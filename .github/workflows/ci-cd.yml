@@ -159,10 +159,8 @@ jobs:
           exclude: |
             **/.git*/**
             **/.git*
-            **/.env
             **/.env.dev
             **/.env.test
-            **/.env.*.local
             **/.env.local.php
             **/node_modules/**
             **/vendor/**
@@ -180,7 +178,10 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd '${{ secrets.FTP_SERVER_DIR }}'
+            cd '${{ secrets.SSH_SERVER_DIR }}'
+            test -f composer.json
+            test -f .env
+            test -f .env.local
             export APP_ENV=prod
             export APP_DEBUG=0
             composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --optimize-autoloader
