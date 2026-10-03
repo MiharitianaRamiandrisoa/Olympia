@@ -176,6 +176,8 @@ jobs:
             # Fail the deployment if the importmap references packages that were
             # not compiled or are not readable by the web server.
             test -s public/assets/importmap.json
+            ! grep -q '/assets/vendor/@hotwired/' public/assets/importmap.json
+            ! grep -q '/assets/@symfony/' public/assets/importmap.json
             test -n "$(find public/assets/vendor/hotwired/stimulus -type f -name '*.js' -readable -print -quit)"
             test -n "$(find public/assets/vendor/hotwired/turbo -type f -name '*.js' -readable -print -quit)"
 
