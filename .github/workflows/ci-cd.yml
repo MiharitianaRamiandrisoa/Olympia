@@ -91,6 +91,7 @@ jobs:
 
             command -v php >/dev/null 2>&1 || { echo "ERREUR : PHP n'est pas disponible."; exit 1; }
             command -v composer >/dev/null 2>&1 || { echo "ERREUR : Composer n'est pas disponible."; exit 1; }
+            command -v npm >/dev/null 2>&1 || { echo "ERREUR : npm n'est pas disponible."; exit 1; }
 
             composer install \
               --no-dev \
@@ -99,6 +100,27 @@ jobs:
               --prefer-dist \
               --no-progress \
               --optimize-autoloader
+
+            npm ci --no-audit --no-fund
+            npm run build
+
+            php bin/console importmap:install --env=prod --no-interaction
+            rm -rf public/assets
+            php bin/console asset-map:compile --env=prod --no-interaction
+
+            # Certains hébergements refusent les URLs contenant « @ ».
+            if [ -d public/assets/vendor/@hotwired ]; then
+              mkdir -p public/assets/vendor/hotwired
+              cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
+            fi
+            if [ -d public/assets/@symfony ]; then
+              mkdir -p public/assets/symfony
+              cp -R public/assets/@symfony/. public/assets/symfony/
+            fi
+            sed -i \
+              -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
+              -e 's#/assets/@symfony/#/assets/symfony/#g' \
+              public/assets/importmap.json
 
             php bin/console doctrine:migrations:migrate \
               --env=prod \
@@ -109,4 +131,9 @@ jobs:
             find public -type d -exec chmod 755 {} +
             find public -type f -exec chmod 644 {} +
 
-            echo "Sources transférées. Compilation des assets laissée manuelle."
+            test -s public/build/app.css
+            test -s public/assets/importmap.json
+            test -n "$(find public/assets/vendor/hotwired/stimulus -type f -name '*.js' -readable -print -quit)"
+            test -n "$(find public/assets/vendor/hotwired/turbo -type f -name '*.js' -readable -print -quit)"
+
+            echo "Déploiement et compilation des assets terminés."
