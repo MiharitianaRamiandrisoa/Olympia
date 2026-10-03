@@ -46,12 +46,19 @@ jobs:
 
       - name: Installer les dépendances PHP sur le serveur
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          DB_HOST: ${{ secrets.HOST_BASE }}
+          DB_NAME: ${{ secrets.NOM_BASE }}
+          DB_USER: ${{ secrets.NOM_UTILISATEUR }}
+          DB_PASSWORD: ${{ secrets.MOT_DE_PASSE }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script_stop: true
+          envs: APP_SECRET,DB_HOST,DB_NAME,DB_USER,DB_PASSWORD
           script: |
             set -e
 
@@ -60,6 +67,7 @@ jobs:
             cd "$SERVER_DIR"
 
             echo "Dossier : $(pwd)"
+            umask 077
 
             printf '%s\n' \
               'APP_ENV=prod' \
@@ -69,11 +77,17 @@ jobs:
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
               'MAILER_DSN=null://null' > .env
 
-            if [ ! -f .env.local ]; then
-              echo "ERREUR : .env.local est absent du serveur et contient les secrets de production."
+            if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
+              echo "ERREUR : les secrets de production sont incomplets."
               exit 1
             fi
-            sed -i '/^APP_ENV=/d; /^APP_DEBUG=/d' .env.local
+            printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=8.0.0&charset=utf8mb4"\n' \
+              "$APP_SECRET" "$DB_USER" "$DB_PASSWORD" "$DB_HOST" "$DB_NAME" > .env.local
+
+            if ! grep -q '^APP_ENV=prod$' .env.local || ! grep -q '^APP_DEBUG=0$' .env.local; then
+              echo "ERREUR : .env.local n'est pas configuré pour la production."
+              exit 1
+            fi
 
             export APP_ENV=prod
             export APP_DEBUG=0
@@ -98,6 +112,10 @@ jobs:
               --prefer-dist \
               --no-progress \
               --optimize-autoloader
+
+            # Le dossier var/ est exclu du transfert FTP : supprimer un ancien
+            # cache dev évite de réutiliser une configuration qui charge DebugBundle.
+            rm -rf var/cache/dev var/cache/test
 
             php bin/console doctrine:migrations:migrate \
               --env=prod \

@@ -41,6 +41,9 @@ APP_SECRET=une-cle-secrete-unique
 DATABASE_URL="mysql://utilisateur:mot_de_passe@127.0.0.1:3306/olympia?serverVersion=8.4.0&charset=utf8mb4"
 ```
 
+Le workflow écrit aussi `APP_ENV=prod` et `APP_DEBUG=0` dans `.env.local`, afin
+que ces valeurs priment sur un ancien fichier `.env` ou une configuration locale.
+
 Le workflow force également `APP_ENV=prod` et `APP_DEBUG=0` pendant les commandes de déploiement. Cela évite que Composer tente de charger les bundles de développement absents de l’installation `--no-dev`.
 
 Le serveur web doit pointer vers le dossier `public/`, et l’utilisateur PHP doit pouvoir écrire dans `var/` et `public/uploads/`.
