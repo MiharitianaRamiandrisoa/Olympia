@@ -186,6 +186,10 @@ jobs:
             fi
             cd "$SERVER_DIR"
             echo "Dossier courant: $(pwd)"
+            if [ ! -f .env ]; then
+              printf '# Base environment file generated during deployment\n' > .env
+              echo "Fichier .env cree sur le serveur."
+            fi
             for required_file in composer.json .env .env.local; do
               if [ ! -f "$required_file" ]; then
                 echo "ERREUR: fichier manquant: $required_file"
