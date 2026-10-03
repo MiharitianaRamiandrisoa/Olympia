@@ -168,8 +168,10 @@ jobs:
             # Apache must be able to traverse every generated directory and read
             # every generated asset.  This also protects against an old umask on
             # the hosting account.
-            find public/assets public/build -type d -exec chmod 755 {} +
-            find public/assets public/build -type f -exec chmod 644 {} +
+            # Le serveur doit pouvoir traverser public/ et lire son index ainsi
+            # que les assets statiques avant même l'exécution de Symfony.
+            find public -type d -exec chmod 755 {} +
+            find public -type f -exec chmod 644 {} +
 
             # Fail the deployment if the importmap references packages that were
             # not compiled or are not readable by the web server.

@@ -4,7 +4,8 @@
     # Le domaine pointe actuellement vers la racine du projet.
     # Les fichiers publics doivent être servis depuis le dossier public/.
     RewriteCond %{REQUEST_URI} !^/public(?:/|$)
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
+    RewriteRule ^$ public/index.php [L]
 
-DirectoryIndex public/index.php
+    RewriteCond %{REQUEST_URI} !^/public(?:/|$)
+    RewriteRule ^(.+)$ public/$1 [L]
+</IfModule>
