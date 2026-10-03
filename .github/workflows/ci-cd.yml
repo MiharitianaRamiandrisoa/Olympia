@@ -187,7 +187,13 @@ jobs:
             cd "$SERVER_DIR"
             echo "Dossier courant: $(pwd)"
             if [ ! -f .env ]; then
-              printf '# Base environment file generated during deployment\n' > .env
+              printf '%s\n' \
+                'APP_ENV=prod' \
+                'APP_DEBUG=0' \
+                'APP_SHARE_DIR=var/share' \
+                'DEFAULT_URI=https://olympia-madagascar.mg' \
+                'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
+                'MAILER_DSN=null://null' > .env
               echo "Fichier .env cree sur le serveur."
             fi
             for required_file in composer.json .env .env.local; do
