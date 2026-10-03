@@ -90,6 +90,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
+    env:
+      APP_ENV: prod
+      APP_DEBUG: 0
 
     steps:
       - name: Récupérer le code
@@ -104,7 +107,12 @@ jobs:
           tools: composer:v2
 
       - name: Installer les dépendances PHP
-        run: composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader
+        run: composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Installer les assets Symfony et Importmap
+        run: |
+          php bin/console assets:install public --env=prod
+          php bin/console importmap:install --env=prod
 
       - name: Installer Node.js
         uses: actions/setup-node@v4
@@ -121,37 +129,45 @@ jobs:
           php bin/console tailwind:build --env=prod --minify
           php bin/console asset-map:compile --env=prod
 
-      - name: Configurer la clé SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
-
-      - name: Ajouter le serveur aux hôtes connus
-        run: ssh-keyscan -H "${{ secrets.SERVER_HOST }}" >> "$HOME/.ssh/known_hosts"
-
-      - name: Transférer le projet
+      - name: Générer la configuration Symfony production
         env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PATH: ${{ secrets.SERVER_PATH }}
-        run: >-
-          rsync -az
-          --exclude='.git/'
-          --exclude='.env*'
-          --exclude='node_modules/'
-          --exclude='var/'
-          --exclude='public/uploads/'
-          ./ "$SERVER_USER@$SERVER_HOST:$SERVER_PATH/"
-
-      - name: Installer et préparer Symfony sur le serveur
-        env:
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_PATH: ${{ secrets.SERVER_PATH }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          DB_HOST: ${{ secrets.HOST_BASE }}
+          DB_NAME: ${{ secrets.NOM_BASE }}
+          DB_USER: ${{ secrets.NOM_UTILISATEUR }}
+          DB_PASSWORD: ${{ secrets.MOT_DE_PASSE }}
         run: |
-          ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader"
-          ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && php bin/console tailwind:build --env=prod --minify && php bin/console asset-map:compile --env=prod && php bin/console cache:clear --env=prod"
-          ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && chmod -R ug+rw var public/uploads 2>/dev/null || true"
+          test -n "$APP_SECRET"
+          test -n "$DB_HOST"
+          test -n "$DB_NAME"
+          test -n "$DB_USER"
+          test -n "$DB_PASSWORD"
+          printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=8.0.0&charset=utf8mb4"\n' \
+            "$APP_SECRET" "$DB_USER" "$DB_PASSWORD" "$DB_HOST" "$DB_NAME" > .env.local
+
+      - name: Déployer les fichiers par FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          local-dir: ./
+          security: loose
+          exclude: |
+            **/.git*/**
+            **/.git*
+            **/.env
+            **/.env.dev
+            **/.env.test
+            **/.env.*.local
+            **/.env.local.php
+            **/node_modules/**
+            **/var/**
+            **/public/uploads/**
+            **/.phpunit.cache/**
 
       - name: Vérifier le site en production
         env:
