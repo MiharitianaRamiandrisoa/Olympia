@@ -36,6 +36,7 @@ jobs:
             **/.git*
             **/.env.dev
             **/.env.test
+            **/.env.local
             **/.env.local.php
             **/node_modules/**
             **/vendor/**
@@ -59,6 +60,20 @@ jobs:
             cd "$SERVER_DIR"
 
             echo "Dossier : $(pwd)"
+
+            printf '%s\n' \
+              'APP_ENV=prod' \
+              'APP_DEBUG=0' \
+              'APP_SHARE_DIR=var/share' \
+              'DEFAULT_URI=https://olympia-madagascar.mg' \
+              'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
+              'MAILER_DSN=null://null' > .env
+
+            if [ ! -f .env.local ]; then
+              echo "ERREUR : .env.local est absent du serveur et contient les secrets de production."
+              exit 1
+            fi
+            sed -i '/^APP_ENV=/d; /^APP_DEBUG=/d' .env.local
 
             export APP_ENV=prod
             export APP_DEBUG=0
