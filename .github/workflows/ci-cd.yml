@@ -178,7 +178,7 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd '${{ secrets.SSH_SERVER_DIR }}'
+            cd '${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
             test -f composer.json
             test -f .env
             test -f .env.local
