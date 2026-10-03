@@ -53,7 +53,9 @@ jobs:
             **/.env.local
             **/.env.local.php
             **/node_modules/**
-            **/vendor/**
+            # Exclude Composer's root vendor directory, but keep
+            # public/assets/vendor: AssetMapper puts the @hotwired packages there.
+            vendor/**
             **/var/**
             **/public/uploads/**
             **/.phpunit.cache/**
@@ -146,6 +148,17 @@ jobs:
             php bin/console cache:clear --env=prod
             rm -rf public/assets
             php bin/console asset-map:compile --env=prod --no-interaction
-            chmod -R a+rX public/assets public/build
+
+            # Apache must be able to traverse every generated directory and read
+            # every generated asset.  This also protects against an old umask on
+            # the hosting account.
+            find public/assets public/build -type d -exec chmod 755 {} +
+            find public/assets public/build -type f -exec chmod 644 {} +
+
+            # Fail the deployment if the importmap references packages that were
+            # not compiled or are not readable by the web server.
+            test -s public/assets/importmap.json
+            test -n "$(find public/assets/vendor/@hotwired/stimulus -type f -name '*.js' -readable -print -quit)"
+            test -n "$(find public/assets/vendor/@hotwired/turbo -type f -name '*.js' -readable -print -quit)"
 
             echo "Déploiement terminé."
