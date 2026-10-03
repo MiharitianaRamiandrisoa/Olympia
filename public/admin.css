@@ -1,0 +1,118 @@
+/* Palette Olympia pour l'interface EasyAdmin */
+:root {
+    --ea-primary: #1A4A54;
+    --ea-primary-foreground: #FFFFFF;
+    --color-primary: #1A4A54;
+    --sidebar-bg: #1A4A54;
+    --sidebar-border-color: #235C68;
+    --sidebar-logo-color: #DDC9A4;
+    --sidebar-menu-color: #F8FAFC;
+    --sidebar-menu-header-color: #DDC9A4;
+    --sidebar-menu-icon-color: #B9D0D4;
+    --sidebar-menu-active-item-color: #DDC9A4;
+    --sidebar-menu-hover-color: #DDC9A4;
+    --link-color: #1A4A54;
+    --link-hover-color: #2D6F7C;
+    --content-top-border-color: #DDC9A4;
+    --body-bg: #FAF6EC;
+    --content-panel-bg: #FFFCF5;
+    --table-cell-border-color: #E8DFD0;
+    --table-cell-color: #315B64;
+    --table-thead-color: #1A4A54;
+}
+
+body { background-color: #FAF6EC; color: #1A4A54; }
+.main-sidebar, .sidebar { background-color: #1A4A54; }
+.content-top { background-color: #FFFFFF; border-bottom-color: #DDC9A4; }
+.content-wrapper, .content { background-color: #FAF6EC; }
+
+.content-header-title .title {
+    color: #1A4A54;
+    letter-spacing: -0.02em;
+}
+
+.content-panel {
+    background: #FFFFFF;
+    border: 1px solid #E8DFD0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(26, 74, 84, 0.06);
+    overflow: hidden;
+}
+
+.content-panel-body {
+    background: #FFFCF5;
+}
+
+table.datagrid {
+    background: #FFFFFF;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.datagrid thead th {
+    background: #F3EFE8;
+    color: #1A4A54;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.datagrid thead th a,
+.datagrid thead th span:not(.icon) {
+    color: #1A4A54;
+    font-weight: 700;
+}
+
+.datagrid tbody tr {
+    transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.datagrid tbody tr:hover {
+    background-color: #FAF6EC;
+    box-shadow: inset 4px 0 0 #DDC9A4;
+}
+
+.datagrid td {
+    color: #315B64;
+    vertical-align: middle;
+}
+
+.datagrid td a:not(.btn) {
+    color: #1A4A54;
+    font-weight: 600;
+}
+
+.form-control, .form-select {
+    background-color: #FFFCF5;
+    border-color: #D8D0C3;
+    border-radius: 10px;
+    color: #1A4A54;
+}
+
+.form-control:hover, .form-select:hover {
+    border-color: #B9D0D4;
+}
+
+.form-label, .form-widget label {
+    color: #1A4A54;
+    font-weight: 600;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:focus {
+    background-color: #1A4A54;
+    border-color: #1A4A54;
+    color: #FFFFFF;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #143942;
+    border-color: #143942;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #2D6F7C;
+    box-shadow: 0 0 0 0.2rem rgba(45, 111, 124, 0.2);
+}
+
+.table thead th { color: #1A4A54; border-bottom-color: #DDC9A4; }
+.pagination .page-item.active .page-link { background-color: #1A4A54; border-color: #1A4A54; }

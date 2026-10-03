@@ -13,13 +13,23 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Entity\Boutique;
+use App\Entity\AbonnementNewsletter;
+use App\Entity\CategorieBoutique;
+use App\Entity\CategorieEvenement;
+use App\Entity\CategoriePromotion;
+use App\Entity\CategorieRestaurant;
 use App\Entity\Enseigne;
 use App\Entity\Restaurant;
 use App\Entity\Media;
 use App\Entity\Promotion;
 use App\Entity\Evenement;
 use App\Entity\Service;
+use App\Entity\InformationPratique;
+use App\Entity\MessageContact;
+use App\Entity\Utilisateur;
 use App\Service\ImageOptimizer;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -42,7 +52,59 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud->addFormTheme('admin/form/photo_upload.html.twig');
+        return $crud
+            ->addFormTheme('admin/form/photo_upload.html.twig')
+            ->setPageTitle(Crud::PAGE_NEW, 'Ajouter ' . $this->getPageEntityLabel())
+            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier ' . $this->getPageEntityLabel());
+    }
+
+    private function getPageEntityLabel(): string
+    {
+        return [
+            Boutique::class => 'une boutique',
+            Restaurant::class => 'un restaurant',
+            Service::class => 'un service',
+            Promotion::class => 'une promotion',
+            Evenement::class => 'un evenement',
+            InformationPratique::class => 'une information pratique',
+            Media::class => 'un media',
+            Utilisateur::class => 'un utilisateur',
+            CategorieBoutique::class => 'une categorie de boutique',
+            CategorieRestaurant::class => 'une categorie de restaurant',
+            CategoriePromotion::class => 'une categorie de promotion',
+            CategorieEvenement::class => 'une categorie d evenement',
+            MessageContact::class => 'un message',
+            AbonnementNewsletter::class => 'un abonne',
+        ][static::$entityClass] ?? 'un element';
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        $labels = [
+            Boutique::class => ['singular' => 'boutique', 'new' => 'Ajouter une boutique'],
+            Restaurant::class => ['singular' => 'restaurant', 'new' => 'Ajouter un restaurant'],
+            Service::class => ['singular' => 'service', 'new' => 'Ajouter un service'],
+            Promotion::class => ['singular' => 'promotion', 'new' => 'Ajouter une promotion'],
+            Evenement::class => ['singular' => 'événement', 'new' => 'Ajouter un événement'],
+            InformationPratique::class => ['singular' => 'information pratique', 'new' => 'Ajouter une information'],
+            Media::class => ['singular' => 'média', 'new' => 'Ajouter un média'],
+            Utilisateur::class => ['singular' => 'utilisateur', 'new' => 'Ajouter un utilisateur'],
+            CategorieBoutique::class => ['singular' => 'catégorie de boutique', 'new' => 'Ajouter une catégorie de boutique'],
+            CategorieRestaurant::class => ['singular' => 'catégorie de restaurant', 'new' => 'Ajouter une catégorie de restaurant'],
+            CategoriePromotion::class => ['singular' => 'catégorie de promotion', 'new' => 'Ajouter une catégorie de promotion'],
+            CategorieEvenement::class => ['singular' => 'catégorie d’événement', 'new' => 'Ajouter une catégorie d’événement'],
+            MessageContact::class => ['singular' => 'message', 'new' => 'Ajouter un message'],
+            AbonnementNewsletter::class => ['singular' => 'abonné', 'new' => 'Ajouter un abonné'],
+        ][static::$entityClass] ?? ['singular' => 'élément', 'new' => 'Ajouter'];
+
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($labels['new']))
+            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => $action->setLabel('Modifier'))
+            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action->setLabel('Supprimer'))
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel('Enregistrer'))
+            ->update(Crud::PAGE_EDIT, Action::SAVE_AND_CONTINUE, fn (Action $action) => $action->setLabel('Enregistrer et continuer'))
+            ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, fn (Action $action) => $action->setLabel('Créer'))
+            ->update(Crud::PAGE_NEW, Action::SAVE_AND_ADD_ANOTHER, fn (Action $action) => $action->setLabel('Créer et ajouter'));
     }
 
     public function configureAssets(Assets $assets): Assets

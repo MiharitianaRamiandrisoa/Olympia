@@ -16,6 +16,7 @@ use App\Entity\Promotion;
 use App\Entity\Restaurant;
 use App\Entity\Utilisateur;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -76,7 +77,12 @@ final class DashboardController extends AbstractDashboardController
     {
         return Dashboard::new()->setTitle(
             '<img src="/images/logo/logo-header-teal.png" alt="Olympia" style="max-width: 150px; max-height: 60px; object-fit: contain;">'
-        );
+        )->setFaviconPath('images/logo/favico/favicon.ico');
+    }
+
+    public function configureAssets(): Assets
+    {
+        return Assets::new()->addCssFile('admin.css');
     }
 
     public function configureMenuItems(): iterable
