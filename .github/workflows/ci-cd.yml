@@ -139,5 +139,7 @@ jobs:
               --no-interaction \
               --allow-no-migration
             php bin/console cache:clear --env=prod
+            rm -rf public/assets
+            php bin/console asset-map:compile --env=prod --no-interaction
 
             echo "Déploiement terminé."
