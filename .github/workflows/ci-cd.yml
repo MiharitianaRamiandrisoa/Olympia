@@ -108,19 +108,19 @@ jobs:
             rm -rf public/assets
             php bin/console asset-map:compile --env=prod --no-interaction
 
-            # Certains hébergements refusent les URLs contenant « @ ».
-            if [ -d public/assets/vendor/@hotwired ]; then
-              mkdir -p public/assets/vendor/hotwired
-              cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
-            fi
-            if [ -d public/assets/@symfony ]; then
-              mkdir -p public/assets/symfony
-              cp -R public/assets/@symfony/. public/assets/symfony/
-            fi
-            sed -i \
-              -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
-              -e 's#/assets/@symfony/#/assets/symfony/#g' \
-              public/assets/importmap.json
+            # # Certains hébergements refusent les URLs contenant « @ ».
+            # if [ -d public/assets/vendor/@hotwired ]; then
+            #   mkdir -p public/assets/vendor/hotwired
+            #   cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
+            # fi
+            # if [ -d public/assets/@symfony ]; then
+            #   mkdir -p public/assets/symfony
+            #   cp -R public/assets/@symfony/. public/assets/symfony/
+            # fi
+            # sed -i \
+            #   -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
+            #   -e 's#/assets/@symfony/#/assets/symfony/#g' \
+            #   public/assets/importmap.json
 
             php bin/console doctrine:migrations:migrate \
               --env=prod \
