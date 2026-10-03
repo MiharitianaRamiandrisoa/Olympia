@@ -77,7 +77,9 @@ jobs:
         run: php bin/console lint:twig templates --env=test
 
       - name: Compiler les assets AssetMapper
-        run: php bin/console asset-map:compile --env=prod
+        run: |
+          php bin/console tailwind:build --env=prod --minify
+          php bin/console asset-map:compile --env=prod
 
       - name: Exécuter PHPUnit
         run: php bin/phpunit --testdox
@@ -116,6 +118,7 @@ jobs:
       - name: Compiler les assets
         run: |
           npm run build
+          php bin/console tailwind:build --env=prod --minify
           php bin/console asset-map:compile --env=prod
 
       - name: Configurer la clé SSH
@@ -147,7 +150,7 @@ jobs:
           SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
           ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && composer install --no-dev --no-interaction --prefer-dist --no-progress --optimize-autoloader"
-          ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && php bin/console asset-map:compile --env=prod && php bin/console cache:clear --env=prod"
+          ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && php bin/console tailwind:build --env=prod --minify && php bin/console asset-map:compile --env=prod && php bin/console cache:clear --env=prod"
           ssh "$SERVER_USER@$SERVER_HOST" "cd '$SERVER_PATH' && chmod -R ug+rw var public/uploads 2>/dev/null || true"
 
       - name: Vérifier le site en production
