@@ -178,10 +178,30 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd '${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
-            test -f composer.json
-            test -f .env
-            test -f .env.local
+            SERVER_DIR='${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
+            echo "Dossier de deploiement: $SERVER_DIR"
+            if [ ! -d "$SERVER_DIR" ]; then
+              echo "ERREUR: le dossier SSH_SERVER_DIR n'existe pas."
+              exit 1
+            fi
+            cd "$SERVER_DIR"
+            echo "Dossier courant: $(pwd)"
+            for required_file in composer.json .env .env.local; do
+              if [ ! -f "$required_file" ]; then
+                echo "ERREUR: fichier manquant: $required_file"
+                echo "Contenu du dossier:"
+                ls -la
+                exit 1
+              fi
+            done
+            if ! command -v composer >/dev/null 2>&1; then
+              echo "ERREUR: Composer n'est pas disponible dans le PATH SSH."
+              exit 1
+            fi
+            if ! command -v php >/dev/null 2>&1; then
+              echo "ERREUR: PHP n'est pas disponible dans le PATH SSH."
+              exit 1
+            fi
             export APP_ENV=prod
             export APP_DEBUG=0
             composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --optimize-autoloader
