@@ -149,6 +149,22 @@ jobs:
             rm -rf public/assets
             php bin/console asset-map:compile --env=prod --no-interaction
 
+            # Certains hébergements refusent les URLs contenant des répertoires
+            # commençant par « @ » (403 sur @hotwired et @symfony). Publier les
+            # bundles sous des chemins neutres évite ce blocage Apache/Nginx.
+            if [ -d public/assets/vendor/@hotwired ]; then
+              mkdir -p public/assets/vendor/hotwired
+              cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
+            fi
+            if [ -d public/assets/@symfony ]; then
+              mkdir -p public/assets/symfony
+              cp -R public/assets/@symfony/. public/assets/symfony/
+            fi
+            sed -i \
+              -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
+              -e 's#/assets/@symfony/#/assets/symfony/#g' \
+              public/assets/importmap.json
+
             # Apache must be able to traverse every generated directory and read
             # every generated asset.  This also protects against an old umask on
             # the hosting account.
@@ -158,7 +174,7 @@ jobs:
             # Fail the deployment if the importmap references packages that were
             # not compiled or are not readable by the web server.
             test -s public/assets/importmap.json
-            test -n "$(find public/assets/vendor/@hotwired/stimulus -type f -name '*.js' -readable -print -quit)"
-            test -n "$(find public/assets/vendor/@hotwired/turbo -type f -name '*.js' -readable -print -quit)"
+            test -n "$(find public/assets/vendor/hotwired/stimulus -type f -name '*.js' -readable -print -quit)"
+            test -n "$(find public/assets/vendor/hotwired/turbo -type f -name '*.js' -readable -print -quit)"
 
             echo "Déploiement terminé."
