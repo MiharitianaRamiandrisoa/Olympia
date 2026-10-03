@@ -113,6 +113,9 @@ jobs:
               --no-progress \
               --optimize-autoloader
 
+            echo "Installation des assets de l'importmap..."
+            php bin/console importmap:install --env=prod --no-interaction
+
             # Le dossier var/ est exclu du transfert FTP : supprimer un ancien
             # cache dev évite de réutiliser une configuration qui charge DebugBundle.
             rm -rf var/cache/dev var/cache/test
