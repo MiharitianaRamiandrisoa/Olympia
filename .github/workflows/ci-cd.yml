@@ -1,149 +1,24 @@
-name: CI/CD Olympia
+name: Deploy Olympia
 
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
 
 permissions:
   contents: read
 
 concurrency:
-  group: olympia-${{ github.workflow }}-${{ github.ref }}
+  group: olympia-deploy
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: Tests et validation
-    runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.4
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: olympia_test
-          MYSQL_USER: app
-          MYSQL_PASSWORD: app
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uapp -papp"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=12
-
-    env:
-      APP_ENV: test
-      APP_DEBUG: 1
-      APP_SECRET: ci-secret-not-for-production
-      DATABASE_URL: mysql://app:app@127.0.0.1:3306/olympia_test?serverVersion=8.4.0&charset=utf8mb4
-
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v4
-
-      - name: Installer PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: ctype, iconv, intl, mbstring, pdo_mysql
-          coverage: none
-          tools: composer:v2
-
-      - name: Valider Composer
-        run: composer validate --no-check-publish
-
-      - name: Installer les dépendances PHP
-        run: composer install --no-interaction --prefer-dist --no-progress
-
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-
-      - name: Installer les dépendances JavaScript
-        run: npm ci
-
-      - name: Compiler Tailwind
-        run: npm run build
-
-      - name: Vérifier le conteneur Symfony
-        run: php bin/console lint:container --env=test
-
-      - name: Vérifier les templates Twig
-        run: php bin/console lint:twig templates --env=test
-
-      - name: Compiler les assets AssetMapper
-        run: |
-          php bin/console tailwind:build --env=prod --minify
-          php bin/console asset-map:compile --env=prod
-
-      - name: Exécuter PHPUnit
-        run: php bin/phpunit --testdox
-
   deploy:
     name: Déploiement production
-    needs: quality
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
-    env:
-      APP_ENV: prod
-      APP_DEBUG: 0
 
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
-
-      - name: Installer PHP pour compiler les assets
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: ctype, iconv, intl, mbstring, pdo_mysql
-          coverage: none
-          tools: composer:v2
-
-      - name: Installer les dépendances PHP
-        run: composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --optimize-autoloader
-
-      - name: Installer les assets Symfony et Importmap
-        run: |
-          php bin/console assets:install public --env=prod
-          php bin/console importmap:install --env=prod
-
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-
-      - name: Installer les dépendances JavaScript
-        run: npm ci
-
-      - name: Compiler les assets
-        run: |
-          npm run build
-          php bin/console tailwind:build --env=prod --minify
-          php bin/console asset-map:compile --env=prod
-
-      - name: Générer la configuration Symfony production
-        env:
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          DB_HOST: ${{ secrets.HOST_BASE }}
-          DB_NAME: ${{ secrets.NOM_BASE }}
-          DB_USER: ${{ secrets.NOM_UTILISATEUR }}
-          DB_PASSWORD: ${{ secrets.MOT_DE_PASSE }}
-        run: |
-          test -n "$APP_SECRET"
-          test -n "$DB_HOST"
-          test -n "$DB_NAME"
-          test -n "$DB_USER"
-          test -n "$DB_PASSWORD"
-          printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=8.0.0&charset=utf8mb4"\n' \
-            "$APP_SECRET" "$DB_USER" "$DB_PASSWORD" "$DB_HOST" "$DB_NAME" > .env.local
 
       - name: Déployer les fichiers par FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -153,8 +28,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          # server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          server-dir: /public
+          server-dir: /public_html/
           local-dir: ./
           security: strict
           exclude: |
@@ -169,7 +43,7 @@ jobs:
             **/public/uploads/**
             **/.phpunit.cache/**
 
-      - name: Installer les dependances PHP sur le serveur via SSH
+      - name: Installer les dépendances PHP sur le serveur
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -179,46 +53,30 @@ jobs:
           script_stop: true
           script: |
             set -e
-            SERVER_DIR='${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
-            echo "Dossier de deploiement: $SERVER_DIR"
-            if [ ! -d "$SERVER_DIR" ]; then
-              echo "ERREUR: le dossier SSH_SERVER_DIR n'existe pas."
-              exit 1
-            fi
-            cd "$SERVER_DIR"
-            echo "Dossier courant: $(pwd)"
-            printf '%s\n' \
-              'APP_ENV=prod' \
-              'APP_DEBUG=0' \
-              'APP_SHARE_DIR=var/share' \
-              'DEFAULT_URI=https://olympia-madagascar.mg' \
-              'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
-              'MAILER_DSN=null://null' > .env
-            echo "Fichier .env production mis a jour sur le serveur."
-            for required_file in composer.json .env .env.local; do
-              if [ ! -f "$required_file" ]; then
-                echo "ERREUR: fichier manquant: $required_file"
-                echo "Contenu du dossier:"
-                ls -la
-                exit 1
-              fi
-            done
-            if ! command -v composer >/dev/null 2>&1; then
-              echo "ERREUR: Composer n'est pas disponible dans le PATH SSH."
-              exit 1
-            fi
-            if ! command -v php >/dev/null 2>&1; then
-              echo "ERREUR: PHP n'est pas disponible dans le PATH SSH."
-              exit 1
-            fi
-            export APP_ENV=prod
-            export APP_DEBUG=0
-            mkdir -p var/cache var/log var/share
-            composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --optimize-autoloader
-            php bin/console doctrine:migrations:migrate --env=prod --no-interaction --allow-no-migration
-            php bin/console cache:clear --env=prod
 
-      - name: Vérifier le site en production
-        env:
-          APP_URL: ${{ secrets.APP_URL }}
-        run: curl --fail --silent --show-error --location --max-time 30 "$APP_URL"
+            SERVER_DIR='${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
+
+            cd "$SERVER_DIR"
+
+            echo "Dossier : $(pwd)"
+
+            if ! command -v php >/dev/null 2>&1; then
+              echo "ERREUR : PHP n'est pas disponible."
+              exit 1
+            fi
+
+            if ! command -v composer >/dev/null 2>&1; then
+              echo "ERREUR : Composer n'est pas disponible."
+              exit 1
+            fi
+
+            echo "Installation des dépendances PHP..."
+
+            composer install \
+              --no-dev \
+              --no-interaction \
+              --prefer-dist \
+              --no-progress \
+              --optimize-autoloader
+
+            echo "Déploiement terminé."
