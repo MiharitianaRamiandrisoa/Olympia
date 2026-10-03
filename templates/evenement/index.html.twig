@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block title %}Événements | Olympia{% endblock %}
+{% block hero %}
+  {% include 'components/_hero.html.twig' with {title: 'Événements', subtitle: 'Découvrez les animations et événements du centre Olympia.', image: 'images/hero-olympia.jpg'} only %}
+{% endblock %}
+{% block filters %}
+  <div id="event-filters">
+    {% include 'components/_filter_pills.html.twig' with {items: categories, active: active_category, filter_route: 'app_events', ajax_name: 'event'} only %}
+  </div>
+{% endblock %}
+{% block body %}
+  <section id="event-results" class="container-site py-12">
+    <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+      <div>
+        <p class="text-xs font-bold uppercase text-olympia-gold">Agenda Olympia</p>
+        <h2 class="mt-3 text-3xl font-medium">Ne manquez aucun événement</h2>
+      </div>
+      <div class="flex rounded-full border border-slate-200 bg-white p-1" role="group" aria-label="Affichage des événements">
+        <button type="button" data-event-view="list" class="rounded-full bg-olympia px-4 py-2 text-sm font-semibold text-white">Liste</button>
+        <button type="button" data-event-view="calendar" class="rounded-full px-4 py-2 text-sm font-semibold text-olympia-muted hover:text-olympia">Calendrier</button>
+      </div>
+    </div>
+
+    <div id="event-list-view" class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {% for event in events %}
+        {% include 'components/cards/_news-card.html.twig' with event only %}
+      {% else %}
+        <p class="text-sm text-olympia-muted">Aucun événement à venir.</p>
+      {% endfor %}
+    </div>
+
+    <div id="event-calendar-view" class="mt-10 hidden" data-event-calendar data-events="{{ events|json_encode|e('html_attr') }}">
+      <div class="mb-5 flex items-center justify-between">
+        <button type="button" data-calendar-prev class="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-olympia hover:bg-olympia-cream">←</button>
+        <h3 data-calendar-title class="text-xl font-semibold capitalize text-olympia"></h3>
+        <button type="button" data-calendar-next class="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-olympia hover:bg-olympia-cream">→</button>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div class="grid grid-cols-7 border-b border-slate-200 bg-olympia-cream text-center text-xs font-bold uppercase text-olympia-muted">
+          {% for day in ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] %}
+            <div class="px-2 py-3">{{ day }}</div>
+          {% endfor %}
+        </div>
+        <div data-calendar-grid class="grid grid-cols-7"></div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

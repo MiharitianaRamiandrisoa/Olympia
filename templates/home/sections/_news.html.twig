@@ -1,0 +1,20 @@
+{# Param : news (liste de {badge, title, icon, date, text, image, href}) #}
+<section class="container-site py-16 md:py-24">
+  {% include 'components/ui/_section-heading.html.twig' with {
+    eyebrow: 'Actualités & événements',
+    title: 'Ne manquez rien !',
+    link_label: 'Tous nos événements',
+    link_href: '/evenements'
+  } only %}
+
+  <div class="home-carousel mt-10" data-home-carousel>
+    <div class="home-carousel-viewport news-carousel-viewport">
+      <div class="home-carousel-track news-carousel-track">
+    {% for item in news %}
+      {% include 'components/cards/_news-card.html.twig' with item only %}
+    {% endfor %}
+      </div>
+    </div>
+    <div class="home-carousel-dots" data-carousel-dots aria-label="Pages des actualités et événements"></div>
+  </div>
+</section>

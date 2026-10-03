@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion administrateur | Olympia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=services-20261001">
+  {{ importmap('app') }}
+</head>
+<body class="min-h-screen bg-olympia-cream text-olympia-ink">
+  <main class="grid min-h-screen lg:grid-cols-2">
+    <section class="relative hidden overflow-hidden bg-olympia-dark lg:block">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_#286574,_#003f4f_55%,_#002f3b)]"></div>
+      <div class="relative flex h-full flex-col justify-between p-12 text-white">
+        <a href="{{ path('app_home') }}" aria-label="Olympia - Accueil">
+          <img src="{{ asset('images/logo/logo-admin-blanc.png') }}" alt="Olympia" width="220" height="156" decoding="async" class="h-20 w-auto">
+        </a>
+        <div>
+          <p class="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-olympia-gold">Espace privé</p>
+          <h1 class="max-w-lg text-5xl font-medium leading-tight">Gérez votre centre commercial en toute simplicité.</h1>
+        </div>
+        <p class="text-sm text-white/70">Olympia Centre Commercial</p>
+      </div>
+    </section>
+
+    <section class="flex items-center justify-center px-6 py-12 sm:px-10">
+      <div class="w-full max-w-md">
+        <a href="{{ path('app_home') }}" aria-label="Olympia - Accueil" class="mb-12 inline-block lg:hidden">
+          <img src="{{ asset('images/logo/logo-header-teal.png') }}" alt="Olympia" width="160" height="114" decoding="async" class="h-14 w-auto">
+        </a>
+        <p class="text-sm font-bold uppercase tracking-[0.18em] text-olympia-gold">Administration</p>
+        <h2 class="mt-3 text-4xl font-medium">Bienvenue</h2>
+        <p class="mt-3 text-olympia-muted">Connectez-vous pour accéder au back-office.</p>
+
+        {% if error %}
+          <div class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">Identifiants invalides. Vérifiez votre email et votre mot de passe.</div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_admin_login') }}" class="mt-8 space-y-5 rounded-3xl bg-white p-7 shadow-sm sm:p-8">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+          <div>
+            <label for="username" class="mb-2 block text-sm font-bold">Adresse e-mail</label>
+            <input id="username" name="_username" type="email" value="{{ last_username }}" autocomplete="email" required class="field" placeholder="admin@olympia.mg">
+          </div>
+          <div>
+            <label for="password" class="mb-2 block text-sm font-bold">Mot de passe</label>
+            <input id="password" name="_password" type="password" autocomplete="current-password" required class="field" placeholder="Votre mot de passe">
+          </div>
+          <button type="submit" class="w-full rounded-full bg-olympia py-3.5 text-sm font-bold text-white transition hover:bg-olympia-dark">Se connecter</button>
+        </form>
+        <a href="{{ path('app_home') }}" class="mt-6 block text-center text-sm text-olympia-muted hover:text-olympia">← Retour au site public</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

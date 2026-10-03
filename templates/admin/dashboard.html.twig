@@ -1,0 +1,41 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Tableau de bord Olympia{% endblock %}
+
+{% block main %}
+  <div class="content-panel">
+    <div class="content-panel-body">
+      <p class="text-muted">Bienvenue dans votre espace d’administration. Gérez ici le contenu affiché sur le site public.</p>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    {% for stat in stats %}
+      <div class="col-12 col-md-6 col-xl-4 mb-4">
+        <a href="{{ path(stat.route) }}" class="text-decoration-none">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+              <span class="d-flex align-items-center justify-content-center rounded-circle bg-{{ stat.color }} text-white" style="width: 52px; height: 52px;">
+                <i class="fa fa-fw {{ stat.icon }}"></i>
+              </span>
+              <div>
+                <div class="text-muted small">{{ stat.label }}</div>
+                <div class="fs-2 fw-bold text-dark">{{ stat.value }}</div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="content-panel mt-2">
+    <div class="content-panel-header"><h2 class="title">Accès rapides</h2></div>
+    <div class="content-panel-body d-flex flex-wrap gap-2">
+      <a class="btn btn-primary" href="{{ path('app_admin_dashboard_boutique_new') }}">Ajouter une boutique</a>
+      <a class="btn btn-success" href="{{ path('app_admin_dashboard_restaurant_new') }}">Ajouter un restaurant</a>
+      <a class="btn btn-warning" href="{{ path('app_admin_dashboard_promotion_new') }}">Ajouter une promotion</a>
+      <a class="btn btn-info" href="{{ path('app_admin_dashboard_evenement_new') }}">Ajouter un événement</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{# Param : items (liste de {icon, title, text, href}) #}
+<section class="container-site -mt-2 py-10 md:py-12">
+  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
+    {% for item in items %}
+      {% include 'components/cards/_quick-access-card.html.twig' with item only %}
+    {% endfor %}
+  </div>
+</section>

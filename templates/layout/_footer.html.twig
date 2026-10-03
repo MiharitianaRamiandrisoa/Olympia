@@ -1,0 +1,57 @@
+<footer class="bg-brand-900 text-white">
+  <div class="container-site grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-[2fr_1fr_1.2fr_1fr]">
+
+    <div>
+      <a href="/" class="flex items-center gap-3">
+        <img src="{{ asset('images/logo/logo-footer-creme.png') }}" alt="Olympia Centre Commercial" width="180" height="128" decoding="async" class="h-16 w-auto">
+      </a>
+      <p class="mt-5 max-w-sm text-sm leading-relaxed text-white/70">
+        Le rendez-vous incontournable pour votre shopping et vos moments de détente. Un cadre unique, moderne et accueillant.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-sand-300">Navigation</h3>
+      <ul class="mt-4 space-y-3 text-sm text-white/70">
+        <li><a class="hover:text-white" href="/">Accueil</a></li>
+        <li><a class="hover:text-white" href="/boutiques">Boutiques</a></li>
+        <li><a class="hover:text-white" href="/restaurants">Restaurants &amp; Food</a></li>
+        <li><a class="hover:text-white" href="/promotions">Promotions &amp; Offres</a></li>
+        <li><a class="hover:text-white" href="/evenements">Événements</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-sand-300">Pratique</h3>
+      <address class="mt-4 space-y-3 text-sm not-italic text-white/70">
+        <p>Tanjombato<br>En face de SMART</p>
+        <p><a href="tel:+261341234567" class="hover:text-white">+261 34 12 34 567</a></p>
+        <p><a href="mailto:contact@olympia.mg" class="hover:text-white">contact@olympia.mg</a></p>
+        <p>Horaires : 9h00 - 20h00</p>
+      </address>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wide text-sand-300">Suivez-nous</h3>
+      <div class="mt-4 flex gap-3">
+        <a href="#" aria-label="Facebook" class="flex size-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20">
+          {% include 'components/ui/_icon.html.twig' with {name: 'facebook', class: 'size-4'} only %}
+        </a>
+        <a href="#" aria-label="Instagram" class="flex size-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20">
+          {% include 'components/ui/_icon.html.twig' with {name: 'instagram', class: 'size-4'} only %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-site flex flex-col items-center justify-between gap-3 py-5 text-xs text-white/50 sm:flex-row">
+      <p>© {{ 'now'|date('Y') }} Olympia Centre Commercial. Tous droits réservés.</p>
+      <div class="flex gap-6">
+        <a href="/mentions-legales" class="hover:text-white">Mentions légales</a>
+        <a href="/confidentialite" class="hover:text-white">Politique de confidentialité</a>
+        <a href="/cgu" class="hover:text-white">CGU</a>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+{% block title %}Promotions & Offres | Olympia{% endblock %}
+
+{% block hero %}
+  {% include 'components/_hero.html.twig' with {title: 'Promotions & Offres', subtitle: "Découvrez les promotions, réductions et offres exclusives des enseignes d'Olympia.", image: 'images/hero-promotions.jpg'} only %}
+{% endblock %}
+
+{% block filters %}
+  <div id="promotion-filters">
+    {% include 'components/_filter_pills.html.twig' with {items: categories, active: active_category, filter_route: 'app_promotions', ajax_name: 'promotion'} only %}
+  </div>
+{% endblock %}
+
+{% block body %}
+  <section id="promotion-results" class="container-site py-10">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {% for promo in promotions %}
+        {% include 'components/_card_promo.html.twig' with {promo: promo} only %}
+      {% else %}
+        <p class="text-sm text-olympia-muted">Aucune promotion disponible pour cette catégorie.</p>
+      {% endfor %}
+    </div>
+  </section>
+  {% include 'components/_newsletter_cta.html.twig' %}
+{% endblock %}

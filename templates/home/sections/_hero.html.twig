@@ -1,0 +1,22 @@
+<section class="relative isolate flex min-h-[520px] items-center overflow-hidden text-white lg:min-h-[620px]">
+  <img src="{{ asset('images/hero-olympia.jpg') }}" alt="" width="1800" height="900" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover">
+  {# Dégradé de lisibilité : sombre à gauche, transparent à droite #}
+  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/85 via-brand-900/45 to-transparent"></div>
+  <div class="absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-brand-900/50 to-transparent"></div>
+
+  <div class="container-site py-16">
+    <p class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide">
+      <span class="h-px w-3 bg-white/70"></span>Tanjombato
+    </p>
+    <h1 class="mt-4 max-w-xl text-4xl font-semibold leading-tight md:text-5xl">
+      Bienvenue à Olympia Madagascar
+    </h1>
+    <p class="mt-8 max-w-lg text-base text-white/90 md:text-lg">
+      Shopping, restauration, services et loisirs au même endroit.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-3">
+      {% include 'components/ui/_button.html.twig' with {label: 'Découvrir Olympia', href: '#informations-pratiques', variant: 'primary'} only %}
+      {% include 'components/ui/_button.html.twig' with {label: 'Explorer les boutiques', href: '/boutiques', variant: 'outline'} only %}
+    </div>
+  </div>
+</section>

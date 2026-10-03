@@ -1,0 +1,20 @@
+{# Param : shops (liste de {name, category, image, href}) #}
+<section class="container-site py-16 md:py-24">
+  {% include 'components/ui/_section-heading.html.twig' with {
+    eyebrow: 'Nos enseignes',
+    title: 'Des boutiques pour toutes vos envies',
+    link_label: 'Toutes les boutiques',
+    link_href: '/boutiques'
+  } only %}
+
+  <div class="home-carousel mt-10" data-home-carousel>
+    <div class="home-carousel-viewport">
+      <div class="home-carousel-track shops-carousel-track">
+    {% for shop in shops %}
+      {% include 'components/cards/_shop-card.html.twig' with shop only %}
+    {% endfor %}
+      </div>
+    </div>
+    <div class="home-carousel-dots" data-carousel-dots aria-label="Pages des enseignes"></div>
+  </div>
+</section>

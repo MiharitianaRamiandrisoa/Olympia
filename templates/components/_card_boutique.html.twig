@@ -1,0 +1,17 @@
+{# Params : shop {name, category, floor, image, initial, url} #}
+<article class="card flex flex-col">
+  {% set srcset = responsive_srcset(shop.image) %}
+  <img src="{{ asset(shop.image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"{% endif %} alt="{{ shop.name }}" width="600" height="400" class="h-40 w-full object-cover" loading="lazy" decoding="async">
+  <div class="flex flex-1 flex-col p-5">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h3 class="text-lg font-medium">{{ shop.name }}</h3>
+        <p class="mt-1 text-sm text-olympia-muted">{{ shop.category }} • {{ shop.floor }}</p>
+      </div>
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-olympia-cream font-serif font-bold text-olympia">
+        {{ shop.initial|default(shop.name|first|upper) }}
+      </span>
+    </div>
+    <a href="{{ shop.url|default('#') }}" class="btn-outline mt-4">En savoir plus</a>
+  </div>
+</article>

@@ -1,0 +1,37 @@
+{% set addressText = address ? address.contenu : 'Centre commercial Olympia, Tanjombato, Madagascar' %}
+{% set mapQuery = ('Olympia Madagascar, ' ~ addressText)|replace({'\n': ', '}) %}
+
+<section id="localisation" class="scroll-mt-24 bg-sand-50 py-16 md:py-20">
+  <div class="container-site grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+    <div>
+      <p class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-sand-400">
+        <span class="h-px w-3 bg-sand-400"></span>Nous trouver
+      </p>
+      <h2 class="mt-3 text-3xl font-medium leading-tight text-olympia">L'adresse du centre</h2>
+      <p class="mt-4 max-w-md text-sm leading-relaxed text-brand-600">Retrouvez Olympia directement sur Google Maps et préparez facilement votre visite.</p>
+
+      <div class="mt-6 flex items-start gap-4">
+        <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-white text-olympia shadow-sm">
+          {% include 'components/ui/_icon.html.twig' with {name: 'map-pin', class: 'size-5'} only %}
+        </span>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-wide text-brand-600">{{ address ? address.titre : 'Localisation' }}</p>
+          <p class="mt-1 whitespace-pre-line text-sm leading-6 text-olympia-ink">{{ addressText }}</p>
+        </div>
+      </div>
+
+      <a href="https://www.google.com/maps/search/?api=1&amp;query={{ mapQuery|url_encode }}" target="_blank" rel="noopener noreferrer"
+         class="mt-7 inline-flex items-center gap-2 rounded-full bg-olympia px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-800">
+        Ouvrir dans Google Maps
+        {% include 'components/ui/_icon.html.twig' with {name: 'arrow-right', class: 'size-4'} only %}
+      </a>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-brand-900/10 bg-white shadow-sm">
+      <iframe title="Localisation du centre commercial Olympia"
+              src="https://www.google.com/maps?q={{ mapQuery|url_encode }}&amp;output=embed"
+              class="h-80 w-full border-0 md:h-96" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,18 @@
+{#
+  Titre de section : eyebrow + titre + lien à droite.
+  Params : eyebrow, title, link_label (opt.), link_href (opt.)
+#}
+<div class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-brand-600">
+      <span class="h-px w-3 bg-sand-400"></span>{{ eyebrow }}
+    </p>
+    <h2 class="mt-2 text-2xl font-medium md:text-3xl">{{ title }}</h2>
+  </div>
+  {% if link_href|default(null) %}
+    <a href="{{ link_href }}" class="inline-flex items-center gap-1 text-sm font-semibold text-brand-600 hover:text-brand-900">
+      {{ link_label }}
+      {% include 'components/ui/_icon.html.twig' with {name: 'chevron-right', class: 'size-4'} only %}
+    </a>
+  {% endif %}
+</div>

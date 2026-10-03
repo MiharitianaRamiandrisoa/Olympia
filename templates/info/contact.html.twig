@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+{% block title %}Contactez-nous | Olympia{% endblock %}
+
+{% block hero %}
+  <nav aria-label="Fil d'Ariane" class="border-b border-slate-100 bg-olympia-cream">
+    <ol class="container-site flex items-center gap-2 py-4 text-sm text-olympia-muted">
+      <li><a href="{{ path('app_home') }}" class="hover:text-olympia">Accueil</a></li>
+      <li aria-hidden="true">›</li>
+      <li>Infos Pratiques</li>
+      <li aria-hidden="true">›</li>
+      <li class="font-medium text-olympia-ink" aria-current="page">Contactez-nous</li>
+    </ol>
+  </nav>
+  {% include 'components/_hero.html.twig' with {
+    title: 'Contactez-nous',
+    subtitle: 'Une question ? Notre équipe est là pour vous aider.',
+    image: 'images/hero-restaurants.jpg',
+    height: 'h-[420px]'
+  } only %}
+{% endblock %}
+
+{% block body %}
+  {% set infos = [
+    {label: 'Adresse', value: 'Tanjombato, En face de SMART', icon: 'M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12zM12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4z'},
+    {label: 'Téléphone', value: '+261 34 12 34 567', icon: 'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z'},
+    {label: 'E-mail', value: 'contact@olympia.mg', icon: 'M3 6h18v12H3zM3 7l9 6 9-6'},
+    {label: "Horaires d'ouverture", value: 'Lun - Dim : 9h00 - 20h00', icon: 'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z'},
+  ] %}
+
+  <div class="container-site grid gap-12 py-16 lg:grid-cols-2">
+    <section>
+      <h2 class="mb-8 text-3xl font-medium">Nos coordonnées</h2>
+      <ul class="space-y-6 rounded-3xl bg-white p-8">
+        {% for info in infos %}
+          <li class="flex items-center gap-4">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-olympia-cream text-olympia">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="{{ info.icon }}"/></svg>
+            </span>
+            <div>
+              <p class="text-xs font-bold uppercase text-olympia-muted">{{ info.label }}</p>
+              <p class="mt-0.5">{{ info.value }}</p>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="mb-8 text-3xl font-medium">Écrivez-nous</h2>
+      <form method="post" action="{{ path('app_contact') }}" data-contact-form class="space-y-5 rounded-3xl bg-white p-8">
+        <input type="hidden" name="_token" value="{{ csrf_token('contact') }}">
+        <div>
+          <label for="name" class="mb-2 block text-sm font-bold">Nom complet</label>
+          <input id="name" name="name" type="text" required placeholder="Votre nom..." class="field">
+        </div>
+        <div>
+          <label for="email" class="mb-2 block text-sm font-bold">Adresse e-mail</label>
+          <input id="email" name="email" type="email" required placeholder="votre.email@exemple.com" class="field">
+        </div>
+        <div>
+          <label for="message" class="mb-2 block text-sm font-bold">Message</label>
+          <textarea id="message" name="message" rows="5" required placeholder="Comment pouvons-nous vous aider ?" class="field resize-none"></textarea>
+        </div>
+        <button type="submit" class="w-full rounded-full bg-olympia py-3.5 text-sm font-bold text-white transition hover:bg-olympia-dark">
+          Envoyer le message
+        </button>
+        <p data-contact-message class="hidden text-sm" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+{% endblock %}

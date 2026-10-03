@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Olympia Madagascar - Centre commercial à Tanjombato{% endblock %}
+
+{% block main_background %}bg-white{% endblock %}
+
+{% block head_preloads %}
+  <link rel="preload" as="image" href="{{ asset('images/hero-olympia.jpg') }}" fetchpriority="high">
+{% endblock %}
+
+{% block body %}
+  {% include 'home/sections/_hero.html.twig' %}
+  {% include 'home/sections/_quick-access.html.twig' with {items: quick_access} only %}
+  {% include 'home/sections/_featured-shops.html.twig' with {shops: shops} only %}
+  {% include 'home/sections/_restaurant-banner.html.twig' %}
+  {% include 'home/sections/_news.html.twig' with {news: news} only %}
+  {% include 'home/sections/_services.html.twig' with {services: services} only %}
+  {% include 'home/sections/_location.html.twig' with {address: center_address} only %}
+  {% include 'home/sections/_practical-info.html.twig' with {items: practical_info} only %}
+{% endblock %}

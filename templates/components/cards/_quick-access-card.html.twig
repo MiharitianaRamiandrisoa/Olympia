@@ -1,0 +1,9 @@
+{# Params : icon, title, text, href #}
+<a href="{{ href }}"
+   class="group flex flex-col items-center rounded-xl bg-sand-100 px-5 py-6 text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+  <span class="flex size-14 items-center justify-center rounded-full bg-white text-brand-900 shadow-sm">
+    {% include 'components/ui/_icon.html.twig' with {name: icon, class: 'size-6'} only %}
+  </span>
+  <h3 class="mt-4 text-lg font-semibold">{{ title }}</h3>
+  <p class="mt-1 text-sm text-brand-900/60">{{ text }}</p>
+</a>

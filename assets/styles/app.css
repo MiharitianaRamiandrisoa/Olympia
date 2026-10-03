@@ -1,3 +1,243 @@
-body {
-    background-color: skyblue;
+@import "tailwindcss";
+
+/* Les templates Twig sont la source des classes Tailwind à générer. */
+@source "../../templates";
+@source "../";
+
+/*
+|--------------------------------------------------------------------------
+| OLYMPIA DESIGN TOKENS
+|--------------------------------------------------------------------------
+*/
+
+@theme {
+    /* Polices */
+    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-serif: "Lora", ui-serif, Georgia, serif;
+
+    /* Couleurs Olympia utilisées par les templates */
+    --color-olympia: #1A4A54;
+    --color-olympia-dark: #143942;
+    --color-olympia-gold: #DDC9A4;
+    --color-olympia-cream: #FAF6EC;
+
+    /* Couleurs de texte */
+    --color-olympia-ink: #1A4A54;
+    --color-olympia-muted: #64748b;
+
+    /* Variations Olympia */
+    --color-brand-50: #eaf1f2;
+    --color-brand-100: #cfe0e3;
+    --color-brand-600: #2d6f7c;
+    --color-brand-700: #235c68;
+    --color-brand-800: #1e515c;
+    --color-brand-900: #1a4a54;
+
+    /* Variations sable */
+    --color-sand-50: #faf6ec;
+    --color-sand-100: #f3efe8;
+    --color-sand-300: #ddc9a4;
+    --color-sand-400: #cdb68a;
+
+    /* Génère la classe utilitaire max-w-site */
+    --container-site: 1200px;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| BASE
+|--------------------------------------------------------------------------
+*/
+
+@layer base {
+
+    body {
+        background-color: white;
+        color: var(--color-olympia-ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+    }
+
+    :focus-visible {
+        outline-width: 2px;
+        outline-offset: 2px;
+        outline-color: var(--color-olympia);
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| COMPOSANTS RÉUTILISABLES
+|--------------------------------------------------------------------------
+*/
+
+@layer components {
+
+    .home-carousel-viewport {
+        overflow: hidden;
+    }
+
+    .home-carousel-track {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .home-carousel-track.is-marquee {
+        width: max-content;
+        overflow: visible;
+        animation: home-marquee 32s linear infinite;
+    }
+
+    .home-carousel:hover .home-carousel-track.is-marquee {
+        animation-play-state: paused;
+    }
+
+    .home-carousel-track.is-marquee > article {
+        flex: 0 0 280px !important;
+        width: 280px;
+    }
+
+    .home-carousel-track.is-marquee.news-carousel-track > article {
+        flex-basis: 340px !important;
+        width: 340px;
+    }
+
+    @keyframes home-marquee {
+        from { transform: translateX(0); }
+        to { transform: translateX(calc(-50% - 0.75rem)); }
+    }
+
+    .home-carousel-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .home-carousel-track > article {
+        flex: 0 0 86%;
+        min-width: 0;
+        scroll-snap-align: start;
+    }
+
+    .news-carousel-track > article {
+        min-height: 360px;
+    }
+
+    .home-carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+    }
+
+    .home-carousel-dots[hidden] {
+        display: none;
+    }
+
+    .home-carousel-dots span {
+        width: 0.5rem;
+        height: 0.5rem;
+        padding: 0;
+        border: 0;
+        border-radius: 9999px;
+        background: rgb(15 65 78 / 25%);
+        transition: width 180ms ease, background-color 180ms ease;
+    }
+
+    .home-carousel-dots span[aria-current="true"] {
+        width: 1.5rem;
+        background: var(--color-olympia);
+    }
+
+    @media (min-width: 768px) {
+        .shops-carousel-track > article,
+        .news-carousel-track > article {
+            flex-basis: calc((100% - 1.5rem) / 2);
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .shops-carousel-track > article,
+        .news-carousel-track > article {
+            flex-basis: calc((100% - 3rem) / 3);
+        }
+
+        .shops-carousel-track > article {
+            flex-basis: calc((100% - 6rem) / 5);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .home-carousel-track { scroll-behavior: auto; }
+    }
+
+    /*
+    | Container principal
+    */
+
+    .container-site {
+        @apply mx-auto w-full max-w-site px-5 md:px-8 lg:px-12;
+    }
+
+
+    /*
+    | Pills / filtres
+    */
+
+    .pill {
+        @apply rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-olympia-ink transition;
+    }
+
+    .pill:hover {
+        @apply border-olympia;
+    }
+
+    .pill-active {
+        @apply rounded-full border-olympia bg-olympia px-5 py-2.5 text-sm font-medium text-white;
+    }
+
+
+    /*
+    | Bouton outline
+    */
+
+    .btn-outline {
+        @apply block w-full rounded-lg border border-olympia-gold py-2 text-center text-sm font-medium text-olympia transition;
+    }
+
+    .btn-outline:hover {
+        @apply bg-olympia-gold/10;
+    }
+
+
+    /*
+    | Card générale
+    */
+
+    .card {
+        @apply overflow-hidden rounded-2xl border border-slate-200 bg-white;
+    }
+
+
+    /*
+    | Champs de formulaire
+    */
+
+    .field {
+        @apply w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm;
+    }
+
+    .field::placeholder {
+        @apply text-olympia-muted;
+    }
+
+    .field:focus {
+        @apply border-olympia outline-none ring-2 ring-olympia/20;
+    }
 }

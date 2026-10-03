@@ -1,0 +1,103 @@
+<header class="sticky top-0 z-50 border-b border-[#DDC9A4]/30 bg-white/95 backdrop-blur">
+    <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+
+        {# Logo #}
+        <a href="{{ path('app_home') }}" class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[#1A4A54]">
+                <span class="text-lg font-bold text-[#DDC9A4]">O</span>
+            </div>
+
+            <div class="leading-tight">
+                <span class="block text-lg font-bold tracking-wide text-[#1A4A54]">
+                    OLYMPIA
+                </span>
+                <span class="block text-xs tracking-[0.2em] text-gray-500">
+                    MADAGASCAR
+                </span>
+            </div>
+        </a>
+
+        {# Navigation desktop #}
+        <nav class="hidden items-center gap-7 lg:flex">
+
+            <a href="{{ path('app_home') }}"
+               class="text-sm font-medium text-[#1A4A54] transition hover:text-[#DDC9A4]">
+                Accueil
+            </a>
+
+            <a href="#"
+               class="text-sm font-medium text-gray-600 transition hover:text-[#1A4A54]">
+                Boutiques
+            </a>
+
+            <a href="#"
+               class="text-sm font-medium text-gray-600 transition hover:text-[#1A4A54]">
+                Restaurants
+            </a>
+
+            <a href="#"
+               class="text-sm font-medium text-gray-600 transition hover:text-[#1A4A54]">
+                Promotions
+            </a>
+
+            <a href="#"
+               class="text-sm font-medium text-gray-600 transition hover:text-[#1A4A54]">
+                Événements
+            </a>
+
+            <a href="#"
+               class="text-sm font-medium text-gray-600 transition hover:text-[#1A4A54]">
+                Services
+            </a>
+
+        </nav>
+
+        {# Actions #}
+        <div class="hidden items-center gap-3 lg:flex">
+
+            {# Recherche #}
+            <button
+                type="button"
+                class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-[#1A4A54] transition hover:border-[#DDC9A4] hover:bg-[#DDC9A4]/10"
+                aria-label="Rechercher"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.8"
+                     stroke="currentColor"
+                     class="h-5 w-5">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m21 21-4.3-4.3m1.8-5.2a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                </svg>
+            </button>
+
+            {# Localisation #}
+            <a href="{{ path('app_home') }}#localisation"
+               class="rounded-full bg-[#1A4A54] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#143942]">
+                Nous trouver
+            </a>
+
+        </div>
+
+        {# Menu mobile #}
+        <button
+            type="button"
+            class="flex h-10 w-10 items-center justify-center rounded-lg text-[#1A4A54] lg:hidden"
+            aria-label="Ouvrir le menu"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke-width="2"
+                 stroke="currentColor"
+                 class="h-6 w-6">
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+
+    </div>
+</header>

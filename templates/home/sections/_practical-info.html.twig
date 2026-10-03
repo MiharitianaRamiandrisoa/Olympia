@@ -1,0 +1,34 @@
+<section id="informations-pratiques" class="container-site scroll-mt-24 py-16 md:py-20">
+  <p class="text-center text-[11px] font-semibold uppercase tracking-wide text-sand-400">Votre visite</p>
+  <h2 class="mt-2 text-center text-3xl font-medium">Tout ce qu'il faut savoir</h2>
+
+  <div class="mt-12 grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_205px]">
+    <div class="grid gap-8 md:grid-cols-2 lg:col-span-2">
+      {% for item in items %}
+        <article class="flex gap-4">
+          <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-sand-100 text-olympia">
+            {% if item.type == 'horaires' %}{% set icon = 'clock' %}
+            {% elseif item.type == 'adresse' %}{% set icon = 'map-pin' %}
+            {% elseif item.type == 'parking' %}{% set icon = 'building' %}
+            {% else %}{% set icon = 'mail' %}{% endif %}
+            {% include 'components/ui/_icon.html.twig' with {name: icon, class: 'size-5'} only %}
+          </span>
+          <div>
+            <p class="text-[10px] font-semibold uppercase tracking-wide text-brand-600">{{ item.titre }}</p>
+            <p class="mt-1 whitespace-pre-line text-xs leading-4 text-olympia-ink">{{ item.contenu }}</p>
+          </div>
+        </article>
+      {% else %}
+        <p class="text-sm text-brand-600 md:col-span-2">Les informations pratiques seront bientôt disponibles.</p>
+      {% endfor %}
+    </div>
+
+    <aside class="bg-sand-50 p-5 text-center lg:row-span-2">
+      <h3 class="text-lg font-medium">Une question ?</h3>
+      <p class="mt-1 text-xs leading-4 text-brand-600">Notre équipe est là pour vous accompagner.</p>
+      <div class="mt-5">
+        {% include 'components/ui/_button.html.twig' with {label: 'Nous contacter', href: '/contact', variant: 'primary', icon: 'arrow-right', class: 'w-full'} only %}
+      </div>
+    </aside>
+  </div>
+</section>

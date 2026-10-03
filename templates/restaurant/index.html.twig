@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nos restaurants | Olympia{% endblock %}
+
+{% block hero %}
+  {% include 'components/_hero.html.twig' with {
+    title: 'Nos restaurants',
+    subtitle: 'Une sélection de saveurs pour tous les goûts.',
+    image: 'images/hero-restaurants.jpg',
+    search_placeholder: 'Rechercher une cuisine, un restaurant...',
+    search_action: path('app_restaurants')
+  } only %}
+{% endblock %}
+
+{% block filters %}
+  <div id="restaurant-filters">
+    {% include 'components/_filter_pills.html.twig' with {
+      items: categories,
+      active: active_category,
+      filter_route: 'app_restaurants',
+      ajax_name: 'restaurant'
+    } only %}
+  </div>
+{% endblock %}
+
+{% block body %}
+  <section id="restaurant-results" class="container-site py-12">
+    <p class="text-xs font-bold uppercase text-olympia-gold">Délices &amp; saveurs</p>
+    <h2 class="mt-3 mb-10 text-3xl font-medium">Trouvez votre bonheur gustatif</h2>
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {% for resto in restaurants %}
+        {% include 'components/_card_restaurant.html.twig' with {resto: resto} only %}
+      {% else %}
+        <p class="text-sm text-olympia-muted">Aucun restaurant ne correspond à votre recherche.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

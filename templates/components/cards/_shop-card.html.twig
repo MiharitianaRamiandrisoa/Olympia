@@ -1,0 +1,13 @@
+{# Params : name, category, image, href #}
+<article class="flex flex-col overflow-hidden rounded-xl border border-brand-900/10 bg-white shadow-sm">
+  {% set srcset = responsive_srcset(image) %}
+  <img src="{{ asset(image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"{% endif %} alt="Boutique {{ name }}" width="600" height="360" loading="lazy" decoding="async" class="h-36 w-full object-cover">
+  <div class="flex flex-1 flex-col p-4">
+    <h3 class="font-serif text-lg font-semibold">{{ name }}</h3>
+    <p class="mt-0.5 text-xs text-brand-900/60">{{ category }}</p>
+    <a href="{{ href }}"
+       class="mt-4 rounded-full bg-sand-300 py-2 text-center text-sm font-semibold transition-colors hover:bg-sand-400">
+      Découvrir
+    </a>
+  </div>
+</article>

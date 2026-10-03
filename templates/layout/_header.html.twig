@@ -1,0 +1,52 @@
+{% set nav = [
+  {label: 'Accueil',      href: '/'},
+  {label: 'Boutiques',    href: '/boutiques'},
+  {label: 'Restaurants',  href: '/restaurants'},
+  {label: 'Promotions',   href: '/promotions'},
+  {label: 'Événements',   href: '/evenements'},
+  {label: 'Info pratiques', href: '/informations'}
+] %}
+{% set current = app.request.pathInfo %}
+
+<header class="sticky top-0 z-40 border-b border-brand-900/10 bg-white/95 backdrop-blur"
+        data-controller="mobile-menu">
+      <div class="container-site flex h-16 items-center justify-between gap-6 md:h-[72px]">
+    <a href="/" aria-label="Olympia - Accueil">
+      <img src="{{ asset('images/logo/logo-header-teal.png') }}" alt="Olympia" width="160" height="114" decoding="async" class="h-10 w-auto md:h-12">
+    </a>
+
+    {# Navigation desktop #}
+    <nav class="hidden items-center gap-8 lg:flex" aria-label="Navigation principale">
+      {% for item in nav %}
+        {% set active = (item.href == '/' ? current == '/' : current starts with item.href) %}
+        <a href="{{ item.href }}"
+           class="text-sm transition-colors hover:text-brand-600 {{ active ? 'font-semibold text-brand-900' : 'text-brand-900/70' }}"
+           {% if active %}aria-current="page"{% endif %}>{{ item.label }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="{{ path('app_home') }}#localisation" class="hidden rounded-full bg-brand-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-800 sm:inline-flex">Nous trouver</a>
+      <a href="/admin" aria-label="Espace administrateur" class="rounded-full p-2 text-brand-900 hover:bg-brand-900/5">
+        {% include 'components/ui/_icon.html.twig' with {name: 'user', class: 'size-5'} only %}
+      </a>
+
+      {# Bouton menu mobile #}
+      <button type="button" class="rounded-full p-2 hover:bg-brand-900/5 lg:hidden"
+              aria-label="Ouvrir le menu" aria-expanded="false" data-action="mobile-menu#toggle">
+        <span data-mobile-menu-target="open">{% include 'components/ui/_icon.html.twig' with {name: 'menu', class: 'size-6'} only %}</span>
+        <span data-mobile-menu-target="close" class="hidden">{% include 'components/ui/_icon.html.twig' with {name: 'x', class: 'size-6'} only %}</span>
+      </button>
+    </div>
+  </div>
+
+  {# Menu mobile #}
+  <nav class="hidden border-t border-brand-900/10 bg-white lg:hidden" data-mobile-menu-target="panel" aria-label="Menu mobile">
+    <ul class="container-site flex flex-col py-3">
+      {% for item in nav %}
+        <li><a href="{{ item.href }}" class="block py-3 text-base text-brand-900">{{ item.label }}</a></li>
+      {% endfor %}
+      <li class="pt-2"><a href="{{ path('app_home') }}#localisation" class="block rounded-full bg-brand-900 py-3 text-center font-semibold text-white">Nous trouver</a></li>
+    </ul>
+  </nav>
+</header>

@@ -1,0 +1,24 @@
+{% block file_widget %}
+    {% set current_media = null %}
+    {% if form.vars.name == 'photoUpload' and form.parent.vars.data.photoMedia is defined and form.parent.vars.data.photoMedia is not null %}
+        {% set current_media = form.parent.vars.data.photoMedia %}
+    {% elseif form.vars.name == 'imageUpload' and form.parent.vars.data.photoMedia is defined and form.parent.vars.data.photoMedia is not null %}
+        {% set current_media = form.parent.vars.data.photoMedia %}
+    {% elseif form.vars.name == 'imageUpload' and form.parent.vars.data.imageMedia is defined and form.parent.vars.data.imageMedia is not null %}
+        {% set current_media = form.parent.vars.data.imageMedia %}
+    {% endif %}
+
+    {% if current_media is not null %}
+        <div class="mb-3">
+            <p class="form-label">Image actuelle</p>
+            <img
+                src="{{ asset(current_media.chemin) }}"
+                alt="Image actuelle"
+                style="display:block; max-width:320px; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:10px;"
+            >
+        </div>
+    {% endif %}
+
+    {{- block('form_widget_simple') -}}
+
+{% endblock %}

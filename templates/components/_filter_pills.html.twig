@@ -1,0 +1,18 @@
+{# Params : items (strings ou objets nom/slug), active, filter_route (optionnel) #}
+<div class="border-b border-slate-100 bg-white">
+  <div class="container-site flex gap-3 overflow-x-auto py-6">
+    {% if filter_route|default(null) %}
+        <a href="{{ path(filter_route) }}" data-{{ ajax_name|default('boutique') }}-ajax class="pill shrink-0 {{ active|default(null) is null ? 'pill-active' : '' }}">Tout</a>
+    {% endif %}
+    {% for item in items %}
+      {% set label = item.nom|default(item) %}
+      {% set slug = item.slug|default(null) %}
+      {% set selected = slug is not null ? slug == active|default(null) : label == active|default('Tout') %}
+      {% if filter_route|default(null) %}
+        <a href="{{ path(filter_route, slug ? {category: slug} : {}) }}" data-{{ ajax_name|default('boutique') }}-ajax class="pill shrink-0 {{ selected ? 'pill-active' : '' }}">{{ label }}</a>
+      {% else %}
+        <button type="button" data-filter="{{ label|lower }}" class="pill shrink-0 {{ selected ? 'pill-active' : '' }}">{{ label }}</button>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>

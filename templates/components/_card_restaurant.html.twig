@@ -1,0 +1,14 @@
+{# Params : resto {name, cuisine, floor, image, url} #}
+<article class="card flex flex-col">
+  {% set srcset = responsive_srcset(resto.image) %}
+  <img src="{{ asset(resto.image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"{% endif %} alt="{{ resto.name }}" width="700" height="440" class="h-44 w-full object-cover" loading="lazy" decoding="async">
+  <div class="flex flex-1 flex-col p-5">
+    <h3 class="text-lg font-medium">{{ resto.name }}</h3>
+    <p class="mt-1 flex items-center gap-2 text-sm text-olympia-muted">
+      {{ resto.cuisine }}
+      <span class="h-1 w-1 rounded-full bg-olympia-gold"></span>
+      <span class="font-bold text-olympia">{{ resto.floor }}</span>
+    </p>
+    <a href="{{ resto.url|default('#') }}" class="btn-outline mt-5 font-bold text-olympia">Découvrir la fiche</a>
+  </div>
+</article>

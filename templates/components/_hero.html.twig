@@ -1,0 +1,17 @@
+{# Params : title, subtitle, image, search_placeholder, search_action (optionnel), height (optionnel) #}
+<section class="relative flex {{ height|default('h-[420px]') }} items-center justify-center overflow-hidden bg-olympia-dark">
+  <img src="{{ asset(image) }}" alt="" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+  <div class="absolute inset-0 bg-slate-900/60"></div>
+  <div class="relative w-full max-w-3xl px-5 text-center text-white">
+    <h1 class="text-4xl font-medium md:text-5xl">{{ title }}</h1>
+    <p class="mt-4 text-lg text-white/90">{{ subtitle }}</p>
+    {% if search_placeholder is defined %}
+      <form role="search" method="get" action="{{ search_action|default('') }}" class="mt-8">
+        <label class="flex items-center gap-3 rounded-full bg-white px-6 py-4 shadow-lg">
+          <svg class="h-5 w-5 shrink-0 text-olympia" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" name="q" value="{{ app.request.query.get('q') }}" placeholder="{{ search_placeholder }}" class="w-full bg-transparent text-olympia-ink placeholder:text-olympia-muted focus:outline-none">
+        </label>
+      </form>
+    {% endif %}
+  </div>
+</section>

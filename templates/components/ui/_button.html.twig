@@ -1,0 +1,23 @@
+{#
+  Bouton / lien stylé.
+  Params : label, href (optionnel, sinon <button>), variant (primary|outline|dark), icon (optionnel), class (optionnel)
+#}
+{% set variants = {
+  'primary': 'bg-sand-300 text-brand-900 hover:bg-sand-400',
+  'outline': 'border border-white/80 text-white hover:bg-white/10',
+  'dark':    'bg-brand-900 text-white hover:bg-brand-800'
+} %}
+{% set classes = 'inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-colors '
+  ~ variants[variant|default('primary')] ~ ' ' ~ class|default('') %}
+
+{% if href|default(null) %}
+  <a href="{{ href }}" class="{{ classes }}">
+    {{ label }}
+    {% if icon|default(null) %}{% include 'components/ui/_icon.html.twig' with {name: icon, class: 'size-4'} only %}{% endif %}
+  </a>
+{% else %}
+  <button type="{{ type|default('button') }}" class="{{ classes }}">
+    {{ label }}
+    {% if icon|default(null) %}{% include 'components/ui/_icon.html.twig' with {name: icon, class: 'size-4'} only %}{% endif %}
+  </button>
+{% endif %}
