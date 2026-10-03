@@ -128,6 +128,8 @@ jobs:
               --optimize-autoloader
 
             echo "Installation des assets de l'importmap..."
+            # Les assets publics doivent être lisibles par Apache/Nginx.
+            umask 022
             php bin/console importmap:install --env=prod --no-interaction
 
             # Le dossier var/ est exclu du transfert FTP : supprimer un ancien
@@ -144,5 +146,6 @@ jobs:
             php bin/console cache:clear --env=prod
             rm -rf public/assets
             php bin/console asset-map:compile --env=prod --no-interaction
+            chmod -R a+rX public/assets public/build
 
             echo "Déploiement terminé."
