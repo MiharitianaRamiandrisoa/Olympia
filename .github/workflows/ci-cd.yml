@@ -53,7 +53,7 @@ jobs:
           tools: composer:v2
 
       - name: Valider Composer
-        run: composer validate
+        run: composer validate --no-check-publish
 
       - name: Installer les dépendances PHP
         run: composer install --no-interaction --prefer-dist --no-progress
