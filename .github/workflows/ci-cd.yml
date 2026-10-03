@@ -134,6 +134,9 @@ jobs:
             # cache dev évite de réutiliser une configuration qui charge DebugBundle.
             rm -rf var/cache/dev var/cache/test
 
+            echo "Compilation des assets Tailwind sur le serveur..."
+            php bin/console tailwind:build --env=prod --no-interaction --minify
+
             php bin/console doctrine:migrations:migrate \
               --env=prod \
               --no-interaction \
