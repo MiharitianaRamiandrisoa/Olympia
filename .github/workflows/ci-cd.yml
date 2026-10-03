@@ -151,11 +151,11 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
+          protocol: ftps
           port: 21
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
           local-dir: ./
-          security: loose
+          security: strict
           exclude: |
             **/.git*/**
             **/.git*

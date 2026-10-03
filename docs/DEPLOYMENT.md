@@ -45,7 +45,7 @@ Le workflow force également `APP_ENV=prod` et `APP_DEBUG=0` pendant les command
 
 Le serveur web doit pointer vers le dossier `public/`, et l’utilisateur PHP doit pouvoir écrire dans `var/` et `public/uploads/`.
 
-Le déploiement FTP ne peut pas exécuter de commandes sur le serveur. Il faut donc vérifier depuis le panneau d’hébergement que Composer, le cache Symfony et les permissions sont correctement préparés. Pour un déploiement entièrement automatisé, un accès SSH/SFTP reste préférable.
+Le déploiement utilise FTPS (FTP avec TLS), car l’hébergeur refuse les connexions FTP non chiffrées. Il ne peut pas exécuter de commandes sur le serveur : il faut donc vérifier depuis le panneau d’hébergement que Composer, le cache Symfony et les permissions sont correctement préparés. Pour un déploiement entièrement automatisé, un accès SSH/SFTP reste préférable.
 
 ## Base de données
 
