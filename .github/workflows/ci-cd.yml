@@ -17,24 +17,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Récupérer le code
+      - name: Récupérer le code source
         uses: actions/checkout@v4
 
-      - name: Installer Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Compiler les assets CSS
-        run: |
-          npm ci
-          npm run build
-
-      - name: Vérifier la feuille CSS compilée
-        run: test -s public/build/app.css
-
-      - name: Déployer les fichiers par FTP
+      - name: Déployer uniquement les sources par FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -53,14 +39,15 @@ jobs:
             **/.env.local
             **/.env.local.php
             **/node_modules/**
-            # Exclude Composer's root vendor directory, but keep
-            # public/assets/vendor: AssetMapper puts the @hotwired packages there.
-            vendor/**
+            **/vendor/**
             **/var/**
+            **/public/assets/**
+            **/public/build/**
             **/public/uploads/**
+            **/assets/vendor/**
             **/.phpunit.cache/**
 
-      - name: Installer les dépendances PHP sur le serveur
+      - name: Installer les dépendances PHP et préparer Symfony
         uses: appleboy/ssh-action@v1.2.0
         env:
           APP_SECRET: ${{ secrets.APP_SECRET }}
@@ -79,12 +66,9 @@ jobs:
             set -e
 
             SERVER_DIR='${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
-
             cd "$SERVER_DIR"
 
-            echo "Dossier : $(pwd)"
             umask 077
-
             printf '%s\n' \
               'APP_ENV=prod' \
               'APP_DEBUG=0' \
@@ -97,29 +81,16 @@ jobs:
               echo "ERREUR : les secrets de production sont incomplets."
               exit 1
             fi
+
             printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=8.0.0&charset=utf8mb4"\n' \
               "$APP_SECRET" "$DB_USER" "$DB_PASSWORD" "$DB_HOST" "$DB_NAME" > .env.local
-
-            if ! grep -q '^APP_ENV=prod$' .env.local || ! grep -q '^APP_DEBUG=0$' .env.local; then
-              echo "ERREUR : .env.local n'est pas configuré pour la production."
-              exit 1
-            fi
 
             export APP_ENV=prod
             export APP_DEBUG=0
             mkdir -p var/cache var/log var/share
 
-            if ! command -v php >/dev/null 2>&1; then
-              echo "ERREUR : PHP n'est pas disponible."
-              exit 1
-            fi
-
-            if ! command -v composer >/dev/null 2>&1; then
-              echo "ERREUR : Composer n'est pas disponible."
-              exit 1
-            fi
-
-            echo "Installation des dépendances PHP..."
+            command -v php >/dev/null 2>&1 || { echo "ERREUR : PHP n'est pas disponible."; exit 1; }
+            command -v composer >/dev/null 2>&1 || { echo "ERREUR : Composer n'est pas disponible."; exit 1; }
 
             composer install \
               --no-dev \
@@ -129,56 +100,13 @@ jobs:
               --no-progress \
               --optimize-autoloader
 
-            echo "Installation des assets de l'importmap..."
-            # Les assets publics doivent être lisibles par Apache/Nginx.
-            umask 022
-            php bin/console importmap:install --env=prod --no-interaction
-
-            # Le dossier var/ est exclu du transfert FTP : supprimer un ancien
-            # cache dev évite de réutiliser une configuration qui charge DebugBundle.
-            rm -rf var/cache/dev var/cache/test
-
-            echo "Compilation des assets Tailwind sur le serveur..."
-            php bin/console tailwind:build --env=prod --no-interaction --minify
-
             php bin/console doctrine:migrations:migrate \
               --env=prod \
               --no-interaction \
               --allow-no-migration
+
             php bin/console cache:clear --env=prod
-            rm -rf public/assets
-            php bin/console asset-map:compile --env=prod --no-interaction
-
-            # Certains hébergements refusent les URLs contenant des répertoires
-            # commençant par « @ » (403 sur @hotwired et @symfony). Publier les
-            # bundles sous des chemins neutres évite ce blocage Apache/Nginx.
-            if [ -d public/assets/vendor/@hotwired ]; then
-              mkdir -p public/assets/vendor/hotwired
-              cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
-            fi
-            if [ -d public/assets/@symfony ]; then
-              mkdir -p public/assets/symfony
-              cp -R public/assets/@symfony/. public/assets/symfony/
-            fi
-            sed -i \
-              -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
-              -e 's#/assets/@symfony/#/assets/symfony/#g' \
-              public/assets/importmap.json
-
-            # Apache must be able to traverse every generated directory and read
-            # every generated asset.  This also protects against an old umask on
-            # the hosting account.
-            # Le serveur doit pouvoir traverser public/ et lire son index ainsi
-            # que les assets statiques avant même l'exécution de Symfony.
             find public -type d -exec chmod 755 {} +
             find public -type f -exec chmod 644 {} +
 
-            # Fail the deployment if the importmap references packages that were
-            # not compiled or are not readable by the web server.
-            test -s public/assets/importmap.json
-            ! grep -q '/assets/vendor/@hotwired/' public/assets/importmap.json
-            ! grep -q '/assets/@symfony/' public/assets/importmap.json
-            test -n "$(find public/assets/vendor/hotwired/stimulus -type f -name '*.js' -readable -print -quit)"
-            test -n "$(find public/assets/vendor/hotwired/turbo -type f -name '*.js' -readable -print -quit)"
-
-            echo "Déploiement terminé."
+            echo "Sources transférées. Compilation des assets laissée manuelle."
