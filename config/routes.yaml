@@ -9,3 +9,7 @@
 
 controllers:
     resource: routing.controllers
+
+seo:
+    resource: '../src/Controller/SeoController.php'
+    type: attribute

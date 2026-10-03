@@ -3,11 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% set seo_title %}{% block title %}Olympia Centre Commercial{% endblock %}{% endset %}
+  {% set seo_title = seo_title|striptags|trim %}
+  {% set seo_description %}{% block meta_description %}Olympia Madagascar : centre commercial à Tanjombato, boutiques, restaurants, services et événements.{% endblock %}{% endset %}
+  {% set seo_description = seo_description|striptags|trim %}
+  {% set canonical_url = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ app.request.pathInfo %}
+  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ asset('images/hero-olympia.jpg') %}
+  <meta name="description" content="{{ seo_description }}">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#1A4A54">
+  <link rel="canonical" href="{{ canonical_url }}">
   <link rel="icon" href="{{ asset('images/logo/favico/favicon.ico') }}?v=olympia-4" sizes="any">
   <link rel="icon" href="{{ asset('images/logo/favico/favicon-32x32.png') }}?v=olympia-4" type="image/png" sizes="32x32">
   <link rel="icon" href="{{ asset('images/logo/favico/favicon-16x16.png') }}?v=olympia-4" type="image/png" sizes="16x16">
   <link rel="apple-touch-icon" href="{{ asset('images/logo/favico/apple-touch-icon.png') }}?v=olympia-4">
-  <title>{% block title %}Olympia Centre Commercial{% endblock %}</title>
+  <link rel="manifest" href="{{ asset('images/logo/favico/site.webmanifest') }}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_MG">
+  <meta property="og:site_name" content="Olympia Madagascar">
+  <meta property="og:title" content="{{ seo_title }}">
+  <meta property="og:description" content="{{ seo_description }}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:image" content="{{ seo_image }}">
+  <meta property="og:image:alt" content="Centre commercial Olympia à Tanjombato">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ seo_title }}">
+  <meta name="twitter:description" content="{{ seo_description }}">
+  <meta name="twitter:image" content="{{ seo_image }}">
+  <title>{{ seo_title }}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
@@ -16,6 +39,26 @@
   <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=services-20261001">
   {{ importmap('app') }}
   {% block stylesheets %}{% endblock %}
+  {% block structured_data %}
+    <script type="application/ld+json">
+      {{ {
+        '@context': 'https://schema.org',
+        '@type': 'ShoppingCenter',
+        'name': 'Olympia Madagascar',
+        'url': app.request.schemeAndHttpHost,
+        'logo': app.request.schemeAndHttpHost ~ asset('images/logo/logo-header-teal.png'),
+        'sameAs': [
+          'https://www.facebook.com/profile.php?id=61575812981322',
+          'https://www.instagram.com/olympia_madagascar/'
+        ],
+        'address': {
+          '@type': 'PostalAddress',
+          'addressLocality': 'Tanjombato',
+          'addressCountry': 'MG'
+        }
+      }|json_encode|raw }}
+    </script>
+  {% endblock %}
 </head>
 <body class="flex min-h-screen flex-col">
   {% include 'components/_header.html.twig' %}

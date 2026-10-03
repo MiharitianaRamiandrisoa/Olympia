@@ -1,7 +1,7 @@
 {# Params : promo {tag, title, date, shop, description, image, url} #}
 <article class="card flex flex-col">
   {% set srcset = responsive_srcset(promo.image) %}
-  <img src="{{ asset(promo.image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"{% endif %} alt="" width="700" height="560" class="h-56 w-full object-cover" loading="lazy" decoding="async">
+  <img src="{{ asset(promo.image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"{% endif %} alt="{{ promo.title }} - {{ promo.shop }}" width="700" height="560" class="h-56 w-full object-cover" loading="lazy" decoding="async">
   <div class="flex flex-1 flex-col p-6">
     <span class="w-fit rounded-full bg-olympia px-3 py-1 text-[11px] font-bold uppercase text-white">{{ promo.tag }}</span>
     <h3 class="mt-2 text-xl font-bold">{{ promo.title }}</h3>

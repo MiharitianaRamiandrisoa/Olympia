@@ -1,11 +1,40 @@
 {% extends 'base.html.twig' %}
+{% block meta_description %}{{ event.titre }} a Olympia Madagascar : date, horaires, lieu et informations sur cet evenement a Tanjombato.{% endblock %}
 {% block title %}{{ event.titre }} | Olympia{% endblock %}
+{% block structured_data %}
+  {{ parent() }}
+  <script type="application/ld+json">
+    {{ {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      'name': event.titre,
+      'description': event.description|default(''),
+      'startDate': event.dateDebut|date('c'),
+      'endDate': event.dateFin ? event.dateFin|date('c') : event.dateDebut|date('c'),
+      'eventStatus': 'https://schema.org/EventScheduled',
+      'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+      'location': {
+        '@type': 'Place',
+        'name': event.lieu|default('Centre commercial Olympia'),
+        'address': {
+          '@type': 'PostalAddress',
+          'addressLocality': 'Tanjombato',
+          'addressCountry': 'MG'
+        }
+      },
+      'organizer': {
+        '@type': 'Organization',
+        'name': 'Olympia Madagascar'
+      }
+    }|json_encode|raw }}
+  </script>
+{% endblock %}
 {% block main_background %}bg-white{% endblock %}
 {% block body %}
 <section class="relative isolate flex min-h-[420px] items-end overflow-hidden bg-olympia-dark text-white lg:min-h-[500px]">
   {% set hero_image_path = event.imageMedia ? event.imageMedia.chemin : 'images/hero-olympia.jpg' %}
   {% set hero_srcset = responsive_srcset(hero_image_path) %}
-  <img src="{{ asset(hero_image_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover"><div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/90 via-brand-900/65 to-brand-900/20"></div>
+  <img src="{{ asset(hero_image_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="{{ event.titre }}" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover"><div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/90 via-brand-900/65 to-brand-900/20"></div>
   <div class="container-site w-full pb-16 pt-20"><a href="{{ path('app_events') }}" class="text-sm text-white/85 hover:text-white">← Retour aux événements</a><span class="mt-8 block w-fit rounded-full bg-olympia-gold px-4 py-1 text-xs font-bold uppercase text-olympia">Événement</span><h1 class="mt-5 max-w-3xl text-4xl font-semibold leading-tight md:text-6xl">{{ event.titre }}</h1><div class="mt-6 flex flex-wrap gap-x-8 gap-y-2 text-sm text-white/90"><span>{{ event.dateDebut|date('d/m/Y') }}</span><span>{{ event.dateDebut|date('H\\hi') }}</span>{% if event.lieu %}<span>{{ event.lieu }}</span>{% endif %}</div></div>
 </section>
 <section class="container-site grid gap-10 py-12 md:grid-cols-2 md:py-16">

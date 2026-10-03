@@ -55,7 +55,7 @@ final class ResetAndSeedDemoDataCommand extends Command
     {
         $tables = [
             'abonnement_newsletter', 'message_contact', 'evenement', 'promotion', 'restaurant', 'boutique',
-            'service', 'information_pratique', 'emplacement', 'etage', 'media', 'categorie_evenement',
+            'service', 'information_pratique', 'media', 'categorie_evenement',
             'categorie_promotion', 'categorie_restaurant', 'categorie_boutique', 'enseigne',
         ];
         $this->connection->executeStatement('SET FOREIGN_KEY_CHECKS = 0');

@@ -27,10 +27,20 @@
       </a>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-brand-900/10 bg-white shadow-sm">
+    <div class="min-h-80 overflow-hidden rounded-2xl border border-brand-900/10 bg-white shadow-sm md:min-h-96" data-map-embed data-map-src="https://www.google.com/maps?q={{ mapQuery|url_encode }}&amp;output=embed">
+      <div class="flex min-h-80 flex-col items-center justify-center gap-3 bg-sand-50 px-6 text-center md:min-h-96">
+        <span class="flex size-12 items-center justify-center rounded-full bg-white text-olympia shadow-sm">
+          {% include 'components/ui/_icon.html.twig' with {name: 'map-pin', class: 'size-6'} only %}
+        </span>
+        <p class="text-sm font-semibold text-olympia">Afficher la carte Google Maps</p>
+        <p data-map-note class="max-w-xs text-xs leading-5 text-brand-600">La carte est chargée uniquement lorsque vous le demandez.</p>
+        <button type="button" data-map-load class="rounded-full bg-olympia px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-800">
+          Charger la carte
+        </button>
+      </div>
       <iframe title="Localisation du centre commercial Olympia"
-              src="https://www.google.com/maps?q={{ mapQuery|url_encode }}&amp;output=embed"
-              class="h-80 w-full border-0 md:h-96" loading="lazy"
+              data-map-frame
+              class="hidden h-80 w-full border-0 md:h-96" loading="lazy"
               referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
     </div>
   </div>

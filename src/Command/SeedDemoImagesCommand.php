@@ -84,7 +84,7 @@ final class SeedDemoImagesCommand extends Command
             }
         }
 
-        $downloaded = 0;
+        $associated = 0;
         foreach (self::IMAGES as $class => $items) {
             foreach ($items as $slug => [$filename, $photoId]) {
                 $entity = $this->findEntity($class, $slug);
@@ -94,13 +94,17 @@ final class SeedDemoImagesCommand extends Command
                 }
 
                 $path = $directory.'/'.$filename;
-                try {
-                    $response = $this->httpClient->request('GET', 'https://images.unsplash.com/'.$photoId.'?auto=format&fit=crop&w=1400&q=82');
-                    $content = $response->getContent();
-                    file_put_contents($path, $content);
-                } catch (\Throwable $exception) {
-                    $output->writeln(sprintf('<error>Échec pour %s : %s</error>', $slug, $exception->getMessage()));
-                    continue;
+                if (!is_file($path)) {
+                    try {
+                        $response = $this->httpClient->request('GET', 'https://images.unsplash.com/'.$photoId.'?auto=format&fit=crop&w=1400&q=82');
+                        $content = $response->getContent();
+                        file_put_contents($path, $content);
+                    } catch (\Throwable $exception) {
+                        $output->writeln(sprintf('<error>Échec pour %s : %s</error>', $slug, $exception->getMessage()));
+                        continue;
+                    }
+                } else {
+                    $output->writeln(sprintf('<comment>Image locale réutilisée : %s</comment>', $filename));
                 }
 
                 $media = $this->entityManager->getRepository(Media::class)->findOneBy(['nomFichier' => $filename]) ?? new Media();
@@ -125,12 +129,12 @@ final class SeedDemoImagesCommand extends Command
                 } elseif ($entity instanceof Evenement) {
                     $entity->setImageMedia($media);
                 }
-                $downloaded++;
+                $associated++;
             }
         }
 
         $this->entityManager->flush();
-        $output->writeln(sprintf('<info>%d images téléchargées et associées.</info>', $downloaded));
+        $output->writeln(sprintf('<info>%d images associées.</info>', $associated));
 
         return Command::SUCCESS;
     }

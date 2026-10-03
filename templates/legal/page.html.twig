@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ page_title }} | Olympia Madagascar{% endblock %}
+{% block meta_description %}{{ meta_description }}{% endblock %}
+
+{% block body %}
+  <section class="container-site max-w-3xl py-16 md:py-24">
+    <p class="text-[11px] font-semibold uppercase tracking-wide text-sand-400">Olympia Madagascar</p>
+    <h1 class="mt-3 text-4xl font-semibold text-olympia md:text-5xl">{{ page_title }}</h1>
+    <p class="mt-8 text-base leading-7 text-olympia-muted">{{ intro }}</p>
+    <p class="mt-6 text-sm leading-7 text-olympia-muted">
+      Pour toute question concernant ces informations, contactez l’équipe d’Olympia depuis la
+      <a href="{{ path('app_contact') }}" class="font-semibold text-olympia underline">page contact</a>.
+    </p>
+  </section>
+{% endblock %}

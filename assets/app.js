@@ -1,4 +1,18 @@
 import './stimulus_bootstrap.js';
+
+document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-map-load]');
+    if (!button) return;
+
+    const container = button.closest('[data-map-embed]');
+    const frame = container?.querySelector('[data-map-frame]');
+    if (!container || !frame) return;
+
+    frame.src = container.dataset.mapSrc;
+    frame.classList.remove('hidden');
+    button.closest('div')?.remove();
+});
+
 /*
  * Welcome to your app's main JavaScript file!
  *

@@ -1,11 +1,12 @@
 {% extends 'base.html.twig' %}
+{% block meta_description %}{{ promotion.titre }} : decouvrez cette offre proposee par Olympia Madagascar et consultez ses conditions et sa periode de validite.{% endblock %}
 {% block title %}{{ promotion.titre }} | Olympia{% endblock %}
 {% block main_background %}bg-white{% endblock %}
 {% block body %}
 <section class="relative isolate flex min-h-[420px] items-end overflow-hidden bg-olympia-dark text-white lg:min-h-[500px]">
   {% set hero_image_path = promotion.imageMedia ? promotion.imageMedia.chemin : 'images/hero-olympia.jpg' %}
   {% set hero_srcset = responsive_srcset(hero_image_path) %}
-  <img src="{{ asset(hero_image_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover">
+  <img src="{{ asset(hero_image_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="{{ promotion.titre }}" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover">
   <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/90 via-brand-900/65 to-brand-900/20"></div>
   <div class="container-site w-full pb-16 pt-20">
     <a href="{{ path('app_promotions') }}" class="text-sm text-white/85 hover:text-white">← Retour aux offres</a>
