@@ -106,7 +106,7 @@ jobs:
 
             php bin/console importmap:install --env=prod --no-interaction
             rm -rf public/assets
-            php bin/console tailwind:build
+            php bin/console tailwind:build --env=prod --no-interaction
             php bin/console asset-map:compile --env=prod --no-interaction
 
             # # Certains hébergements refusent les URLs contenant « @ ».
