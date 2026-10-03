@@ -20,6 +20,20 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
 
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Compiler les assets CSS
+        run: |
+          npm ci
+          npm run build
+
+      - name: Vérifier la feuille CSS compilée
+        run: test -s public/build/app.css
+
       - name: Déployer les fichiers par FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
