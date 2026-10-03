@@ -77,7 +77,7 @@ jobs:
         run: php bin/console lint:twig templates --env=test
 
       - name: Compiler les assets AssetMapper
-        run: php bin/console asset-map:compile --env=test
+        run: php bin/console asset-map:compile --env=prod
 
       - name: Exécuter PHPUnit
         run: php bin/phpunit --testdox
