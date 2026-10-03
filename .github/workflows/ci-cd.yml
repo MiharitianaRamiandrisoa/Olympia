@@ -165,9 +165,26 @@ jobs:
             **/.env.*.local
             **/.env.local.php
             **/node_modules/**
+            **/vendor/**
             **/var/**
             **/public/uploads/**
             **/.phpunit.cache/**
+
+      - name: Installer les dependances PHP sur le serveur via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -e
+            cd '${{ secrets.FTP_SERVER_DIR }}'
+            export APP_ENV=prod
+            export APP_DEBUG=0
+            composer install --no-dev --no-scripts --no-interaction --prefer-dist --no-progress --optimize-autoloader
+            php bin/console cache:clear --env=prod
 
       - name: Vérifier le site en production
         env:

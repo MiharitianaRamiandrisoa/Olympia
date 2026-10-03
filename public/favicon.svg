@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Olympia</title>
+  <rect width="64" height="64" rx="14" fill="#1A4A54"/>
+
+  <!-- Emblème Olympia : colonne surmontée de ses deux anneaux -->
+  <circle cx="32" cy="29" r="20.5" fill="none" stroke="#E3CFA8" stroke-width="1.8"/>
+  <ellipse cx="32" cy="26" rx="16.5" ry="4.8" fill="#E3CFA8"/>
+  <ellipse cx="32" cy="29.5" rx="12.8" ry="3.7" fill="#E3CFA8"/>
+  <path d="M21.5 30.5h21L40 54H24z" fill="#E3CFA8"/>
+  <path d="M25.5 33v20M32 33v21M38.5 33v20" stroke="#1A4A54" stroke-width="2.5"/>
+  <path d="M23 54h18" stroke="#E3CFA8" stroke-width="2" stroke-linecap="round"/>
+</svg>
