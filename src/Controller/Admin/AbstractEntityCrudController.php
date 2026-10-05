@@ -28,6 +28,7 @@ use App\Entity\Promotion;
 use App\Entity\Evenement;
 use App\Entity\Service;
 use App\Entity\InformationPratique;
+use App\Entity\Actualite;
 use App\Entity\MessageContact;
 use App\Entity\Utilisateur;
 use App\Service\ImageOptimizer;
@@ -67,6 +68,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             Promotion::class => 'une promotion',
             Evenement::class => 'un evenement',
             InformationPratique::class => 'une information pratique',
+            Actualite::class => 'une actualite',
             Media::class => 'un media',
             Utilisateur::class => 'un utilisateur',
             CategorieBoutique::class => 'une categorie de boutique',
@@ -87,6 +89,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             Promotion::class => ['singular' => 'promotion', 'new' => 'Ajouter une promotion'],
             Evenement::class => ['singular' => 'événement', 'new' => 'Ajouter un événement'],
             InformationPratique::class => ['singular' => 'information pratique', 'new' => 'Ajouter une information'],
+            Actualite::class => ['singular' => 'actualite', 'new' => 'Ajouter une actualite'],
             Media::class => ['singular' => 'média', 'new' => 'Ajouter un média'],
             Utilisateur::class => ['singular' => 'utilisateur', 'new' => 'Ajouter un utilisateur'],
             CategorieBoutique::class => ['singular' => 'catégorie de boutique', 'new' => 'Ajouter une catégorie de boutique'],
@@ -126,7 +129,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             if ($fieldName === 'horaires' && in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)) {
                 continue;
             }
-            if ($fieldName === 'imageMedia' && in_array(static::$entityClass, [Promotion::class, Evenement::class], true)) {
+            if ($fieldName === 'imageMedia' && in_array(static::$entityClass, [Promotion::class, Evenement::class, Actualite::class], true)) {
                 continue;
             }
             if ($fieldName === 'photoMedia' && static::$entityClass === Service::class) {
@@ -208,7 +211,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
     private function synchronizeImage(EntityManagerInterface $entityManager, object $entity): void
     {
-        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service) {
+        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite) {
             return;
         }
 

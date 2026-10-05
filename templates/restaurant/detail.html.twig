@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
-{% block meta_description %}Decouvrez le restaurant {{ restaurant.enseigne.nom }} au centre commercial Olympia a Tanjombato : cuisine, horaires et informations pratiques.{% endblock %}
+{% block meta_description %}Decouvrez l'enseigne {{ restaurant.enseigne.nom }} du Food court au centre commercial Olympia a Tanjombato : cuisine, horaires et informations pratiques.{% endblock %}
 
 {% block title %}{{ restaurant.enseigne.nom }} | Olympia{% endblock %}
 {% block main_background %}bg-white{% endblock %}
 
 {% block body %}
   <section class="container-site py-8 md:py-12">
-    <a href="{{ path('app_restaurants') }}" class="text-sm font-medium text-olympia hover:underline">← Retour aux restaurants</a>
+    <a href="{{ path('app_restaurants') }}" class="text-sm font-medium text-olympia hover:underline">← Retour au Food court</a>
 
     <div class="mt-8 grid gap-10 md:grid-cols-2 md:items-start">
       <div class="min-h-[360px] overflow-hidden rounded-2xl bg-sand-50">
@@ -16,7 +16,7 @@
       </div>
 
       <div class="py-2 md:py-8">
-        <p class="text-sm font-bold uppercase tracking-wide text-olympia-gold">{{ restaurant.categorie ? restaurant.categorie.nom : 'Restaurant' }}</p>
+        <p class="text-sm font-bold uppercase tracking-wide text-olympia-gold">{{ restaurant.categorie ? restaurant.categorie.nom : 'Food court' }}</p>
         <h1 class="mt-3 text-4xl font-semibold text-olympia md:text-5xl">{{ restaurant.enseigne.nom }}</h1>
 
         {% if restaurant.description %}

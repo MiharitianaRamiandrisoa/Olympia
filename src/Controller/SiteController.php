@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\BoutiqueRepository;
 use App\Repository\RestaurantRepository;
 use App\Repository\PromotionRepository;
+use App\Repository\ActualiteRepository;
 use App\Repository\EvenementRepository;
 use App\Repository\CategorieBoutiqueRepository;
 use App\Repository\CategorieRestaurantRepository;
@@ -70,7 +71,7 @@ class SiteController extends AbstractController
         $category = $request->query->get('category');
         $categories = $categorieRepository->findBy(['estActif' => true], ['nom' => 'ASC']);
         $restaurants = array_map(static fn ($restaurant) => [
-            'name' => $restaurant->getEnseigne()?->getNom() ?? 'Restaurant',
+            'name' => $restaurant->getEnseigne()?->getNom() ?? 'Food court',
             'cuisine' => $restaurant->getCategorie()?->getNom() ?? 'Cuisine',
             'floor' => 'Olympia',
             'image' => $restaurant->getPhotoMedia()?->getChemin() ?? 'images/resto/default.jpg',
@@ -168,6 +169,75 @@ class SiteController extends AbstractController
         ], $evenementRepository->findActive($category));
         return $this->render('evenement/index.html.twig', ['events' => $events, 'categories' => $categories, 'active_category' => $category]);
 
+    }
+
+    #[Route('/actualites', name: 'app_actualites', methods: ['GET'])]
+    public function actualites(Request $request, ActualiteRepository $actualiteRepository): Response
+    {
+        $search = trim((string) $request->query->get('q', ''));
+
+        $articles = array_map(static fn ($article) => [
+            'badge' => $article->getCategorie() ?: 'Actualité',
+            'title' => $article->getTitre(),
+            'date' => $article->getDatePublication()?->format('d/m/Y'),
+            'text' => $article->getChapeau() ?: $article->getContenu() ?: '',
+            'image' => $article->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
+            'href' => '/actualites/'.$article->getSlug(),
+        ], $actualiteRepository->findActive($search));
+
+        /*
+
+        $promotions = array_map(static fn ($promotion) => [
+            'type' => 'promotion',
+            'badge' => $promotion->getCategorie()?->getNom() ?? 'Nouveautés',
+            'title' => $promotion->getTitre(),
+            'date' => $promotion->getDateDebut()?->format('d/m/Y'),
+            'timestamp' => $promotion->getDateDebut()?->getTimestamp() ?? 0,
+            'text' => $promotion->getDescription() ?? '',
+            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/promo/default.jpg',
+            'href' => '/promotions/'.$promotion->getSlug(),
+        ], $promotionRepository->findActive());
+
+        $events = array_map(static fn ($event) => [
+            'type' => 'event',
+            'badge' => 'Événement',
+            'title' => $event->getTitre(),
+            'date' => $event->getDateDebut()?->format('d/m/Y'),
+            'timestamp' => $event->getDateDebut()?->getTimestamp() ?? 0,
+            'text' => $event->getDescription() ?? '',
+            'image' => $event->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
+            'href' => '/evenements/'.$event->getSlug(),
+        ], $evenementRepository->findActive());
+
+        $articles = array_merge($promotions, $events);
+        usort($articles, static fn (array $left, array $right) => $right['timestamp'] <=> $left['timestamp']);
+        $articles = array_values(array_filter($articles, static function (array $article) use ($type, $search): bool {
+            if ($type !== 'all' && $article['type'] !== $type) {
+                return false;
+            }
+            if ($search === '') {
+                return true;
+            }
+            return str_contains(mb_strtolower($article['title'].' '.$article['text'].' '.$article['badge']), mb_strtolower($search));
+        }));
+
+        */
+        return $this->render('actualite/index.html.twig', [
+            'articles' => $articles,
+            'featured' => $articles[0] ?? null,
+            'search' => $search,
+        ]);
+    }
+
+    #[Route('/actualites/{slug}', name: 'app_actualite_detail', methods: ['GET'])]
+    public function actualiteDetail(string $slug, ActualiteRepository $actualiteRepository): Response
+    {
+        $actualite = $actualiteRepository->findOneBy(['slug' => $slug, 'estActif' => true]);
+        if (!$actualite instanceof \App\Entity\Actualite) {
+            throw $this->createNotFoundException('Actualite introuvable.');
+        }
+
+        return $this->render('actualite/detail.html.twig', ['actualite' => $actualite]);
     }
 
     #[Route('/services', name: 'app_services', methods: ['GET'])]

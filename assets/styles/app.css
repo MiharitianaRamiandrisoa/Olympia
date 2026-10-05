@@ -64,6 +64,23 @@
         outline-offset: 2px;
         outline-color: var(--color-olympia);
     }
+
+    /* La sous-navigation Actualités agrandit le header au lieu de recouvrir la page. */
+    .desktop-news-subnav {
+        display: none;
+    }
+
+    .site-header:has(.desktop-news-menu.menu-open) .desktop-news-subnav {
+        display: block;
+    }
+
+    .desktop-news-menu.menu-open svg {
+        transform: rotate(180deg);
+    }
+
+    .site-header.news-menu-open .desktop-news-subnav {
+        display: block;
+    }
 }
 
 

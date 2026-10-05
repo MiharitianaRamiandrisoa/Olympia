@@ -1,5 +1,35 @@
 import './stimulus_bootstrap.js';
 
+const initNewsMenu = () => {
+    document.querySelectorAll('[data-news-menu]').forEach((menu) => {
+        if (menu.dataset.initialized === 'true') return;
+        menu.dataset.initialized = 'true';
+        const trigger = menu.querySelector('a');
+        if (!trigger) return;
+
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            const isOpen = menu.classList.toggle('menu-open');
+            trigger.setAttribute('aria-expanded', String(isOpen));
+            menu.closest('.site-header')?.classList.toggle('news-menu-open', isOpen);
+
+            // Le focus maintient :focus-within actif ; le retirer permet au
+            // second clic de refermer réellement le sous-menu.
+            if (!isOpen) trigger.blur();
+        });
+
+        document.addEventListener('click', (event) => {
+            if (menu.contains(event.target)) return;
+            menu.classList.remove('menu-open');
+            trigger.setAttribute('aria-expanded', 'false');
+            menu.closest('.site-header')?.classList.remove('news-menu-open');
+        });
+    });
+};
+
+window.addEventListener('DOMContentLoaded', initNewsMenu);
+document.addEventListener('turbo:load', initNewsMenu);
+
 document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-map-load]');
     if (!button) return;

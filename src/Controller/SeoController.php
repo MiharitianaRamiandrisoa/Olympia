@@ -37,7 +37,7 @@ final class SeoController extends AbstractController
     public function sitemap(): Response
     {
         $urls = [];
-        foreach (['app_home', 'app_boutiques', 'app_restaurants', 'app_promotions', 'app_events', 'app_services', 'app_contact', 'app_legal_mentions', 'app_legal_privacy', 'app_legal_terms'] as $route) {
+        foreach (['app_home', 'app_boutiques', 'app_restaurants', 'app_actualites', 'app_promotions', 'app_events', 'app_services', 'app_contact', 'app_legal_mentions', 'app_legal_privacy', 'app_legal_terms'] as $route) {
             $urls[$this->generateUrl($route, [], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
         }
 
