@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
-{% block meta_description %}Retrouvez les restaurants d'Olympia a Tanjombato : cuisine locale, cafes, fast-food, patisseries et saveurs internationales.{% endblock %}
-{% block title %}Nos restaurants | Olympia{% endblock %}
+{% block meta_description %}Retrouvez le Food court d'Olympia a Tanjombato : cuisine locale, cafes, fast-food, patisseries et saveurs internationales.{% endblock %}
+{% block title %}Food court | Olympia{% endblock %}
 
 {% block hero %}
   {% include 'components/_hero.html.twig' with {
-    title: 'Nos restaurants',
+    title: 'Food court',
     subtitle: 'Une sélection de saveurs pour tous les goûts.',
     image: 'images/hero-restaurants.jpg',
-    search_placeholder: 'Rechercher une cuisine, un restaurant...',
+    search_placeholder: 'Rechercher une cuisine, une enseigne...',
     search_action: path('app_restaurants')
   } only %}
 {% endblock %}
@@ -31,7 +31,7 @@
       {% for resto in restaurants %}
         {% include 'components/_card_restaurant.html.twig' with {resto: resto} only %}
       {% else %}
-        <p class="text-sm text-olympia-muted">Aucun restaurant ne correspond à votre recherche.</p>
+        <p class="text-sm text-olympia-muted">Aucune enseigne ne correspond à votre recherche.</p>
       {% endfor %}
     </div>
   </section>

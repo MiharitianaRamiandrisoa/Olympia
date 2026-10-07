@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ actualite.titre }} | Olympia{% endblock %}
+{% block meta_description %}{{ actualite.chapeau|default(actualite.contenu|default(''))|striptags|slice(0, 160) }}{% endblock %}
+{% block main_background %}bg-white{% endblock %}
+
+{% block body %}
+  <article>
+    <section class="relative isolate flex min-h-[420px] items-end overflow-hidden bg-olympia-dark text-white lg:min-h-[500px]">
+      {% set hero_image_path = actualite.imageMedia ? actualite.imageMedia.chemin : 'images/hero-olympia.jpg' %}
+      {% set hero_srcset = responsive_srcset(hero_image_path) %}
+      <img src="{{ asset(hero_image_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="{{ actualite.titre }}" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover">
+      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/90 via-brand-900/65 to-brand-900/20"></div>
+      <div class="container-site w-full pb-16 pt-20">
+        <a href="{{ path('app_actualites') }}" class="text-sm text-white/85 hover:text-white">← Retour aux actualités</a>
+        <span class="mt-8 block w-fit rounded-full bg-olympia-gold px-4 py-1 text-xs font-bold uppercase text-olympia">{{ actualite.categorie|default('Actualité') }}</span>
+        <h1 class="mt-5 max-w-3xl text-4xl font-semibold leading-tight md:text-6xl">{{ actualite.titre }}</h1>
+        <p class="mt-6 text-sm text-white/90">{{ actualite.datePublication|date('d/m/Y') }}</p>
+      </div>
+    </section>
+    <section class="container-site grid gap-10 py-12 md:grid-cols-2 md:py-16">
+      {% set image_path = actualite.imageMedia ? actualite.imageMedia.chemin : 'images/news/default.jpg' %}
+      {% set srcset = responsive_srcset(image_path) %}
+      <div class="min-h-[360px] overflow-hidden bg-sand-50"><img src="{{ asset(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, 1000px"{% endif %} alt="{{ actualite.titre }}" width="1000" height="700" loading="lazy" decoding="async" class="size-full object-cover"></div>
+      <div class="flex flex-col justify-center">
+        <p class="text-sm text-olympia-muted">{{ actualite.datePublication|date('d/m/Y') }}</p>
+        {% if actualite.chapeau %}<p class="mt-5 text-xl leading-8 text-olympia">{{ actualite.chapeau }}</p>{% endif %}
+        <div class="mt-6 text-base leading-8 text-olympia-muted">{{ actualite.contenu|default('')|nl2br }}</div>
+      </div>
+    </section>
+  </article>
+{% endblock %}

@@ -25,6 +25,7 @@ use App\Repository\BoutiqueRepository;
 use App\Repository\RestaurantRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\EvenementRepository;
+use App\Repository\ActualiteRepository;
 use App\Repository\MessageContactRepository;
 
 #[AdminDashboard(routePath: '/olympia-admin', routeName: 'app_admin_dashboard')]
@@ -35,6 +36,7 @@ final class DashboardController extends AbstractDashboardController
         private readonly RestaurantRepository $restaurants,
         private readonly PromotionRepository $promotions,
         private readonly EvenementRepository $events,
+        private readonly ActualiteRepository $actualites,
         private readonly MessageContactRepository $messages,
     ) {
     }
@@ -47,6 +49,7 @@ final class DashboardController extends AbstractDashboardController
                 ['label' => 'Restaurants', 'value' => $this->restaurants->count([]), 'icon' => 'fa-utensils', 'color' => 'success', 'route' => 'app_admin_dashboard_restaurant_index'],
                 ['label' => 'Promotions', 'value' => $this->promotions->count([]), 'icon' => 'fa-tags', 'color' => 'warning', 'route' => 'app_admin_dashboard_promotion_index'],
                 ['label' => 'Événements', 'value' => $this->events->count([]), 'icon' => 'fa-calendar', 'color' => 'info', 'route' => 'app_admin_dashboard_evenement_index'],
+                ['label' => 'Actualites', 'value' => $this->actualites->count([]), 'icon' => 'fa-newspaper', 'color' => 'secondary', 'route' => 'app_admin_dashboard_actualite_index'],
                 ['label' => 'Messages non lus', 'value' => $this->messages->count(['estLu' => false]), 'icon' => 'fa-envelope', 'color' => 'danger', 'route' => 'app_admin_dashboard_message_contact_index'],
             ],
         ]);
@@ -96,6 +99,7 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToRoute('Promotions', 'fa fa-tags', 'app_admin_dashboard_promotion_index');
         yield MenuItem::linkToRoute('Événements', 'fa fa-calendar', 'app_admin_dashboard_evenement_index');
         yield MenuItem::linkToRoute('Utilisateurs', 'fa fa-users', 'app_admin_dashboard_utilisateur_index');
+        yield MenuItem::linkToRoute('Actualites', 'fa fa-newspaper', 'app_admin_dashboard_actualite_index');
         yield MenuItem::section('Catégories');
         yield MenuItem::linkToRoute('Boutiques', 'fa fa-list', 'app_admin_dashboard_categorie_boutique_index');
         yield MenuItem::linkToRoute('Restaurants', 'fa fa-list', 'app_admin_dashboard_categorie_restaurant_index');

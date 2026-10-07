@@ -2,12 +2,10 @@
 {% set links = [
   {label: 'Accueil', route: 'app_home'},
   {label: 'Boutiques', route: 'app_boutiques'},
-  {label: 'Restaurants', route: 'app_restaurants'},
-  {label: 'Promotions', route: 'app_promotions'},
-  {label: 'Événements', route: 'app_events'},
-  {label: 'Info pratiques', route: 'app_contact'},
+  {label: 'Food court', route: 'app_restaurants'},
+  {label: 'Infos pratiques', route: 'app_contact'},
 ] %}
-<header class="sticky top-0 z-40 border-b border-slate-100 bg-white" data-controller="mobile-menu">
+<header class="site-header sticky top-0 z-40 border-b border-slate-100 bg-white" data-controller="mobile-menu">
   <div class="container-site flex h-[88px] items-center justify-between gap-6">
     <a href="{{ path('app_home') }}" aria-label="Olympia - Accueil">
       <img src="{{ asset('images/logo/logo-header-teal.png') }}" alt="Olympia" width="160" height="114" decoding="async" class="h-14 w-auto">
@@ -15,33 +13,49 @@
 
     <nav class="hidden items-center gap-8 lg:flex" aria-label="Navigation principale">
       {% for link in links %}
-        <a href="{{ path(link.route) }}"
-           class="text-[15px] transition hover:text-olympia {{ current == link.route ? 'font-medium text-olympia' : 'text-olympia-muted' }}">
-          {{ link.label }}
-        </a>
+        <a href="{{ path(link.route) }}" class="text-[15px] transition hover:text-olympia {{ current == link.route ? 'font-medium text-olympia' : 'text-olympia-muted' }}">{{ link.label }}</a>
       {% endfor %}
+      {% set news_active = current in ['app_actualites', 'app_actualite_detail', 'app_events', 'app_event_detail', 'app_promotions', 'app_promotion_detail'] %}
+      <div class="desktop-news-menu group" data-news-menu>
+        <a href="{{ path('app_actualites') }}" aria-expanded="false" class="flex items-center gap-1 text-[15px] transition hover:text-olympia {{ news_active ? 'font-medium text-olympia' : 'text-olympia-muted' }}">
+          À découvrir
+          <svg class="h-4 w-4 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </a>
+      </div>
     </nav>
 
     <div class="flex items-center gap-4">
-      <a href="{{ path('app_home') }}#localisation"
-         class="hidden rounded-full bg-olympia px-6 py-3 text-sm font-bold text-white transition hover:bg-olympia-dark sm:inline-block">
-        Nous trouver
-      </a>
+      <a href="{{ path('app_home') }}#localisation" class="hidden rounded-full bg-olympia px-6 py-3 text-sm font-bold text-white transition hover:bg-olympia-dark sm:inline-block">Nous trouver</a>
       <button type="button" class="lg:hidden" aria-label="Ouvrir le menu" aria-expanded="false" data-action="mobile-menu#toggle">
         <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
   </div>
-  <nav class="hidden border-t border-slate-100 bg-white lg:hidden" data-mobile-menu-target="panel" aria-label="Menu mobile">
+
+  <div class="desktop-news-subnav border-t border-slate-100 bg-slate-50/80 shadow-[0_8px_20px_-18px_rgba(26,74,84,0.5)]">
+    <div class="container-site flex min-h-16 items-center justify-center gap-10">
+      <a href="{{ path('app_actualites') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_actualites', 'app_actualite_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Actualités</a>
+      <a href="{{ path('app_events') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_events', 'app_event_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Événements</a>
+      <a href="{{ path('app_promotions') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_promotions', 'app_promotion_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Promotions</a>
+    </div>
+  </div>
+
+  <nav class="hidden border-t border-slate-100 bg-white lg:hidden" data-mobile-menu-target="panel" data-action="click->mobile-menu#closeOnLink" aria-label="Menu mobile">
     <ul class="container-site flex flex-col py-3">
       {% for link in links %}
-        <li>
-          <a href="{{ path(link.route) }}" class="block py-3 text-base text-olympia hover:text-olympia-dark">{{ link.label }}</a>
-        </li>
+        <li><a href="{{ path(link.route) }}" class="block py-3 text-base transition {{ current == link.route ? 'font-medium text-olympia' : 'text-olympia-muted hover:text-olympia-dark' }}">{{ link.label }}</a></li>
       {% endfor %}
-      <li class="pt-2">
-         <a href="{{ path('app_home') }}#localisation" class="block rounded-full bg-olympia py-3 text-center font-bold text-white">Nous trouver</a>
+      <li>
+        <details class="group">
+          <summary class="flex cursor-pointer list-none items-center justify-between py-3 text-base text-olympia">À découvrir <svg class="h-5 w-5 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+          <div class="flex flex-wrap gap-x-6 border-l-2 border-olympia-gold pl-4">
+            <a href="{{ path('app_actualites') }}" class="block py-2 text-sm {{ current in ['app_actualites', 'app_actualite_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Toutes les actualités</a>
+            <a href="{{ path('app_events') }}" class="block py-2 text-sm {{ current in ['app_events', 'app_event_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Événements</a>
+            <a href="{{ path('app_promotions') }}" class="block py-2 text-sm {{ current in ['app_promotions', 'app_promotion_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Promotions</a>
+          </div>
+        </details>
       </li>
+      <li class="pt-2"><a href="{{ path('app_home') }}#localisation" class="block rounded-full bg-olympia py-3 text-center font-bold text-white">Nous trouver</a></li>
     </ul>
   </nav>
 </header>

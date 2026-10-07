@@ -10,4 +10,18 @@ export default class extends Controller {
         this.element.querySelector('button[aria-expanded]')
             ?.setAttribute('aria-expanded', String(!isHidden));
     }
+
+    closeOnLink(event) {
+        if (!event.target.closest('a')) return;
+
+        this.close();
+    }
+
+    close() {
+        this.panelTarget.classList.add('hidden');
+        if (this.hasOpenTarget) this.openTarget.classList.remove('hidden');
+        if (this.hasCloseTarget) this.closeTarget.classList.add('hidden');
+        this.element.querySelector('button[aria-expanded]')
+            ?.setAttribute('aria-expanded', 'false');
+    }
 }

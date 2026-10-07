@@ -1,7 +1,7 @@
 {% set nav = [
   {label: 'Accueil',      href: '/'},
   {label: 'Boutiques',    href: '/boutiques'},
-  {label: 'Restaurants',  href: '/restaurants'},
+  {label: 'Food court',  href: '/restaurants'},
   {label: 'Promotions',   href: '/promotions'},
   {label: 'Événements',   href: '/evenements'},
   {label: 'Info pratiques', href: '/informations'}
@@ -41,7 +41,7 @@
   </div>
 
   {# Menu mobile #}
-  <nav class="hidden border-t border-brand-900/10 bg-white lg:hidden" data-mobile-menu-target="panel" aria-label="Menu mobile">
+  <nav class="hidden border-t border-brand-900/10 bg-white lg:hidden" data-mobile-menu-target="panel" data-action="click->mobile-menu#closeOnLink" aria-label="Menu mobile">
     <ul class="container-site flex flex-col py-3">
       {% for item in nav %}
         <li><a href="{{ item.href }}" class="block py-3 text-base text-brand-900">{{ item.label }}</a></li>
