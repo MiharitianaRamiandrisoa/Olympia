@@ -45,7 +45,8 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
   {% block head_preloads %}{% endblock %}
-  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=actualites-20261005-2">
+  {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}
+  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261007-1">
   {{ importmap('app') }}
   {% block stylesheets %}{% endblock %}
   {% block structured_data %}
