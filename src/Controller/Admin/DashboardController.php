@@ -19,6 +19,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Option\ColorScheme;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\BoutiqueRepository;
@@ -80,7 +81,9 @@ final class DashboardController extends AbstractDashboardController
     {
         return Dashboard::new()->setTitle(
             '<img src="/images/logo/logo-footer-creme.png" alt="Olympia" style="max-width: 150px; max-height: 60px; object-fit: contain;">'
-        )->setFaviconPath('images/logo/favico/favicon.ico');
+        )->setFaviconPath('images/logo/favico/favicon.ico')
+            ->disableDarkMode()
+            ->setDefaultColorScheme(ColorScheme::LIGHT);
     }
 
     public function configureAssets(): Assets

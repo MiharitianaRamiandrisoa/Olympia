@@ -26,6 +26,8 @@ php bin/console assets:install public --env=prod --no-interaction
 export APP_ENV=prod
 export APP_DEBUG=0
 
+php bin/console tailwind:build --env=prod --no-interaction
+
 rm -rf public/assets
 
 php bin/console importmap:install --env=prod --no-interaction
