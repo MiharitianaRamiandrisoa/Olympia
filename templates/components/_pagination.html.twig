@@ -1,0 +1,16 @@
+{% if pagination.total_pages > 1 %}
+  {% set query = app.request.query.all %}
+  <nav class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Pagination">
+    {% if pagination.current_page > 1 %}
+      <a href="{{ path(app.request.attributes.get('_route'), query|merge({page: pagination.current_page - 1})) }}" class="rounded-full border border-olympia-gold bg-white px-4 py-2 text-sm font-semibold text-olympia transition hover:bg-olympia-cream">Précédent</a>
+    {% endif %}
+
+    {% for page in 1..pagination.total_pages %}
+      <a href="{{ path(app.request.attributes.get('_route'), query|merge({page: page})) }}" aria-current="{{ page == pagination.current_page ? 'page' : 'false' }}" class="flex size-10 items-center justify-center rounded-full text-sm font-semibold transition {{ page == pagination.current_page ? 'bg-olympia text-white' : 'border border-slate-200 bg-white text-olympia hover:border-olympia-gold hover:bg-olympia-cream' }}">{{ page }}</a>
+    {% endfor %}
+
+    {% if pagination.current_page < pagination.total_pages %}
+      <a href="{{ path(app.request.attributes.get('_route'), query|merge({page: pagination.current_page + 1})) }}" class="rounded-full border border-olympia-gold bg-white px-4 py-2 text-sm font-semibold text-olympia transition hover:bg-olympia-cream">Suivant</a>
+    {% endif %}
+  </nav>
+{% endif %}

@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
-{% block meta_description %}Decouvrez les boutiques et enseignes du centre commercial Olympia a Tanjombato : mode, beaute, maison, technologie et alimentation.{% endblock %}
-{% block title %}Nos boutiques | Olympia{% endblock %}
+{% block meta_description %}Découvrez les enseignes du centre commercial Olympia à Tanjombato : boutiques, services, mode, beauté, maison et technologie.{% endblock %}
+{% block title %}Nos enseignes | Olympia{% endblock %}
 
 {% block hero %}
   {% include 'components/_hero.html.twig' with {
-    title: 'Nos boutiques',
+    title: 'Nos enseignes',
     subtitle: 'Découvrez les enseignes présentes à Olympia',
     image: 'images/hero-boutiques.jpg',
     search_placeholder: 'Rechercher une enseigne, une marque...',
-    search_action: path('app_boutiques')
+    search_action: path('app_enseignes')
   } only %}
 {% endblock %}
 
@@ -17,7 +17,7 @@
     {% include 'components/_filter_pills.html.twig' with {
       items: categories,
       active: active_category,
-      filter_route: 'app_boutiques'
+      filter_route: 'app_enseignes'
     } only %}
   </div>
 {% endblock %}
@@ -33,7 +33,7 @@
           {label: 'Catégorie', value: 'category'}
         ] %}
           <li>
-            <a href="{{ path('app_boutiques', {q: search, category: active_category, sort: opt.value}) }}" data-boutique-ajax
+            <a href="{{ path('app_enseignes', {q: search, category: active_category, sort: opt.value}) }}" data-boutique-ajax
                class="block rounded-lg px-3 py-3 {{ active_sort == opt.value ? 'bg-olympia-cream font-medium text-olympia' : 'hover:bg-slate-50' }}">
               {{ opt.label }}
             </a>
@@ -45,15 +45,16 @@
     <section id="boutique-results">
       <div class="mb-6 flex items-center justify-between gap-4">
         <p class="text-xs font-bold uppercase text-olympia-gold">{{ shops|length }} enseignes trouvées</p>
-        {% if search or active_category %}<a href="{{ path('app_boutiques') }}" class="text-sm font-medium text-olympia hover:underline">Réinitialiser</a>{% endif %}
+        {% if search or active_category %}<a href="{{ path('app_enseignes') }}" class="text-sm font-medium text-olympia hover:underline">Réinitialiser</a>{% endif %}
       </div>
       <div class="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
         {% for shop in shops %}
           {% include 'components/_card_boutique.html.twig' with {shop: shop} only %}
         {% else %}
-          <p class="text-sm text-olympia-muted">Aucune boutique ne correspond à votre recherche.</p>
+          <p class="text-sm text-olympia-muted">Aucune enseigne ne correspond à votre recherche.</p>
         {% endfor %}
       </div>
+      {% include 'components/_pagination.html.twig' with {pagination: pagination} only %}
     </section>
   </div>
 {% endblock %}

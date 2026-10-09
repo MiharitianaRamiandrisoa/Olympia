@@ -16,7 +16,7 @@
   </div>
 </section>
 <section class="container-site grid gap-10 py-12 md:grid-cols-2 md:py-16">
-  {% set image_path = promotion.imageMedia ? promotion.imageMedia.chemin : 'images/promo/default.jpg' %}
+      {% set image_path = promotion.imageMedia ? promotion.imageMedia.chemin : 'images/Minimal Storefront Badge Illustration.png' %}
   {% set srcset = responsive_srcset(image_path) %}
   <div class="min-h-[360px] overflow-hidden bg-sand-50"><img src="{{ asset(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, 1000px"{% endif %} alt="{{ promotion.titre }}" width="1000" height="700" loading="lazy" decoding="async" class="size-full object-cover"></div>
   <div class="flex flex-col justify-center">
