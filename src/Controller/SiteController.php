@@ -26,10 +26,10 @@ class SiteController extends AbstractController
     // #[Route('/', name: 'app_home')]
     // public function home(): Response
     // {
-    //     return $this->redirectToRoute('app_boutiques'); // page d'accueil à créer
+    //     return $this->redirectToRoute('app_enseignes'); // page d'accueil à créer
     // }
 
-    #[Route('/boutiques', name: 'app_boutiques')]
+    #[Route('/enseignes', name: 'app_enseignes', methods: ['GET'])]
     public function boutiques(Request $request, BoutiqueRepository $boutiqueRepository, CategorieBoutiqueRepository $categorieRepository): Response
     {
         $search = $request->query->get('q');
@@ -40,9 +40,10 @@ class SiteController extends AbstractController
             'name' => $boutique->getEnseigne()?->getNom() ?? 'Enseigne',
             'category' => $boutique->getCategorie()?->getNom() ?? 'Boutique',
             'floor' => 'Olympia',
-            'image' => $boutique->getPhotoMedia()?->getChemin() ?? 'images/shops/default.jpg',
-            'url' => '/boutiques/'.($boutique->getEnseigne()?->getSlug() ?? ''),
+            'image' => $boutique->getPhotoMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
+            'url' => '/enseignes/'.($boutique->getEnseigne()?->getSlug() ?? ''),
         ], $boutiqueRepository->findActive($search, $category, $sort));
+        $pagination = $this->paginate($shops, $request);
         /*
         $shops = [
             ['name' => 'ZARA', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/zara.jpg'],
@@ -56,12 +57,19 @@ class SiteController extends AbstractController
         ]; */
 
         return $this->render('boutique/index.html.twig', [
-            'shops' => $shops,
+            'shops' => $pagination['items'],
+            'pagination' => $pagination,
             'categories' => $categories,
             'active_category' => $category,
             'active_sort' => $sort,
             'search' => $search,
         ]);
+    }
+
+    #[Route('/boutiques', name: 'app_boutiques_legacy', methods: ['GET'])]
+    public function boutiquesLegacy(Request $request): Response
+    {
+        return $this->redirectToRoute('app_enseignes', $request->query->all(), Response::HTTP_MOVED_PERMANENTLY);
     }
 
     #[Route('/restaurants', name: 'app_restaurants')]
@@ -74,11 +82,13 @@ class SiteController extends AbstractController
             'name' => $restaurant->getEnseigne()?->getNom() ?? 'Food court',
             'cuisine' => $restaurant->getCategorie()?->getNom() ?? 'Cuisine',
             'floor' => 'Olympia',
-            'image' => $restaurant->getPhotoMedia()?->getChemin() ?? 'images/resto/default.jpg',
+            'image' => $restaurant->getPhotoMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'url' => '/restaurants/'.($restaurant->getEnseigne()?->getSlug() ?? ''),
         ], $restaurantRepository->findActive($search, $category));
+        $pagination = $this->paginate($restaurants, $request);
         return $this->render('restaurant/index.html.twig', [
-            'restaurants' => $restaurants,
+            'restaurants' => $pagination['items'],
+            'pagination' => $pagination,
             'categories' => $categories,
             'active_category' => $category,
         ]);
@@ -99,7 +109,7 @@ class SiteController extends AbstractController
         */
     }
 
-    #[Route('/boutiques/{slug}', name: 'app_boutique_detail', methods: ['GET'])]
+    #[Route('/enseignes/{slug}', name: 'app_enseigne_detail', methods: ['GET'])]
     public function boutiqueDetail(string $slug, BoutiqueRepository $boutiqueRepository): Response
     {
         $boutique = $boutiqueRepository->findActiveByEnseigneSlug($slug);
@@ -108,6 +118,12 @@ class SiteController extends AbstractController
         }
 
         return $this->render('boutique/detail.html.twig', ['boutique' => $boutique]);
+    }
+
+    #[Route('/boutiques/{slug}', name: 'app_boutique_detail_legacy', methods: ['GET'])]
+    public function boutiqueDetailLegacy(string $slug): Response
+    {
+        return $this->redirectToRoute('app_enseigne_detail', ['slug' => $slug], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     #[Route('/restaurants/{slug}', name: 'app_restaurant_detail', methods: ['GET'])]
@@ -132,10 +148,11 @@ class SiteController extends AbstractController
             'date' => $promotion->getDateDebut()?->format('d/m/Y'),
             'shop' => $promotion->getEnseigne()?->getNom() ?? 'Olympia',
             'description' => $promotion->getDescription() ?? '',
-            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/promo/default.jpg',
+            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'url' => '/promotions/'.$promotion->getSlug(),
         ], $promotionRepository->findActive($category));
-        return $this->render('promotion/index.html.twig', ['promotions' => $promotions, 'categories' => $categories, 'active_category' => $category]);
+        $pagination = $this->paginate($promotions, $request);
+        return $this->render('promotion/index.html.twig', ['promotions' => $pagination['items'], 'pagination' => $pagination, 'categories' => $categories, 'active_category' => $category]);
 
         /*
         $promotions = [
@@ -164,10 +181,11 @@ class SiteController extends AbstractController
             'end' => $event->getDateFin()?->format(DATE_ATOM),
             'location' => $event->getLieu(),
             'text' => $event->getDescription() ?? '',
-            'image' => $event->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
+            'image' => $event->getImageMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'href' => '/evenements/'.$event->getSlug(),
         ], $evenementRepository->findActive($category));
-        return $this->render('evenement/index.html.twig', ['events' => $events, 'categories' => $categories, 'active_category' => $category]);
+        $pagination = $this->paginate($events, $request);
+        return $this->render('evenement/index.html.twig', ['events' => $pagination['items'], 'pagination' => $pagination, 'categories' => $categories, 'active_category' => $category]);
 
     }
 
@@ -181,9 +199,11 @@ class SiteController extends AbstractController
             'title' => $article->getTitre(),
             'date' => $article->getDatePublication()?->format('d/m/Y'),
             'text' => $article->getChapeau() ?: $article->getContenu() ?: '',
-            'image' => $article->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
+            'image' => $article->getImageMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'href' => '/actualites/'.$article->getSlug(),
         ], $actualiteRepository->findActive($search));
+        $featured = $articles[0] ?? null;
+        $pagination = $this->paginate(array_slice($articles, 1), $request);
 
         /*
 
@@ -223,8 +243,9 @@ class SiteController extends AbstractController
 
         */
         return $this->render('actualite/index.html.twig', [
-            'articles' => $articles,
-            'featured' => $articles[0] ?? null,
+            'articles' => $pagination['items'],
+            'pagination' => $pagination,
+            'featured' => $featured,
             'search' => $search,
         ]);
     }
@@ -241,10 +262,12 @@ class SiteController extends AbstractController
     }
 
     #[Route('/services', name: 'app_services', methods: ['GET'])]
-    public function services(ServiceRepository $serviceRepository): Response
+    public function services(Request $request, ServiceRepository $serviceRepository): Response
     {
+        $pagination = $this->paginate($serviceRepository->findActive(), $request);
         return $this->render('service/index.html.twig', [
-            'services' => $serviceRepository->findActive(),
+            'services' => $pagination['items'],
+            'pagination' => $pagination,
         ]);
     }
 
@@ -296,5 +319,21 @@ class SiteController extends AbstractController
         }
 
         return $this->render('info/contact.html.twig');
+    }
+
+    /** @return array{items: array, current_page: int, total_pages: int, total_items: int, per_page: int} */
+    private function paginate(array $items, Request $request, int $perPage = 9): array
+    {
+        $totalItems = count($items);
+        $totalPages = max(1, (int) ceil($totalItems / $perPage));
+        $currentPage = max(1, min($totalPages, $request->query->getInt('page', 1)));
+
+        return [
+            'items' => array_slice($items, ($currentPage - 1) * $perPage, $perPage),
+            'current_page' => $currentPage,
+            'total_pages' => $totalPages,
+            'total_items' => $totalItems,
+            'per_page' => $perPage,
+        ];
     }
 }

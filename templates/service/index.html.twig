@@ -67,6 +67,7 @@
           <p class="text-sm text-blue-100 sm:col-span-2 lg:col-span-4">Les services seront bientôt disponibles.</p>
         {% endfor %}
       </div>
+      {% include 'components/_pagination.html.twig' with {pagination: pagination} only %}
     </div>
   </section>
 {% endblock %}

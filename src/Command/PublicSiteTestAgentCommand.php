@@ -17,7 +17,7 @@ final class PublicSiteTestAgentCommand extends Command
 {
     private const PAGES = [
         '/' => 'Olympia',
-        '/boutiques' => 'Boutiques',
+        '/enseignes' => 'Enseignes',
         '/restaurants' => 'Restaurants',
         '/promotions' => 'Promotions',
         '/evenements' => 'Événements',

@@ -64,5 +64,6 @@
         <p class="text-sm text-olympia-muted">Aucune actualité ne correspond à votre recherche.</p>
       {% endfor %}
     </div>
+    {% include 'components/_pagination.html.twig' with {pagination: pagination} only %}
   </section>
 {% endblock %}

@@ -10,7 +10,7 @@
 
     <div class="mt-8 grid gap-10 md:grid-cols-2 md:items-start">
       <div class="min-h-[360px] overflow-hidden rounded-2xl bg-sand-50">
-        {% set image_path = restaurant.photoMedia ? restaurant.photoMedia.chemin : 'images/resto/default.jpg' %}
+        {% set image_path = restaurant.photoMedia ? restaurant.photoMedia.chemin : 'images/Minimal Storefront Badge Illustration.png' %}
         {% set srcset = responsive_srcset(image_path) %}
         <img src="{{ asset(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, 1000px"{% endif %} alt="{{ restaurant.enseigne.nom }}" width="1000" height="700" loading="lazy" decoding="async" class="size-full object-cover">
       </div>

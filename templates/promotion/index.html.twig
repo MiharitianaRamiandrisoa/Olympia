@@ -21,6 +21,7 @@
         <p class="text-sm text-olympia-muted">Aucune promotion disponible pour cette catégorie.</p>
       {% endfor %}
     </div>
+    {% include 'components/_pagination.html.twig' with {pagination: pagination} only %}
   </section>
   {% include 'components/_newsletter_cta.html.twig' %}
 {% endblock %}

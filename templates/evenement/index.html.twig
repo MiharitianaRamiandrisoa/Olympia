@@ -29,6 +29,7 @@
         <p class="text-sm text-olympia-muted">Aucun événement à venir.</p>
       {% endfor %}
     </div>
+    {% include 'components/_pagination.html.twig' with {pagination: pagination} only %}
 
     <div id="event-calendar-view" class="mt-10 hidden" data-event-calendar data-events="{{ events|json_encode|e('html_attr') }}">
       <div class="mb-5 flex items-center justify-between">

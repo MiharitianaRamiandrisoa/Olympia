@@ -36,8 +36,8 @@ final class HomeController extends AbstractController
         $shops = array_map(static fn ($boutique) => [
             'name' => $boutique->getEnseigne()?->getNom() ?? 'Enseigne',
             'category' => $boutique->getCategorie()?->getNom() ?? 'Boutique',
-            'image' => $boutique->getPhotoMedia()?->getChemin() ?? 'images/shops/default.jpg',
-            'href' => '/boutiques/'.($boutique->getEnseigne()?->getSlug() ?? ''),
+            'image' => $boutique->getPhotoMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
+            'href' => '/enseignes/'.($boutique->getEnseigne()?->getSlug() ?? ''),
         ], $featuredShops);
 
         $promotions = array_map(static fn ($promotion) => [
@@ -46,7 +46,7 @@ final class HomeController extends AbstractController
             'icon' => 'calendar',
             'date' => $promotion->getDateDebut()?->format('d/m/Y'),
             'text' => $promotion->getDescription() ?? '',
-            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/promo/default.jpg',
+            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'href' => '/promotions/'.$promotion->getSlug(),
         ], $this->promotionRepository->findFeatured());
 
@@ -56,7 +56,7 @@ final class HomeController extends AbstractController
             'icon' => 'calendar',
             'date' => $event->getDateDebut()?->format('d/m/Y H:i'),
             'text' => $event->getDescription() ?? '',
-            'image' => $event->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
+            'image' => $event->getImageMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'href' => '/evenements/'.$event->getSlug(),
         ], $this->evenementRepository->findFeatured());
 
@@ -66,7 +66,7 @@ final class HomeController extends AbstractController
             'icon' => 'newspaper',
             'date' => $actualite->getDatePublication()?->format('d/m/Y'),
             'text' => $actualite->getChapeau() ?: $actualite->getContenu() ?: '',
-            'image' => $actualite->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
+            'image' => $actualite->getImageMedia()?->getChemin() ?? 'images/Minimal Storefront Badge Illustration.png',
             'href' => '/actualites/'.$actualite->getSlug(),
         ], array_slice($this->actualiteRepository->findActive(), 0, 3));
 
@@ -92,7 +92,7 @@ final class HomeController extends AbstractController
             'practical_info' => $this->informationPratiqueRepository->findActiveOrdered(),
             'center_address' => $this->informationPratiqueRepository->findActiveAddress(),
             'quick_access' => [
-                ['icon' => 'shopping-bag', 'title' => 'Boutiques', 'text' => 'Pret-a-porter, beaute, tech et accessoires.', 'href' => '/boutiques'],
+                ['icon' => 'shopping-bag', 'title' => 'Enseignes', 'text' => 'Boutiques, services, beauté, tech et accessoires.', 'href' => '/enseignes'],
                 ['icon' => 'coffee', 'title' => 'Food court', 'text' => 'Du fast-food aux specialites gastronomiques.', 'href' => '/restaurants'],
                 ['icon' => 'calendar', 'title' => 'Evenements', 'text' => 'Decouvrez nos animations et actualites.', 'href' => '/evenements'],
                 ['icon' => 'shield', 'title' => 'Services', 'text' => 'Parking, Wi-Fi, espaces bebe et detente.', 'href' => '/services'],

@@ -17,10 +17,13 @@
   {% set seo_description %}{% block meta_description %}Olympia Madagascar : centre commercial à Tanjombato, boutiques, Food court, services et événements.{% endblock %}{% endset %}
   {% set seo_description = seo_description|striptags|trim %}
   {% set canonical_url = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ app.request.pathInfo %}
+  {% if app.request.query.get('page') %}
+    {% set canonical_url = canonical_url ~ '?page=' ~ app.request.query.get('page') %}
+  {% endif %}
   {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ asset('images/hero-olympia.jpg') %}
   <meta name="description" content="{{ seo_description }}">
   <meta name="robots" content="index,follow">
-  <meta name="theme-color" content="#1A4A54">
+  <meta name="theme-color" content="#154953">
   <link rel="canonical" href="{{ canonical_url }}">
   <link rel="icon" href="{{ asset('images/logo/favico/favicon.ico') }}?v=olympia-4" sizes="any">
   <link rel="icon" href="{{ asset('images/logo/favico/favicon-32x32.png') }}?v=olympia-4" type="image/png" sizes="32x32">
@@ -40,13 +43,9 @@
   <meta name="twitter:description" content="{{ seo_description }}">
   <meta name="twitter:image" content="{{ seo_image }}">
   <title>{{ seo_title }}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"></noscript>
   {% block head_preloads %}{% endblock %}
   {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}
-  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261007-1">
+  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261009-1">
   {{ importmap('app') }}
   {% block stylesheets %}{% endblock %}
   {% block structured_data %}
@@ -73,7 +72,7 @@
 <body class="flex min-h-screen flex-col">
   {% include 'components/_header.html.twig' %}
 
-  <main class="flex-1 {% block main_background %}bg-olympia-cream{% endblock %}">
+  <main class="brand-pattern flex-1 {% block main_background %}bg-olympia-cream{% endblock %}">
     {% block hero %}{% endblock %}
     {% block filters %}{% endblock %}
     {% block body %}{% endblock %}

@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+@font-face {
+    font-family: "Caesar Dressing";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/caesar-dressing.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/montserrat-400.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/montserrat-500.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/montserrat-600.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/montserrat-700.ttf") format("truetype");
+}
+
 /* Les templates Twig sont la source des classes Tailwind à générer. */
 @source "../../templates";
 @source "../";
@@ -12,32 +52,34 @@
 
 @theme {
     /* Polices */
-    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-    --font-serif: "Lora", ui-serif, Georgia, serif;
+    --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Albertus Nova", "Montserrat", ui-sans-serif, system-ui, sans-serif;
+    --font-brand: "Caesar Dressing", "Montserrat", cursive;
 
     /* Couleurs Olympia utilisées par les templates */
-    --color-olympia: #1A4A54;
-    --color-olympia-dark: #143942;
-    --color-olympia-gold: #DDC9A4;
-    --color-olympia-cream: #FAF6EC;
+    --color-olympia: #154953;
+    --color-olympia-dark: #103b43;
+    --color-olympia-sage: #7E8E6C;
+    --color-olympia-gold: #DFCFAC;
+    --color-olympia-cream: #FCFAF5;
 
     /* Couleurs de texte */
-    --color-olympia-ink: #1A4A54;
-    --color-olympia-muted: #64748b;
+    --color-olympia-ink: #154953;
+    --color-olympia-muted: #536267;
 
     /* Variations Olympia */
-    --color-brand-50: #eaf1f2;
-    --color-brand-100: #cfe0e3;
-    --color-brand-600: #2d6f7c;
-    --color-brand-700: #235c68;
-    --color-brand-800: #1e515c;
-    --color-brand-900: #1a4a54;
+    --color-brand-50: #edf3ef;
+    --color-brand-100: #d7e2d7;
+    --color-brand-600: #286572;
+    --color-brand-700: #1f5965;
+    --color-brand-800: #194f5a;
+    --color-brand-900: #154953;
 
     /* Variations sable */
-    --color-sand-50: #faf6ec;
-    --color-sand-100: #f3efe8;
-    --color-sand-300: #ddc9a4;
-    --color-sand-400: #cdb68a;
+    --color-sand-50: #fcfaf5;
+    --color-sand-100: #f5f0e5;
+    --color-sand-300: #dfcfac;
+    --color-sand-400: #cdbb91;
 
     /* Génère la classe utilitaire max-w-site */
     --container-site: 1200px;
@@ -53,11 +95,14 @@
 @layer base {
 
     body {
-        background-color: white;
+        background-color: #fcfaf5;
         color: var(--color-olympia-ink);
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
     }
+
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); letter-spacing: -0.02em; }
+    .font-brand { font-family: var(--font-brand); }
 
     :focus-visible {
         outline-width: 2px;
@@ -80,6 +125,13 @@
 
     .site-header.news-menu-open .desktop-news-subnav {
         display: block;
+    }
+
+    .brand-pattern {
+        background-color: var(--color-olympia-cream);
+        background-image: linear-gradient(135deg, rgb(126 142 108 / 5%) 25%, transparent 25%), linear-gradient(315deg, rgb(126 142 108 / 5%) 25%, transparent 25%);
+        background-position: 0 0, 12px 12px;
+        background-size: 24px 24px;
     }
 }
 
@@ -202,7 +254,7 @@
         @apply mx-auto w-full max-w-site px-5 md:px-8 lg:px-12;
     }
 
-
+    .site-header { border-bottom-color: rgb(223 207 172 / 55%); }
     /*
     | Pills / filtres
     */
@@ -238,7 +290,9 @@
     */
 
     .card {
-        @apply overflow-hidden rounded-2xl border border-slate-200 bg-white;
+        @apply overflow-hidden rounded-2xl border bg-white;
+        border-color: rgb(223 207 172 / 55%);
+        box-shadow: 0 10px 30px rgb(21 73 83 / 6%);
     }
 
 
