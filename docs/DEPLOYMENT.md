@@ -20,6 +20,9 @@ Le workflow n’exécute pas `npm run build`, `importmap:install` ou `asset-map:
 ssh olympiam@web1.simafri.cloud
 cd /home/olympiam/domains/olympia-madagascar.mg/public_html
 
+# Le dossier public/build est ignoré par Git : il faut le reconstruire après chaque déploiement.
+npm ci --include=dev
+npm run build
 
 php bin/console assets:install public --env=prod --no-interaction
 
