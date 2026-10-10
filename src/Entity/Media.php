@@ -34,6 +34,12 @@ class Media
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $taille = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $largeur = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $hauteur = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $texteAlternatif = null;
 
@@ -136,6 +142,11 @@ class Media
 
         return $this;
     }
+
+    public function getLargeur(): ?int { return $this->largeur; }
+    public function setLargeur(?int $largeur): static { $this->largeur = $largeur; return $this; }
+    public function getHauteur(): ?int { return $this->hauteur; }
+    public function setHauteur(?int $hauteur): static { $this->hauteur = $hauteur; return $this; }
 
     public function getTexteAlternatif(): ?string
     {

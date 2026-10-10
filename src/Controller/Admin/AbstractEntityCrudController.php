@@ -2,14 +2,21 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Artiste;
+use App\Entity\CategorieOeuvre;
+use App\Entity\Exposition;
+use App\Entity\Oeuvre;
+
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -129,7 +136,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             if ($fieldName === 'horaires' && in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)) {
                 continue;
             }
-            if ($fieldName === 'imageMedia' && in_array(static::$entityClass, [Promotion::class, Evenement::class, Actualite::class], true)) {
+            if ($fieldName === 'imageMedia' && in_array(static::$entityClass, [Promotion::class, Evenement::class, Actualite::class, Exposition::class, Oeuvre::class], true)) {
                 continue;
             }
             if ($fieldName === 'photoMedia' && static::$entityClass === Service::class) {
@@ -154,6 +161,10 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             $type = $metadata->getTypeOfField($fieldName);
             if ($type === 'boolean') {
                 yield BooleanField::new($fieldName);
+            } elseif (in_array($type, ['integer', 'smallint', 'bigint'], true)) {
+                yield IntegerField::new($fieldName);
+            } elseif (in_array($type, ['date', 'date_immutable'], true)) {
+                yield DateField::new($fieldName);
             } elseif (in_array($type, ['datetime', 'datetime_immutable', 'datetimetz', 'datetimetz_immutable'], true)) {
                 yield DateTimeField::new($fieldName);
             } elseif ($type === 'text') {
@@ -194,6 +205,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         }
 
         $optimized = $this->imageOptimizer->convertToWebp($photoUpload);
+        $dimensions = @getimagesize($photoUpload->getPathname()) ?: [];
         $media = (new Media())
             ->setNomOriginal($photoUpload->getClientOriginalName())
             ->setNomFichier($optimized['filename'])
@@ -201,6 +213,8 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             ->setType('image')
             ->setTypeMime($optimized['mime'])
             ->setTaille((string) $optimized['size'])
+            ->setLargeur(isset($dimensions[0]) ? (int) $dimensions[0] : null)
+            ->setHauteur(isset($dimensions[1]) ? (int) $dimensions[1] : null)
             ->setTexteAlternatif((string) $entity)
             ->setEstActif(true)
             ->setDateCreation(new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
@@ -211,7 +225,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
     private function synchronizeImage(EntityManagerInterface $entityManager, object $entity): void
     {
-        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite) {
+        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre) {
             return;
         }
 
@@ -221,6 +235,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         }
 
         $optimized = $this->imageOptimizer->convertToWebp($imageUpload);
+        $dimensions = @getimagesize($imageUpload->getPathname()) ?: [];
         $media = (new Media())
             ->setNomOriginal($imageUpload->getClientOriginalName())
             ->setNomFichier($optimized['filename'])
@@ -228,6 +243,8 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             ->setType('image')
             ->setTypeMime($optimized['mime'])
             ->setTaille((string) $optimized['size'])
+            ->setLargeur(isset($dimensions[0]) ? (int) $dimensions[0] : null)
+            ->setHauteur(isset($dimensions[1]) ? (int) $dimensions[1] : null)
             ->setTexteAlternatif((string) $entity)
             ->setEstActif(true)
             ->setDateCreation(new \DateTimeImmutable('now', new \DateTimeZone('UTC')))

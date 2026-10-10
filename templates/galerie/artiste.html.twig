@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ artiste.nom }} | Galerie virtuelle Olympia{% endblock %}
+{% block meta_description %}Découvrez le parcours et les œuvres de {{ artiste.nom }} dans la galerie virtuelle Olympia.{% endblock %}
+{% block main_background %}bg-olympia-cream{% endblock %}
+
+{% block body %}
+  <main class="container-site gallery-page gallery-artist-detail">
+    <a class="gallery-back" href="{{ path('app_galerie_virtuelle') }}">← Retour à la galerie</a>
+    <section class="gallery-artist-hero">
+      <p class="gallery-eyebrow"><i></i>Artiste Olympia</p>
+      <h1>{{ artiste.nom }}</h1>
+      {% if artiste.specialite %}<p class="gallery-lead">{{ artiste.specialite }}</p>{% endif %}
+      {% if artiste.biographie %}<div class="gallery-artist-bio">{{ artiste.biographie|nl2br }}</div>{% endif %}
+      <div class="gallery-artist-links">
+        {% if artiste.siteWeb %}<a href="{{ artiste.siteWeb }}" target="_blank" rel="noopener">Site web</a>{% endif %}
+        {% if artiste.instagram %}<a href="{{ artiste.instagram }}" target="_blank" rel="noopener">Instagram</a>{% endif %}
+        {% if artiste.facebook %}<a href="{{ artiste.facebook }}" target="_blank" rel="noopener">Facebook</a>{% endif %}
+      </div>
+    </section>
+
+    <section class="gallery-section">
+      <div class="gallery-heading"><div><p class="gallery-eyebrow"><i></i>Collection</p><h2>Ses œuvres</h2></div></div>
+      {% if works %}
+        <div class="gallery-wall gallery-wall-detail">
+          {% for work in works %}
+            <article class="gallery-piece gallery-piece-static">
+              <div class="gallery-frame"{% if work.image %} style="background-image:url('{{ work.image }}');background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#f4efe3"{% endif %}><i class="gallery-art"></i></div>
+              <div class="gallery-tag"><b>{{ work.title }}</b><span>{{ work.category }}{% if work.year %} · {{ work.year }}{% endif %}</span></div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="gallery-empty">Les œuvres de cet artiste seront bientôt disponibles.</p>
+      {% endif %}
+    </section>
+  </main>
+{% endblock %}

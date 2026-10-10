@@ -2,6 +2,11 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Artiste;
+use App\Entity\CategorieOeuvre;
+use App\Entity\Exposition;
+use App\Entity\Oeuvre;
+
 use App\Entity\AbonnementNewsletter;
 use App\Entity\Boutique;
 use App\Entity\CategorieBoutique;
@@ -93,6 +98,11 @@ final class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::section('Galerie');
+        yield MenuItem::linkToRoute('Œuvres', 'fa fa-image', 'app_admin_dashboard_oeuvre_index');
+        yield MenuItem::linkToRoute('Artistes', 'fa fa-user', 'app_admin_dashboard_artiste_index');
+        yield MenuItem::linkToRoute('Expositions', 'fa fa-palette', 'app_admin_dashboard_exposition_index');
+        yield MenuItem::linkToRoute('Catégories d’œuvres', 'fa fa-tags', 'app_admin_dashboard_categorie_oeuvre_index');
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::section('Contenu du site');
         yield MenuItem::linkToRoute('Boutiques', 'fa fa-store', 'app_admin_dashboard_boutique_index');

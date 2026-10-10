@@ -15,6 +15,8 @@ use App\Repository\CategorieRestaurantRepository;
 use App\Repository\CategoriePromotionRepository;
 use App\Repository\CategorieEvenementRepository;
 use App\Repository\ServiceRepository;
+use App\Repository\OeuvreRepository;
+use App\Repository\ArtisteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Boutique;
 use App\Entity\Restaurant;
@@ -268,6 +270,49 @@ class SiteController extends AbstractController
         return $this->render('service/index.html.twig', [
             'services' => $pagination['items'],
             'pagination' => $pagination,
+        ]);
+    }
+
+    #[Route('/galerie', name: 'app_galerie_virtuelle', methods: ['GET'])]
+    public function galerieVirtuelle(OeuvreRepository $oeuvreRepository): Response
+    {
+        $works = array_map(static function (\App\Entity\Oeuvre $oeuvre): array {
+            return [
+                'title' => $oeuvre->getTitre() ?? 'Œuvre Olympia',
+                'artist' => $oeuvre->getArtiste()?->getNom() ?? 'Artiste Olympia',
+                'artistId' => $oeuvre->getArtiste()?->getId(),
+                'category' => $oeuvre->getCategorie()?->getNom() ?? 'Art',
+                'year' => $oeuvre->getAnnee() ?? (int) date('Y'),
+                'medium' => $oeuvre->getTechnique() ?? 'Œuvre originale',
+                'size' => $oeuvre->getDimensions() ?? '—',
+                'ratio' => ($oeuvre->getImageMedia()?->getLargeur() && $oeuvre->getImageMedia()?->getHauteur())
+                    ? sprintf('%d/%d', $oeuvre->getImageMedia()->getLargeur(), $oeuvre->getImageMedia()->getHauteur())
+                    : '4/5',
+                'image' => $oeuvre->getImageMedia()?->getChemin(),
+            ];
+        }, $oeuvreRepository->findPublished());
+
+        return $this->render('galerie/index.html.twig', ['works' => $works]);
+    }
+
+    #[Route('/galerie-virtuelle/artistes/{id}', name: 'app_galerie_artiste_detail', methods: ['GET'])]
+    public function galerieArtisteDetail(int $id, ArtisteRepository $artisteRepository, OeuvreRepository $oeuvreRepository): Response
+    {
+        $artiste = $artisteRepository->findOneBy(['id' => $id, 'estActif' => true]);
+        if (!$artiste) {
+            throw $this->createNotFoundException('Artiste introuvable.');
+        }
+
+        $works = array_map(static fn (\App\Entity\Oeuvre $oeuvre): array => [
+            'title' => $oeuvre->getTitre(),
+            'category' => $oeuvre->getCategorie()?->getNom() ?? 'Art',
+            'year' => $oeuvre->getAnnee(),
+            'image' => $oeuvre->getImageMedia()?->getChemin(),
+        ], $oeuvreRepository->findBy(['artiste' => $artiste, 'estActive' => true], ['ordre' => 'ASC']));
+
+        return $this->render('galerie/artiste.html.twig', [
+            'artiste' => $artiste,
+            'works' => $works,
         ]);
     }
 
