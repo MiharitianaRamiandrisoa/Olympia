@@ -59,6 +59,7 @@
 
 {% block javascripts %}
   <script>
+  (() => {
     const GALLERY_ARTS = [
       'url("https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=1200&q=85") center/cover no-repeat',
       'url("https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1200&q=85") center/cover no-repeat',
@@ -73,6 +74,21 @@
     const galleryWall = document.getElementById('gallery-wall');
     const galleryPills = document.getElementById('gallery-pills');
     const galleryDialog = document.getElementById('gallery-dialog');
+    const galleryArtists = document.getElementById('gallery-artists');
+    galleryWall.replaceChildren();
+    galleryPills.replaceChildren();
+    galleryArtists.replaceChildren();
+    if (GALLERY_WORKS.length === 0) {
+      galleryWall.innerHTML = '<p class="gallery-empty">La collection est en cours de préparation. Les prochaines œuvres seront bientôt disponibles.</p>';
+    }
+    const galleryStateKey = 'olympia-gallery-state';
+    let activeGalleryCategory = 'Toutes';
+    const saveGalleryState = () => {
+      sessionStorage.setItem(galleryStateKey, JSON.stringify({
+        scrollY: window.scrollY,
+        category: activeGalleryCategory,
+      }));
+    };
     const artCss = (index, image = null) => image
       ? `background-image:url("${image}");background-size:contain;background-repeat:no-repeat;background-position:center;background-color:#f4efe3`
       : `background:${GALLERY_ARTS[index % GALLERY_ARTS.length]}`;
@@ -100,9 +116,10 @@
       const pill = document.createElement('button');
       pill.type = 'button'; pill.className = `gallery-pill${index ? '' : ' is-active'}`; pill.textContent = category;
       pill.addEventListener('click', () => {
+        activeGalleryCategory = category;
         galleryPills.querySelectorAll('.gallery-pill').forEach((item) => item.classList.remove('is-active'));
         pill.classList.add('is-active');
-        galleryWall.querySelectorAll('.gallery-piece').forEach((item) => item.classList.toggle('is-hidden', index > 0 && item.dataset.category !== category));
+        galleryWall.querySelectorAll('.gallery-piece').forEach((item) => item.classList.toggle('is-hidden', category !== 'Toutes' && item.dataset.category !== category));
       });
       galleryPills.appendChild(pill);
     });
@@ -111,10 +128,31 @@
       const count = GALLERY_WORKS.filter((work) => work.artist === artist).length;
       const artistId = GALLERY_WORKS.find((work) => work.artist === artist)?.artistId;
       const artistUrl = artistId ? `{{ path('app_galerie_artiste_detail', {'id': 0}) }}`.replace('/0', `/${artistId}`) : '#oeuvres';
-      document.getElementById('gallery-artists').insertAdjacentHTML('beforeend', `<a class="gallery-artist" href="${artistUrl}"><div class="gallery-initial">${artist[0]}</div><b>${artist}</b><span>${count} œuvre${count > 1 ? 's' : ''} exposée${count > 1 ? 's' : ''}</span></a>`);
+      galleryArtists.insertAdjacentHTML('beforeend', `<a class="gallery-artist" href="${artistUrl}"><div class="gallery-initial">${artist[0]}</div><b>${artist}</b><span>${count} œuvre${count > 1 ? 's' : ''} exposée${count > 1 ? 's' : ''}</span></a>`);
     });
+
+    document.querySelectorAll('.gallery-artist[href]:not([href="#oeuvres"])').forEach((artistLink) => {
+      artistLink.addEventListener('click', saveGalleryState);
+    });
+
+    const savedGalleryState = sessionStorage.getItem(galleryStateKey);
+    if (savedGalleryState) {
+      try {
+        const state = JSON.parse(savedGalleryState);
+        const savedPill = [...galleryPills.querySelectorAll('.gallery-pill')]
+          .find((pill) => pill.textContent === state.category);
+        if (savedPill) savedPill.click();
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: Number(state.scrollY) || 0, behavior: 'auto' });
+          sessionStorage.removeItem(galleryStateKey);
+        });
+      } catch {
+        sessionStorage.removeItem(galleryStateKey);
+      }
+    }
 
     document.getElementById('gallery-close').addEventListener('click', () => galleryDialog.close());
     galleryDialog.addEventListener('click', (event) => { if (event.target === galleryDialog) galleryDialog.close(); });
+  })();
   </script>
 {% endblock %}
