@@ -15,7 +15,7 @@
       {% for link in links %}
         <a href="{{ path(link.route) }}" class="text-[15px] transition hover:text-olympia {{ current == link.route ? 'font-medium text-olympia' : 'text-olympia-muted' }}">{{ link.label }}</a>
       {% endfor %}
-      {% set news_active = current in ['app_actualites', 'app_actualite_detail', 'app_events', 'app_event_detail', 'app_promotions', 'app_promotion_detail'] %}
+      {% set news_active = current in ['app_actualites', 'app_actualite_detail', 'app_events', 'app_event_detail', 'app_promotions', 'app_promotion_detail', 'app_galerie_virtuelle'] %}
       <div class="desktop-news-menu group" data-news-menu>
         <a href="{{ path('app_actualites') }}" aria-expanded="false" class="flex items-center gap-1 text-[15px] transition hover:text-olympia {{ news_active ? 'font-medium text-olympia' : 'text-olympia-muted' }}">
           À découvrir
@@ -37,6 +37,7 @@
       <a href="{{ path('app_actualites') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_actualites', 'app_actualite_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Actualités</a>
       <a href="{{ path('app_events') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_events', 'app_event_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Événements</a>
       <a href="{{ path('app_promotions') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_promotions', 'app_promotion_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Promotions</a>
+      <a href="{{ path('app_galerie_virtuelle') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current == 'app_galerie_virtuelle' ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Galerie</a>
     </div>
   </div>
 
@@ -52,6 +53,7 @@
             <a href="{{ path('app_actualites') }}" class="block py-2 text-sm {{ current in ['app_actualites', 'app_actualite_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Toutes les actualités</a>
             <a href="{{ path('app_events') }}" class="block py-2 text-sm {{ current in ['app_events', 'app_event_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Événements</a>
             <a href="{{ path('app_promotions') }}" class="block py-2 text-sm {{ current in ['app_promotions', 'app_promotion_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Promotions</a>
+            <a href="{{ path('app_galerie_virtuelle') }}" class="block py-2 text-sm {{ current == 'app_galerie_virtuelle' ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Galerie</a>
           </div>
         </details>
       </li>
