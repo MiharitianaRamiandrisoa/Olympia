@@ -22,6 +22,7 @@
   {% endif %}
   {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ asset('images/hero-olympia.jpg') %}
   <meta name="description" content="{{ seo_description }}">
+  <meta name="author" content="Olympia Madagascar">
   <meta name="robots" content="index,follow">
   <meta name="theme-color" content="#154953">
   <link rel="canonical" href="{{ canonical_url }}">
@@ -42,6 +43,7 @@
   <meta name="twitter:title" content="{{ seo_title }}">
   <meta name="twitter:description" content="{{ seo_description }}">
   <meta name="twitter:image" content="{{ seo_image }}">
+  <meta name="twitter:image:alt" content="Centre commercial Olympia à Tanjombato">
   <title>{{ seo_title }}</title>
   {% block head_preloads %}{% endblock %}
   {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}

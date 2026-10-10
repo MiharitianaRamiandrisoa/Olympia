@@ -2,6 +2,20 @@
 
 {% block title %}{{ artiste.nom }} | Galerie virtuelle Olympia{% endblock %}
 {% block meta_description %}Découvrez le parcours et les œuvres de {{ artiste.nom }} dans la galerie virtuelle Olympia.{% endblock %}
+{% block structured_data %}
+  {{ parent() }}
+  <script type="application/ld+json">
+    {{ {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      'name': artiste.nom,
+      'description': (artiste.biographie|default(artiste.specialite|default('Artiste exposé dans la galerie virtuelle Olympia.')))|striptags,
+      'jobTitle': artiste.specialite|default('Artiste'),
+      'url': app.request.uri,
+      'worksFor': {'@type': 'Organization', 'name': 'Olympia Madagascar'}
+    }|json_encode|raw }}
+  </script>
+{% endblock %}
 {% block main_background %}bg-olympia-cream{% endblock %}
 
 {% block body %}

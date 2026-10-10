@@ -2,6 +2,20 @@
 
 {% block title %}Galerie | Olympia Madagascar{% endblock %}
 {% block meta_description %}Découvrez la galerie d’Olympia : peintures, photographies, sculptures et illustrations d’artistes malgaches.{% endblock %}
+{% block structured_data %}
+  {{ parent() }}
+  <script type="application/ld+json">
+    {{ {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      'name': 'Galerie virtuelle Olympia',
+      'description': 'Découvrez les œuvres d’artistes malgaches exposées dans la galerie virtuelle Olympia à Tanjombato.',
+      'url': app.request.uri,
+      'isPartOf': {'@type': 'WebSite', 'name': 'Olympia Madagascar', 'url': app.request.schemeAndHttpHost},
+      'numberOfItems': works|length
+    }|json_encode|raw }}
+  </script>
+{% endblock %}
 
 {% block main_background %}bg-olympia-cream{% endblock %}
 
