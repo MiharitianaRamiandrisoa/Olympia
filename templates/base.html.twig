@@ -20,7 +20,7 @@
   {% if app.request.query.get('page') %}
     {% set canonical_url = canonical_url ~ '?page=' ~ app.request.query.get('page') %}
   {% endif %}
-  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ asset('images/hero-olympia.jpg') %}
+  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ asset('images/hero-olympia.png') %}
   <meta name="description" content="{{ seo_description }}">
   <meta name="author" content="Olympia Madagascar">
   <meta name="robots" content="index,follow">

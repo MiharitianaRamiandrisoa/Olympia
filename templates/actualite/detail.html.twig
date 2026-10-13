@@ -7,7 +7,7 @@
 {% block body %}
   <article>
     <section class="relative isolate flex min-h-[420px] items-end overflow-hidden bg-olympia-dark text-white lg:min-h-[500px]">
-      {% set hero_image_path = actualite.imageMedia ? actualite.imageMedia.chemin : 'images/hero-olympia.jpg' %}
+      {% set hero_image_path = actualite.imageMedia ? actualite.imageMedia.chemin : 'images/hero-olympia.png' %}
       {% set hero_srcset = responsive_srcset(hero_image_path) %}
       <img src="{{ asset(hero_image_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="{{ actualite.titre }}" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 -z-20 size-full object-cover">
       <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/90 via-brand-900/65 to-brand-900/20"></div>

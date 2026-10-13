@@ -18,7 +18,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class SeedDemoImagesCommand extends Command
 {
     private const STATIC_IMAGES = [
-        'hero-olympia.jpg' => 'photo-1780510995351-494218aa155c',
+        'hero-olympia.png' => 'photo-1780510995351-494218aa155c',
         'hero-boutiques.jpg' => 'photo-1441986300917-64674bd600d8',
         'hero-restaurants.jpg' => 'photo-1517248135467-4c7edcad34c4',
         'hero-promotions.jpg' => 'photo-1525507119028-ed4c629a60a3',
