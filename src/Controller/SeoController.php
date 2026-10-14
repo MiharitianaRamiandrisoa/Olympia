@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\BoutiqueRepository;
 use App\Repository\EvenementRepository;
+use App\Repository\ArtisteRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\RestaurantRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,6 +19,7 @@ final class SeoController extends AbstractController
         private readonly RestaurantRepository $restaurants,
         private readonly PromotionRepository $promotions,
         private readonly EvenementRepository $events,
+        private readonly ArtisteRepository $artists,
     ) {
     }
 
@@ -64,6 +66,12 @@ final class SeoController extends AbstractController
         foreach ($this->events->findActive() as $event) {
             if ($event->getSlug()) {
                 $urls[$this->generateUrl('app_event_detail', ['slug' => $event->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
+            }
+        }
+
+        foreach ($this->artists->findBy(['estActif' => true]) as $artist) {
+            if ($artist->getId()) {
+                $urls[$this->generateUrl('app_galerie_artiste_detail', ['id' => $artist->getId()], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
             }
         }
 

@@ -1,7 +1,8 @@
 {# Params : title, subtitle, image, search_placeholder, search_action (optionnel), height (optionnel) #}
 <section class="relative flex {{ height|default('h-[420px]') }} items-center justify-center overflow-hidden bg-olympia-dark">
-  <img src="{{ asset(image) }}" alt="" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover">
-  <div class="absolute inset-0 bg-slate-900/60"></div>
+  {% set hero_srcset = responsive_srcset(image) %}
+  <img src="{{ optimized_image(image) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="" width="1800" height="700" loading="eager" fetchpriority="high" decoding="async" class="absolute inset-0 h-full w-full object-cover">
+  <div class="absolute inset-0 bg-olympia-dark/60"></div>
   <div class="relative w-full max-w-3xl px-5 text-center text-white">
     <h1 class="text-4xl font-medium md:text-5xl">{{ title }}</h1>
     <p class="mt-4 text-lg text-white/90">{{ subtitle }}</p>

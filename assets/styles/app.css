@@ -8,9 +8,49 @@
     src: url("/fonts/caesar-dressing.ttf") format("truetype");
 }
 
+@font-face {
+    font-family: "Albertus Nova";
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url("/fonts/albertusnovathin.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Albertus Nova";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url("/fonts/albertusnovalight.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Albertus Nova";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/albertusnova.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Albertus Nova";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/albertusnova_bold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "Albertus Nova";
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url("/fonts/albertusnovablack.otf") format("opentype");
+}
+
 @layer components {
     .gallery-page { color: var(--color-olympia-ink); overflow: hidden; }
-    .gallery-hero { min-height: 560px; display: flex; align-items: center; padding: 48px 0; background: radial-gradient(900px 500px at 78% 30%, rgb(223 207 172 / 26%), transparent 60%), #f5f0e5; }
+    .gallery-hero { min-height: 560px; display: flex; align-items: center; padding: 48px 0; background: radial-gradient(900px 500px at 78% 30%, rgb(223 207 172 / 26%), transparent 60%), var(--color-sand-100); }
     .gallery-hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0 119px, rgb(21 73 83 / 5%) 119px 120px); }
     .gallery-hero { position: relative; }
     .gallery-hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; position: relative; width: 100%; }
@@ -53,7 +93,7 @@
     .gallery-expo-text > p:not(.gallery-eyebrow):not(.gallery-date) { opacity: .82; font-size: 15px; line-height: 1.7; }
     .gallery-date { margin-top: 22px; color: var(--color-olympia-gold); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
     .gallery-cta-light { color: var(--color-olympia-cream); }
-    .gallery-expo-visual { display: grid; min-height: 340px; place-items: center; background: #f5f0e5; padding: 40px; }
+    .gallery-expo-visual { display: grid; min-height: 340px; place-items: center; background: var(--color-sand-100); padding: 40px; }
     .gallery-expo-visual .gallery-frame { width: 62%; aspect-ratio: 4 / 5; }
     .gallery-artists { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding-bottom: 90px; }
     .gallery-artist { min-width: 0; border: 1px solid rgb(21 73 83 / 18%); padding: 26px 22px; transition: .25s; }
@@ -73,7 +113,7 @@
     .gallery-dialog { width: min(980px, 94vw); max-width: 980px; max-height: calc(100dvh - 32px); border: 0; margin: auto; background: transparent; color: var(--color-olympia-ink); }
     .gallery-dialog::backdrop { background: rgb(6 18 22 / 88%); backdrop-filter: blur(4px); }
     .gallery-lightbox { display: grid; grid-template-columns: 1.2fr .8fr; background: var(--color-olympia-cream); }
-    .gallery-lightbox-art { display: grid; min-height: 420px; place-items: center; background: #f5f0e5; padding: 34px; }
+    .gallery-lightbox-art { display: grid; min-height: 420px; place-items: center; background: var(--color-sand-100); padding: 34px; }
     .gallery-lightbox-art .gallery-frame { width: min(100%, 380px); aspect-ratio: 4 / 5; }
     .gallery-lightbox-info { display: flex; min-width: 0; flex-direction: column; gap: 10px; overflow-y: auto; padding: 36px 32px; }
     .gallery-lightbox-info h2 { margin-top: 8px; font-family: var(--font-brand); font-size: 34px; font-weight: 400; line-height: 1.05; }
@@ -193,7 +233,7 @@
 @layer base {
 
     body {
-        background-color: #fcfaf5;
+        background-color: var(--color-olympia-cream);
         color: var(--color-olympia-ink);
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
@@ -226,10 +266,24 @@
     }
 
     .brand-pattern {
+        position: relative;
+        isolation: isolate;
         background-color: var(--color-olympia-cream);
-        background-image: linear-gradient(135deg, rgb(126 142 108 / 5%) 25%, transparent 25%), linear-gradient(315deg, rgb(126 142 108 / 5%) 25%, transparent 25%);
-        background-position: 0 0, 12px 12px;
-        background-size: 24px 24px;
+    }
+
+    .brand-pattern::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: url("/images/branding/OLY_PATTERN.svg") center top / max(100%, clamp(900px, 110vw, 1800px)) auto repeat-y;
+        opacity: 0.2;
+    }
+
+    .brand-pattern > * {
+        position: relative;
+        z-index: 1;
     }
 }
 
@@ -313,7 +367,7 @@
         padding: 0;
         border: 0;
         border-radius: 9999px;
-        background: rgb(15 65 78 / 25%);
+        background: rgb(21 73 83 / 25%);
         transition: width 180ms ease, background-color 180ms ease;
     }
 
@@ -358,7 +412,7 @@
     */
 
     .pill {
-        @apply rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-medium text-olympia-ink transition;
+        @apply rounded-full border border-olympia-gold/70 bg-olympia-cream px-5 py-2.5 text-sm font-medium text-olympia-ink transition;
     }
 
     .pill:hover {
@@ -394,12 +448,14 @@
     }
 
 
+
+
     /*
     | Champs de formulaire
     */
 
     .field {
-        @apply w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm;
+        @apply w-full rounded-lg border border-olympia-gold/70 bg-olympia-cream px-4 py-3 text-sm;
     }
 
     .field::placeholder {
@@ -410,3 +466,98 @@
         @apply border-olympia outline-none ring-2 ring-olympia/20;
     }
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| HERO — Clip-path reveal + Gradient title
+|--------------------------------------------------------------------------
+|
+| hero-img     : l'image s'ouvre de gauche à droite (rideau)
+| hero-title   : le H1 coule en blanc → doré → blanc en boucle
+| hero-eyebrow : eyebrow fade-up
+| hero-body    : paragraphe fade-up
+| hero-ctas    : boutons fade-up
+|
+*/
+
+@layer components {
+
+    /* Keyframe : rideau gauche → droite */
+    @keyframes hero-clip {
+        from { clip-path: inset(0 100% 0 0); }
+        to   { clip-path: inset(0 0%   0 0); }
+    }
+
+    /* Keyframe : gradient qui coule */
+    @keyframes hero-grad {
+        0%, 100% { background-position: 0%   50%; }
+        50%      { background-position: 100% 50%; }
+    }
+
+    /* Keyframe : montée en douceur */
+    @keyframes hero-up {
+        from { opacity: 0; transform: translateY(22px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Image — s'ouvre lentement avec easing cinématique */
+    .hero-img {
+        animation: hero-clip 1.9s cubic-bezier(.77, 0, .175, 1) both;
+    }
+
+    /* Eyebrow — apparaît en premier, dès 0.1s */
+    .hero-eyebrow {
+        animation: hero-up 0.6s cubic-bezier(.22, .68, 0, 1.2) 0.1s both;
+    }
+
+    /* H1 — fade-up d'abord, puis gradient en boucle infinie */
+    .hero-title {
+        background: linear-gradient(
+            270deg,
+            #ffffff   0%,
+            #DFCFAC  30%,
+            #ffffff  50%,
+            #DFCFAC  70%,
+            #ffffff 100%
+        );
+        background-size: 300% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+
+        /* fade-up d'abord, gradient en boucle dès 1.2s (après le clip-path) */
+        animation:
+            hero-up   0.7s cubic-bezier(.22, .68, 0, 1.2) 0.35s both,
+            hero-grad 6s   ease                            1.2s  infinite;
+    }
+
+    /* Paragraphe — apparaît à 0.65s */
+    .hero-body {
+        animation: hero-up 0.7s cubic-bezier(.22, .68, 0, 1.2) 0.65s both;
+    }
+
+    /* Boutons — apparaissent à 0.85s */
+    .hero-ctas {
+        animation: hero-up 0.7s cubic-bezier(.22, .68, 0, 1.2) 0.85s both;
+    }
+
+    /* Accessibilité : supprime toutes les animations si l'utilisateur le demande */
+    @media (prefers-reduced-motion: reduce) {
+        .hero-img {
+            animation: none;
+            clip-path: none;
+        }
+        .hero-title {
+            animation: none;
+            background: none;
+            -webkit-text-fill-color: white;
+        }
+        .hero-eyebrow,
+        .hero-body,
+        .hero-ctas {
+            animation: none;
+        }
+    }
+}
+

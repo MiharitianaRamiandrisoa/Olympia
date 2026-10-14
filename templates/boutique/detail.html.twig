@@ -12,7 +12,7 @@
       <div class="min-h-[360px] overflow-hidden rounded-2xl bg-sand-50">
         {% set image_path = boutique.photoMedia ? boutique.photoMedia.chemin : 'images/Minimal Storefront Badge Illustration.png' %}
         {% set srcset = responsive_srcset(image_path) %}
-        <img src="{{ asset(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, 1000px"{% endif %} width="1000" height="700" loading="lazy" decoding="async"
+        <img src="{{ optimized_image(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, 1000px"{% endif %} width="1000" height="700" loading="lazy" decoding="async"
              alt="{{ boutique.enseigne.nom }}"
              class="size-full object-cover">
       </div>

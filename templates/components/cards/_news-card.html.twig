@@ -1,7 +1,7 @@
 {# Params : badge, title, icon, date, text, image, href #}
 <article class="flex flex-col overflow-hidden rounded-xl border border-brand-900/10 bg-white shadow-sm">
   {% set srcset = responsive_srcset(image) %}
-  <img src="{{ asset(image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"{% endif %} alt="{{ title }}" width="700" height="440" loading="lazy" decoding="async" class="h-44 w-full object-cover">
+  <img src="{{ optimized_image(image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"{% endif %} alt="{{ title }}" width="700" height="440" loading="lazy" decoding="async" class="h-44 w-full object-cover">
   <div class="flex flex-1 flex-col p-5">
     <span class="w-fit rounded-full bg-brand-900/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase text-white">{{ badge }}</span>
     <h3 class="mt-2 text-lg font-semibold">{{ title }}</h3>

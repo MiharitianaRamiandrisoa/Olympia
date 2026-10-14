@@ -34,7 +34,7 @@ final class SeedDemoServicesCommand extends Command
             'nom' => 'Parking gratuit',
             'slug' => 'parking-gratuit',
             'description' => 'Profitez de 2500 places de parking gratuites pour faciliter votre venue à Olympia.',
-            'image' => 'hero-olympia.jpg',
+            'image' => 'hero-olympia.png',
             'horaires' => 'Ouvert aux horaires du centre',
             'featured' => true,
         ],

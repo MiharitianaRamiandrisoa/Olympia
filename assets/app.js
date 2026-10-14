@@ -34,13 +34,15 @@ document.addEventListener('click', (event) => {
     const button = event.target.closest('[data-map-load]');
     if (!button) return;
 
-    const container = button.closest('[data-map-embed]');
-    const frame = container?.querySelector('[data-map-frame]');
-    if (!container || !frame) return;
+    const map = button.closest('[data-map-embed]');
+    const placeholder = map?.querySelector('[data-map-placeholder]');
+    const frame = map?.querySelector('[data-map-frame]');
+    const source = button.dataset.mapSrc || map?.dataset.mapSrc;
+    if (!placeholder || !frame || !source) return;
 
-    frame.src = container.dataset.mapSrc;
+    frame.src = source;
     frame.classList.remove('hidden');
-    button.closest('div')?.remove();
+    placeholder.classList.add('hidden');
 });
 
 /*
