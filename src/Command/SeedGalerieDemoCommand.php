@@ -44,12 +44,12 @@ final class SeedGalerieDemoCommand extends Command
         }
 
         $works = [
-            ['Aube sur Tanjombato', 'Miora R.', 'Peinture', 'https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=1200&q=85', 'Huile sur toile', 1200, 900],
-            ['Nuit des Baobabs', 'Hery A.', 'Photographie', 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1200&q=85', 'Tirage pigmentaire', 900, 1200],
-            ["Vents d'Imerina", 'Lalaina T.', 'Illustration', 'https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=1200&q=85', 'Encre et gouache', 1000, 1000],
-            ['Rizières, matin', 'Miora R.', 'Peinture', 'https://images.unsplash.com/photo-1578301978018-3005759f48f7?auto=format&fit=crop&w=1200&q=85', 'Acrylique', 1400, 800],
-            ['Colline verte', 'Hery A.', 'Photographie', 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&w=1200&q=85', 'Photographie', 800, 1200],
-            ["Lune d'Antsirabe", 'Lalaina T.', 'Illustration', 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=1200&q=85', 'Aquarelle', 1000, 700],
+            ['Aube sur Tanjombato', 'Miora R.', 'Peinture', 'images/galerie/aube-sur-tanjombato.jpg', 'Huile sur toile', 1200, 900],
+            ['Nuit des Baobabs', 'Hery A.', 'Photographie', 'images/galerie/nuit-des-baobabs.jpg', 'Tirage pigmentaire', 900, 1200],
+            ["Vents d'Imerina", 'Lalaina T.', 'Illustration', 'images/galerie/vents-d-imerina.jpg', 'Encre et gouache', 1000, 1000],
+            ['Rizières, matin', 'Miora R.', 'Peinture', 'images/galerie/rizieres-matin.jpg', 'Acrylique', 1400, 800],
+            ['Colline verte', 'Hery A.', 'Photographie', 'images/galerie/colline-verte.jpg', 'Photographie', 800, 1200],
+            ["Lune d'Antsirabe", 'Lalaina T.', 'Illustration', 'images/galerie/lune-d-antsirabe.jpg', 'Aquarelle', 1000, 700],
         ];
 
         foreach ($works as $index => [$titre, $artiste, $categorie, $url, $technique, $largeur, $hauteur]) {
@@ -57,7 +57,7 @@ final class SeedGalerieDemoCommand extends Command
             $oeuvre = $this->entityManager->getRepository(Oeuvre::class)->findOneBy(['slug' => $slug]) ?? (new Oeuvre())->setTitre($titre)->setSlug($slug);
             $oeuvre->setArtiste($artistes[$artiste])->setCategorie($categories[$categorie])->setTechnique($technique)->setAnnee(2026)->setOrdre($index)->setEstActive(true)->setEstMiseEnAvant($index < 3);
             $media = $oeuvre->getImageMedia() ?? (new Media());
-            $media->setNomOriginal($titre.'.jpg')->setNomFichier($slug.'.jpg')->setChemin($url)->setType('image')->setTypeMime('image/jpeg')->setTaille('0')->setLargeur($largeur)->setHauteur($hauteur)->setTexteAlternatif($titre)->setEstActif(true)->setDateCreation(new \DateTimeImmutable())->setDateModification(new \DateTimeImmutable());
+            $media->setNomOriginal($titre.'.jpg')->setNomFichier(basename($url))->setChemin($url)->setType('image')->setTypeMime('image/jpeg')->setTaille('0')->setLargeur($largeur)->setHauteur($hauteur)->setTexteAlternatif($titre)->setEstActif(true)->setDateCreation(new \DateTimeImmutable())->setDateModification(new \DateTimeImmutable());
             $this->entityManager->persist($media);
             $oeuvre->setImageMedia($media);
             $this->entityManager->persist($oeuvre);

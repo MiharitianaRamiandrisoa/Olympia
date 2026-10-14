@@ -35,7 +35,8 @@ final class MediaCrudController extends AbstractEntityCrudController
                     ->setFormTypeOption('mapped', true)
                     ->setFormTypeOption('required', $pageName === Crud::PAGE_NEW)
                     ->setFormTypeOption('constraints', [new Image(maxSize: '8M', maxWidth: 8000, maxHeight: 8000)])
-                    ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif']),
+                    ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif'])
+                    ->setHelp('Vous pouvez envoyer une image de qualité (8 Mo maximum). Le site génère automatiquement les versions WebP adaptées à chaque écran.'),
                 TextareaField::new('texteAlternatif', 'Texte alternatif'),
                 BooleanField::new('estActif', 'Image active'),
             ];

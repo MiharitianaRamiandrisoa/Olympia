@@ -1,6 +1,8 @@
 <section class="relative isolate flex min-h-[520px] items-center overflow-hidden bg-brand-900 text-white lg:min-h-[620px]">
   {# bg-brand-900 : fond de secours pendant le clip-path reveal de l'image #}
-  <img src="{{ asset('images/hero-olympia.png') }}" alt="Centre commercial Olympia à Tanjombato" width="1800" height="900" loading="eager" fetchpriority="high" decoding="async" class="hero-img absolute inset-0 -z-20 size-full object-cover">
+  {% set hero_path = 'images/hero-olympia.png' %}
+  {% set hero_srcset = responsive_srcset(hero_path) %}
+  <img src="{{ optimized_image(hero_path) }}"{% if hero_srcset %} srcset="{{ hero_srcset }}" sizes="100vw"{% endif %} alt="Centre commercial Olympia à Tanjombato" width="1800" height="900" loading="eager" fetchpriority="high" decoding="async" class="hero-img absolute inset-0 -z-20 size-full object-cover">
   {# Dégradé de lisibilité : sombre à gauche, transparent à droite #}
   <div class="absolute inset-0 -z-10 bg-gradient-to-r from-brand-900/85 via-brand-900/45 to-transparent"></div>
   <div class="absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-brand-900/50 to-transparent"></div>
@@ -10,7 +12,7 @@
       <span class="h-px w-3 bg-white/70"></span>Tanjombato
     </p>
     <h1 class="hero-title mt-4 max-w-xl text-4xl font-semibold leading-tight md:text-5xl">
-      Bienvenue à Olympia Madagascar
+      Bienvenue à Olympia
     </h1>
     <p class="hero-body mt-8 max-w-lg text-base text-white/90 md:text-lg">
       Shopping, restauration, espace bien-être, enfant, services à une même adresse

@@ -5,10 +5,10 @@
   {label: 'Food court', route: 'app_restaurants'},
   {label: 'Infos pratiques', route: 'app_contact'},
 ] %}
-<header class="site-header sticky top-0 z-40 border-b border-slate-100 bg-white" data-controller="mobile-menu">
+<header class="site-header sticky top-0 z-40 border-b border-olympia-gold/50 bg-white" data-controller="mobile-menu">
   <div class="container-site flex h-[88px] items-center justify-between gap-6">
     <a href="{{ path('app_home') }}" aria-label="Olympia - Accueil">
-      <img src="{{ asset('images/logo/logo-header-teal.png') }}" alt="Olympia" width="160" height="114" decoding="async" class="h-14 w-auto">
+      <img src="{{ optimized_image('images/logo/OLY_LOGO HOR.png') }}" alt="Olympia" width="562" height="121" decoding="async" class="h-10 w-auto">
     </a>
 
     <nav class="hidden items-center gap-8 lg:flex" aria-label="Navigation principale">
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div class="desktop-news-subnav border-t border-slate-100 bg-slate-50/80 shadow-[0_8px_20px_-18px_rgba(26,74,84,0.5)]">
+  <div class="desktop-news-subnav border-t border-olympia-gold/40 bg-olympia-cream/80 shadow-[0_8px_20px_-18px_rgba(21,73,83,0.5)]">
     <div class="container-site flex min-h-16 items-center justify-center gap-10">
       <a href="{{ path('app_actualites') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_actualites', 'app_actualite_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Actualités</a>
       <a href="{{ path('app_events') }}" class="py-5 text-[15px] transition hover:text-olympia {{ current in ['app_events', 'app_event_detail'] ? 'font-medium text-olympia' : 'text-olympia-muted' }}">Événements</a>
@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <nav class="hidden border-t border-slate-100 bg-white lg:hidden" data-mobile-menu-target="panel" data-action="click->mobile-menu#closeOnLink" aria-label="Menu mobile">
+  <nav class="hidden border-t border-olympia-gold/40 bg-white lg:hidden" data-mobile-menu-target="panel" data-action="click->mobile-menu#closeOnLink" aria-label="Menu mobile">
     <ul class="container-site flex flex-col py-3">
       {% for link in links %}
         <li><a href="{{ path(link.route) }}" class="block py-3 text-base transition {{ current == link.route ? 'font-medium text-olympia' : 'text-olympia-muted hover:text-olympia-dark' }}">{{ link.label }}</a></li>

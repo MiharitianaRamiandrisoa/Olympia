@@ -1,6 +1,6 @@
-{% set addressText = address ? address.contenu : 'Centre commercial Olympia, Tanjombato, Madagascar' %}
+{% set addressText = address ? address.contenu : "Centre commercial OLYMPIA\nTanjombato, Antananarivo 102, Madagascar\n(en face du pont Tanjombato)" %}
 {% set mapQuery = ('Olympia Madagascar, ' ~ addressText)|replace({'\n': ', '}) %}
-
+{% set mapEmbedUrl = 'https://www.google.com/maps?q=' ~ (mapQuery|url_encode) ~ '&output=embed' %}
 <section id="localisation" class="scroll-mt-24 bg-sand-50 py-16 md:py-20">
   <div class="container-site grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr]">
     <div>
@@ -27,21 +27,22 @@
       </a>
     </div>
 
-    <div class="min-h-80 overflow-hidden rounded-2xl border border-brand-900/10 bg-white shadow-sm md:min-h-96" data-map-embed data-map-src="https://www.google.com/maps?q={{ mapQuery|url_encode }}&amp;output=embed">
-      <div class="flex min-h-80 flex-col items-center justify-center gap-3 bg-sand-50 px-6 text-center md:min-h-96">
+    <div class="min-h-80 overflow-hidden rounded-2xl border border-brand-900/10 bg-white shadow-sm md:min-h-96" data-map-embed data-map-src="{{ mapEmbedUrl }}">
+      <div data-map-placeholder class="flex min-h-80 flex-col items-center justify-center gap-3 bg-sand-50 px-6 text-center md:min-h-96">
         <span class="flex size-12 items-center justify-center rounded-full bg-white text-olympia shadow-sm">
           {% include 'components/ui/_icon.html.twig' with {name: 'map-pin', class: 'size-6'} only %}
         </span>
         <p class="text-sm font-semibold text-olympia">Afficher la carte Google Maps</p>
-        <p data-map-note class="max-w-xs text-xs leading-5 text-brand-600">La carte est chargée uniquement lorsque vous le demandez.</p>
-        <button type="button" data-map-load class="rounded-full bg-olympia px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-800">
-          Charger la carte
+        <p class="max-w-xs text-xs leading-5 text-brand-600">La carte est chargée uniquement lorsque vous le demandez.</p>
+        <button type="button" data-map-load data-map-src="{{ mapEmbedUrl }}"
+                class="rounded-full bg-olympia px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-800">
+          Afficher la carte
         </button>
       </div>
       <iframe title="Localisation du centre commercial Olympia"
-              data-map-frame
-              class="hidden h-80 w-full border-0 md:h-96" loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+              data-map-frame class="hidden h-80 w-full border-0 md:h-96" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade" allowfullscreen
+              tabindex="0"></iframe>
     </div>
   </div>
 </section>

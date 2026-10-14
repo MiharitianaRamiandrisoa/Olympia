@@ -126,9 +126,9 @@ final class ResetAndSeedDemoDataCommand extends Command
         $this->entityManager->persist((new MessageContact())->setNom('Jean Andria')->setEmail('jean.andria@example.com')->setSujet('Location d’espace')->setMessage('Je souhaite obtenir des informations pour un événement professionnel.'));
         $this->entityManager->persist((new AbonnementNewsletter())->setEmail('client.fidele@example.com'));
         foreach ([
-            ['horaires', 'Horaires', "Lundi - Samedi : 10h00 - 21h00\nDimanche : 10h00 - 15h00"],
+            ['horaires', 'Horaires', "Lundi au Jeudi : 9h - 20h\nVendredi et Samedi : 9h - 21h\nDimanche : 9h - 15h"],
             ['parking', 'Parking gratuit', '2500 places'],
-            ['adresse', 'Localisation', "Centre commercial Olympia\nTanjombato, Madagascar"],
+            ['adresse', 'Localisation', "Centre commercial OLYMPIA\nTanjombato, Antananarivo 102, Madagascar\n(en face du pont Tanjombato)"],
         ] as $order => [$type, $title, $content]) {
             $this->entityManager->persist((new InformationPratique())
                 ->setType($type)->setTitre($title)->setContenu($content)->setOrdreAffichage($order));

@@ -1,7 +1,7 @@
 <footer class="bg-olympia text-white/80">
   <div class="container-site grid gap-10 py-14 md:grid-cols-[1fr_auto_auto_auto] md:gap-16">
     <div class="max-w-sm">
-      <img src="{{ asset('images/logo/logo-footer-creme.png') }}" alt="Olympia Centre Commercial" width="180" height="128" decoding="async" class="mb-6 h-16 w-auto">
+      <img src="{{ optimized_image('images/logo/logo-footer-creme.png') }}" alt="Olympia Centre Commercial" width="180" height="128" decoding="async" class="mb-6 h-16 w-auto">
       <p class="font-brand mb-4 text-xl text-olympia-gold">Plus qu'un centre, une expérience !</p>
       <p class="text-sm leading-relaxed">Le rendez-vous incontournable pour votre shopping et vos moments de détente. Un cadre unique, moderne et accueillant.</p>
     </div>
@@ -22,10 +22,11 @@
     <div>
       <h4 class="mb-5 text-sm font-bold uppercase text-olympia-gold">Pratique</h4>
       <address class="space-y-3 text-sm not-italic">
-        <p>Tanjombato<br>En face de SMART</p>
-        <p>+261 34 -- --- --</p>
-        <p>contact@olympia-madagascar.mg</p>
-        <p>Horaires : 9h00 - 18h00</p>
+        <p>Centre commercial OLYMPIA<br>Tanjombato, Antananarivo 102, Madagascar<br>En face du pont Tanjombato</p>
+        <p><a href="tel:+261341234567" class="hover:text-white">+261 34 12 34 567</a></p>
+        <p><a href="mailto:contact@olympia-madagascar.mg" class="hover:text-white">contact@olympia-madagascar.mg</a></p>
+        {# <p><a href="https://www.olympia.mg" target="_blank" rel="noopener noreferrer" class="hover:text-white">www.olympia.mg</a></p> #}
+        <p>Lun - Jeu : 9h - 20h<br>Ven - Sam : 9h - 21h<br>Dimanche : 9h - 15h</p>
       </address>
     </div>
 

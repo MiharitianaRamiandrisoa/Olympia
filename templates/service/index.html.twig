@@ -3,12 +3,12 @@
 
 {% block title %}Services | Olympia Madagascar{% endblock %}
 
-{% block main_background %}bg-[#0d3036]{% endblock %}
+{% block main_background %}bg-olympia-dark{% endblock %}
 
 {% block body %}
-  <section class="bg-[#0d3036] py-14 text-white md:py-20">
+  <section class="bg-olympia-dark py-14 text-white md:py-20">
     <div class="container-site">
-      <a href="{{ path('app_home') }}" class="mb-10 inline-flex items-center gap-2 text-sm font-semibold text-blue-100 transition hover:text-white">
+      <a href="{{ path('app_home') }}" class="mb-10 inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white">
         {% include 'components/ui/_icon.html.twig' with {name: 'arrow-right', class: 'size-4 rotate-180'} only %}
         Retour à l'accueil
       </a>
@@ -17,9 +17,9 @@
         <div>
           <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-600">À votre service</p>
           <h1 class="mt-2 text-3xl font-medium text-white md:text-5xl">Les services d'Olympia</h1>
-          <p class="mt-4 max-w-2xl text-sm leading-6 text-blue-100">Retrouvez les services et équipements disponibles pour rendre votre visite plus simple et agréable.</p>
+          <p class="mt-4 max-w-2xl text-sm leading-6 text-white/80">Retrouvez les services et équipements disponibles pour rendre votre visite plus simple et agréable.</p>
         </div>
-        <p class="text-sm text-blue-100">{{ services|length }} services disponibles</p>
+        <p class="text-sm text-white/80">{{ services|length }} services disponibles</p>
       </div>
 
       <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -32,16 +32,16 @@
             {% set icon = 'mail' %}
           {% endif %}
 
-          <article id="{{ service.slug }}" class="group flex min-h-[324px] scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-[#153f48] shadow-lg shadow-black/10 transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20">
-            <div class="relative flex h-36 shrink-0 items-center justify-center overflow-hidden {% if service.photoMedia %}bg-[#286574]{% else %}bg-[#f3f0eb]{% endif %}">
+          <article id="{{ service.slug }}" class="group flex min-h-[324px] scroll-mt-24 flex-col overflow-hidden rounded-3xl bg-olympia shadow-lg shadow-black/10 transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20">
+            <div class="relative flex h-36 shrink-0 items-center justify-center overflow-hidden {% if service.photoMedia %}bg-brand-600{% else %}bg-olympia-cream{% endif %}">
               {% if service.photoMedia %}
                 {% set image_path = service.photoMedia.chemin %}
                 {% set srcset = responsive_srcset(image_path) %}
-                <img src="{{ asset(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"{% endif %} alt="{{ service.nom }}" width="800" height="500" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-300 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#286574]/80 to-[#123e47]/60"></div>
+                <img src="{{ optimized_image(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"{% endif %} alt="{{ service.nom }}" width="800" height="500" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover opacity-80 transition duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-br from-brand-600/80 to-olympia-dark/60"></div>
                 <span class="relative flex size-16 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm">
               {% else %}
-                <span class="relative flex size-16 items-center justify-center rounded-full bg-white text-[#174c57] shadow-sm">
+                <span class="relative flex size-16 items-center justify-center rounded-full bg-white text-olympia shadow-sm">
               {% endif %}
                   {% include 'components/ui/_icon.html.twig' with {name: icon, class: 'size-8'} only %}
                 </span>
@@ -53,10 +53,10 @@
             <div class="flex flex-1 flex-col p-6">
               <h2 class="text-lg font-bold text-white">{{ service.nom }}</h2>
               {% if service.description %}
-                <p class="mt-2 line-clamp-3 text-sm leading-6 text-blue-100">{{ service.description }}</p>
+                <p class="mt-2 line-clamp-3 text-sm leading-6 text-white/80">{{ service.description }}</p>
               {% endif %}
               {% if service.horaires %}
-                <p class="mt-auto flex items-center gap-2 pt-5 text-sm text-blue-100">
+                <p class="mt-auto flex items-center gap-2 pt-5 text-sm text-white/80">
                   {% include 'components/ui/_icon.html.twig' with {name: 'clock', class: 'size-4'} only %}
                   {{ service.horaires }}
                 </p>
@@ -64,7 +64,7 @@
             </div>
           </article>
         {% else %}
-          <p class="text-sm text-blue-100 sm:col-span-2 lg:col-span-4">Les services seront bientôt disponibles.</p>
+          <p class="text-sm text-white/80 sm:col-span-2 lg:col-span-4">Les services seront bientôt disponibles.</p>
         {% endfor %}
       </div>
       {% include 'components/_pagination.html.twig' with {pagination: pagination} only %}

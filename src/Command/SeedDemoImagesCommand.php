@@ -12,19 +12,10 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-#[AsCommand(name: 'app:seed-demo-images', description: 'Télécharge et associe des images réalistes aux données de démonstration.')]
+#[AsCommand(name: 'app:seed-demo-images', description: 'Associe les images locales aux données de démonstration.')]
 final class SeedDemoImagesCommand extends Command
 {
-    private const STATIC_IMAGES = [
-        'hero-olympia.png' => 'photo-1780510995351-494218aa155c',
-        'hero-boutiques.jpg' => 'photo-1441986300917-64674bd600d8',
-        'hero-restaurants.jpg' => 'photo-1517248135467-4c7edcad34c4',
-        'hero-promotions.jpg' => 'photo-1525507119028-ed4c629a60a3',
-        'restauration.jpg' => 'photo-1504674900247-0877df9cc836',
-    ];
-
     private const IMAGES = [
         Boutique::class => [
             'zara' => ['zara.jpg', 'photo-1445205170230-053b83016050'],
@@ -61,7 +52,6 @@ final class SeedDemoImagesCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly HttpClientInterface $httpClient,
     ) {
         parent::__construct();
     }
@@ -74,19 +64,9 @@ final class SeedDemoImagesCommand extends Command
             mkdir($directory, 0775, true);
         }
 
-        foreach (self::STATIC_IMAGES as $filename => $photoId) {
-            try {
-                $response = $this->httpClient->request('GET', 'https://images.unsplash.com/'.$photoId.'?auto=format&fit=crop&w=1800&q=84');
-                file_put_contents($projectRoot.'/public/images/'.$filename, $response->getContent());
-                $output->writeln(sprintf('<info>Image de présentation ajoutée : %s</info>', $filename));
-            } catch (\Throwable $exception) {
-                $output->writeln(sprintf('<error>Échec pour %s : %s</error>', $filename, $exception->getMessage()));
-            }
-        }
-
         $associated = 0;
         foreach (self::IMAGES as $class => $items) {
-            foreach ($items as $slug => [$filename, $photoId]) {
+            foreach ($items as $slug => [$filename]) {
                 $entity = $this->findEntity($class, $slug);
                 if (!$entity) {
                     $output->writeln(sprintf('<comment>Introuvable : %s (%s)</comment>', $slug, $class));
@@ -95,14 +75,8 @@ final class SeedDemoImagesCommand extends Command
 
                 $path = $directory.'/'.$filename;
                 if (!is_file($path)) {
-                    try {
-                        $response = $this->httpClient->request('GET', 'https://images.unsplash.com/'.$photoId.'?auto=format&fit=crop&w=1400&q=82');
-                        $content = $response->getContent();
-                        file_put_contents($path, $content);
-                    } catch (\Throwable $exception) {
-                        $output->writeln(sprintf('<error>Échec pour %s : %s</error>', $slug, $exception->getMessage()));
-                        continue;
-                    }
+                    $output->writeln(sprintf('<error>Image locale introuvable : %s</error>', $path));
+                    continue;
                 } else {
                     $output->writeln(sprintf('<comment>Image locale réutilisée : %s</comment>', $filename));
                 }

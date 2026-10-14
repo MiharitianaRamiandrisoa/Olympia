@@ -1,26 +1,17 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4G3PZGPQJ1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-4G3PZGPQJ1');
-  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% set seo_title %}{% block title %}Olympia Centre Commercial{% endblock %}{% endset %}
   {% set seo_title = seo_title|striptags|trim %}
-  {% set seo_description %}{% block meta_description %}Olympia Madagascar : centre commercial à Tanjombato, boutiques, Food court, services et événements.{% endblock %}{% endset %}
+  {% set seo_description %}{% block meta_description %}Shopping, restauration, espace bien-être, enfant, services à une même adresse{% endblock %}{% endset %}
   {% set seo_description = seo_description|striptags|trim %}
   {% set canonical_url = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ app.request.pathInfo %}
   {% if app.request.query.get('page') %}
     {% set canonical_url = canonical_url ~ '?page=' ~ app.request.query.get('page') %}
   {% endif %}
-  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ asset('images/hero-olympia.png') %}
+  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ optimized_image('images/hero-olympia.png') %}
   <meta name="description" content="{{ seo_description }}">
   <meta name="author" content="Olympia Madagascar">
   <meta name="robots" content="index,follow">
@@ -47,7 +38,7 @@
   <title>{{ seo_title }}</title>
   {% block head_preloads %}{% endblock %}
   {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}
-  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261009-2">
+  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261014-5">
   {{ importmap('app') }}
   {% block stylesheets %}{% endblock %}
   {% block structured_data %}
@@ -57,7 +48,7 @@
         '@type': 'ShoppingCenter',
         'name': 'Olympia Madagascar',
         'url': app.request.schemeAndHttpHost,
-        'logo': app.request.schemeAndHttpHost ~ asset('images/logo/logo-header-teal.png'),
+        'logo': app.request.schemeAndHttpHost ~ optimized_image('images/logo/OLY_LOGO HOR.png'),
         'sameAs': [
           'https://www.facebook.com/profile.php?id=61575812981322',
           'https://www.instagram.com/olympia_madagascar/'
