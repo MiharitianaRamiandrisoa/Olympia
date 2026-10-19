@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Repository\BoutiqueRepository;
 use App\Repository\EvenementRepository;
-use App\Repository\ArtisteRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\RestaurantRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +18,6 @@ final class SeoController extends AbstractController
         private readonly RestaurantRepository $restaurants,
         private readonly PromotionRepository $promotions,
         private readonly EvenementRepository $events,
-        private readonly ArtisteRepository $artists,
     ) {
     }
 
@@ -29,7 +27,7 @@ final class SeoController extends AbstractController
         $sitemap = $this->generateUrl('app_sitemap', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return new Response(
-            "User-agent: *\nAllow: /\n\nDisallow: /olympia-admin\nDisallow: /login\n\nSitemap: {$sitemap}\n",
+            "User-agent: *\nAllow: /\n\nDisallow: /olympia-admin\nDisallow: /connexion\nDisallow: /galerie\nDisallow: /galerie-virtuelle\n\nSitemap: {$sitemap}\n",
             Response::HTTP_OK,
             ['Content-Type' => 'text/plain; charset=UTF-8']
         );
@@ -39,7 +37,7 @@ final class SeoController extends AbstractController
     public function sitemap(): Response
     {
         $urls = [];
-        foreach (['app_home', 'app_enseignes', 'app_restaurants', 'app_actualites', 'app_promotions', 'app_events', 'app_services', 'app_galerie_virtuelle', 'app_contact', 'app_legal_mentions', 'app_legal_privacy', 'app_legal_terms'] as $route) {
+        foreach (['app_home', 'app_enseignes', 'app_restaurants', 'app_actualites', 'app_promotions', 'app_events', 'app_services', 'app_contact', 'app_legal_mentions', 'app_legal_privacy', 'app_legal_terms'] as $route) {
             $urls[$this->generateUrl($route, [], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
         }
 
@@ -66,12 +64,6 @@ final class SeoController extends AbstractController
         foreach ($this->events->findActive() as $event) {
             if ($event->getSlug()) {
                 $urls[$this->generateUrl('app_event_detail', ['slug' => $event->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
-            }
-        }
-
-        foreach ($this->artists->findBy(['estActif' => true]) as $artist) {
-            if ($artist->getId()) {
-                $urls[$this->generateUrl('app_galerie_artiste_detail', ['id' => $artist->getId()], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
             }
         }
 
