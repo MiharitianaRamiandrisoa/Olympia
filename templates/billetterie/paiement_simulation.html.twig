@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+{% block title %}Paiement test | {{ reservation.evenement.titre }}{% endblock %}
+{% block body %}
+<section class="container-site py-12 md:py-20">
+  <div class="mx-auto max-w-2xl rounded-2xl bg-white p-7 shadow-sm ring-1 ring-olympia-gold/40 md:p-12">
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-olympia-sage">Environnement de test</p>
+    <h1 class="mt-3 text-4xl font-semibold text-olympia">Simuler le paiement</h1>
+    <p class="mt-4 text-olympia-muted">Cette page simule la validation d un paiement. Aucun debit reel ne sera effectue.</p>
+
+    <dl class="mt-8 space-y-4 rounded-xl bg-sand-50 p-5 text-sm">
+      <div class="flex justify-between gap-4"><dt class="font-semibold text-olympia">Evenement</dt><dd class="text-right">{{ reservation.evenement.titre }}</dd></div>
+      <div class="flex justify-between gap-4"><dt class="font-semibold text-olympia">Reservation</dt><dd class="text-right">{{ reservation.reference }}</dd></div>
+      <div class="flex justify-between gap-4"><dt class="font-semibold text-olympia">Places</dt><dd class="text-right">{{ reservation.nombrePlaces }}</dd></div>
+      <div class="flex justify-between gap-4"><dt class="font-semibold text-olympia">Montant simule</dt><dd class="text-right font-bold">{{ (reservation.evenement.tarif * reservation.nombrePlaces)|number_format(2, ',', ' ') }} MGA</dd></div>
+    </dl>
+
+    {% if reservation.dateExpirationPaiement %}
+      <p class="mt-5 text-sm text-amber-700">Votre reservation expire le {{ reservation.dateExpirationPaiement|date('d/m/Y a H\\hi') }} si le paiement n est pas valide.</p>
+    {% endif %}
+    {% if payment_email_sent %}
+      <p class="mt-5 rounded-xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">Le lien de paiement a ete envoye par e-mail a {{ reservation.email }}.</p>
+    {% else %}
+      <p class="mt-5 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">L e-mail automatique sera disponible apres configuration du SMTP. Conservez cette page pour continuer.</p>
+    {% endif %}
+    {% if payment_error %}<p class="mt-5 rounded-xl bg-red-50 p-4 text-sm font-semibold text-red-700">{{ payment_error }}</p>{% endif %}
+
+    <form method="post" class="mt-8">
+      <input type="hidden" name="_token" value="{{ csrf_token('simulate_payment_' ~ reservation.id) }}">
+      <button type="submit" class="w-full rounded-full bg-olympia-gold px-6 py-3 text-sm font-bold text-olympia">Simuler un paiement reussi</button>
+    </form>
+    <a href="{{ path('app_events') }}" class="mt-5 block text-center text-sm font-semibold text-olympia-muted hover:text-olympia">Annuler et revenir aux evenements</a>
+  </div>
+</section>
+{% endblock %}

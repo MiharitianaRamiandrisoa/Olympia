@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mes billets {{ reservation.reference }} | Olympia{% endblock %}
+{% block body %}
+<section class="container-site py-10 md:py-16">
+  <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+    <div><p class="text-xs font-bold uppercase tracking-[0.16em] text-olympia-sage">Billetterie Olympia</p><h1 class="mt-3 text-4xl font-semibold text-olympia">Vos billets</h1><p class="mt-2 text-sm text-olympia-muted">Reservation {{ reservation.reference }} - {{ reservation.evenement.titre }}</p></div>
+    <button type="button" onclick="window.print()" class="rounded-full border border-olympia px-5 py-2.5 text-sm font-bold text-olympia">Imprimer</button>
+  </div>
+  <div class="mt-8 grid gap-6 md:grid-cols-2">
+    {% for ticket in reservation.billets %}
+      <article class="ticket-print-card overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-olympia-gold/50">
+        <div class="flex items-center justify-between bg-olympia px-6 py-4 text-white"><span class="text-xs font-bold uppercase tracking-[0.14em]">Billet Olympia</span><span class="text-xs">{{ ticket.statut|replace({'_': ' '})|capitalize }}</span></div>
+        <div class="grid gap-5 p-6 sm:grid-cols-[1fr_150px] sm:items-center">
+          <div><h2 class="text-xl font-semibold text-olympia">{{ reservation.evenement.titre }}</h2><dl class="mt-5 space-y-2 text-sm text-olympia-muted"><div><dt class="inline font-bold text-olympia">Date : </dt><dd class="inline">{{ reservation.evenement.dateDebut|date('d/m/Y a H\\hi') }}</dd></div>{% if reservation.evenement.lieu %}<div><dt class="inline font-bold text-olympia">Lieu : </dt><dd class="inline">{{ reservation.evenement.lieu }}</dd></div>{% endif %}<div><dt class="inline font-bold text-olympia">Reference : </dt><dd class="inline">{{ ticket.reference }}</dd></div></dl></div>
+          <img src="{{ ticket_qrs[ticket.reference] }}" alt="QR code du billet {{ ticket.reference }}" width="150" height="150" class="mx-auto rounded-lg bg-white p-1">
+        </div>
+        {% if ticket.statut == constant('App\\Entity\\Billet::STATUT_UTILISE') %}<p class="border-t border-slate-100 px-6 py-3 text-sm font-semibold text-olympia-muted">Billet deja utilise le {{ ticket.dateUtilisation|date('d/m/Y a H\\hi') }}.</p>{% elseif ticket.statut == constant('App\\Entity\\Billet::STATUT_ANNULE') %}<p class="border-t border-slate-100 px-6 py-3 text-sm font-semibold text-red-700">Billet annule.</p>{% endif %}
+      </article>
+    {% else %}
+      <p class="text-sm text-olympia-muted">Aucun billet n est encore emis pour cette reservation.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

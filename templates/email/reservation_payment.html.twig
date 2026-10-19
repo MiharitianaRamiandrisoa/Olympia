@@ -1,0 +1,7 @@
+<h1>Finalisez votre reservation Olympia</h1>
+<p>Bonjour {{ reservation.nom }},</p>
+<p>Votre reservation <strong>{{ reservation.reference }}</strong> pour <strong>{{ reservation.evenement.titre }}</strong> a bien ete enregistree.</p>
+<p>Vous disposez d un delai limite pour finaliser le paiement. Aucun billet ne sera emis avant sa validation.</p>
+<p><a href="{{ paymentUrl }}">Continuer vers le paiement</a></p>
+{% if reservation.dateExpirationPaiement %}<p>Ce lien expire le {{ reservation.dateExpirationPaiement|date('d/m/Y a H\\hi') }}.</p>{% endif %}
+<p>Si vous n etes pas a l origine de cette demande, ignorez cet e-mail.</p>

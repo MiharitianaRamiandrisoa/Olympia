@@ -13,6 +13,7 @@ use App\Entity\CategorieBoutique;
 use App\Entity\CategorieEvenement;
 use App\Entity\CategoriePromotion;
 use App\Entity\CategorieRestaurant;
+use App\Entity\ControleEntree;
 use App\Entity\Enseigne;
 use App\Entity\Evenement;
 use App\Entity\Media;
@@ -33,6 +34,13 @@ use App\Repository\PromotionRepository;
 use App\Repository\EvenementRepository;
 use App\Repository\ActualiteRepository;
 use App\Repository\MessageContactRepository;
+use App\Repository\ReservationRepository;
+use App\Repository\BilletRepository;
+use App\Repository\ControleEntreeRepository;
+use App\Service\EntryControlService;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[AdminDashboard(routePath: '/olympia-admin', routeName: 'app_admin_dashboard')]
 final class DashboardController extends AbstractDashboardController
@@ -44,11 +52,23 @@ final class DashboardController extends AbstractDashboardController
         private readonly EvenementRepository $events,
         private readonly ActualiteRepository $actualites,
         private readonly MessageContactRepository $messages,
+        private readonly ReservationRepository $reservations,
+        private readonly BilletRepository $billets,
+        private readonly ControleEntreeRepository $controles,
     ) {
     }
 
     public function index(): Response
     {
+        $ticketEvents = array_map(function (Evenement $event): array {
+            $reserved = $this->reservations->countPlacesReservees($event);
+            return [
+                'event' => $event,
+                'reserved' => $reserved,
+                'remaining' => $event->getCapaciteMaximale() === null ? null : max(0, $event->getCapaciteMaximale() - $reserved),
+            ];
+        }, $this->events->findBy([], ['dateDebut' => 'ASC']));
+
         return $this->render('admin/dashboard.html.twig', [
             'stats' => [
                 ['label' => 'Boutiques', 'value' => $this->boutiques->count([]), 'icon' => 'fa-store', 'color' => 'primary', 'route' => 'app_admin_dashboard_boutique_index'],
@@ -57,8 +77,63 @@ final class DashboardController extends AbstractDashboardController
                 ['label' => 'Événements', 'value' => $this->events->count([]), 'icon' => 'fa-calendar', 'color' => 'info', 'route' => 'app_admin_dashboard_evenement_index'],
                 ['label' => 'Actualites', 'value' => $this->actualites->count([]), 'icon' => 'fa-newspaper', 'color' => 'secondary', 'route' => 'app_admin_dashboard_actualite_index'],
                 ['label' => 'Messages non lus', 'value' => $this->messages->count(['estLu' => false]), 'icon' => 'fa-envelope', 'color' => 'danger', 'route' => 'app_admin_dashboard_message_contact_index'],
+                ['label' => 'Evenements publies', 'value' => $this->events->count(['estActif' => true]), 'icon' => 'fa-bullhorn', 'color' => 'info', 'route' => 'app_admin_dashboard_evenement_index'],
+                ['label' => 'Reservations', 'value' => $this->reservations->count([]), 'icon' => 'fa-ticket', 'color' => 'primary', 'route' => 'app_admin_ticket_export'],
+                ['label' => 'Billets emis', 'value' => $this->billets->countEmis(), 'icon' => 'fa-qrcode', 'color' => 'success', 'route' => 'app_admin_ticket_export'],
+                ['label' => 'Entrees validees', 'value' => $this->controles->countValide(), 'icon' => 'fa-check', 'color' => 'warning', 'route' => 'app_admin_ticket_export'],
             ],
+            'ticket_events' => $ticketEvents,
         ]);
+    }
+
+    #[Route('/olympia-admin/controle-billets', name: 'app_ticket_control', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_TICKET_CONTROL')]
+    public function ticketControl(Request $request, EntryControlService $controlService): Response
+    {
+        $result = null;
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('ticket_control', (string) $request->request->get('_token'))) {
+                $result = ['resultat' => 'csrf', 'message' => 'Session expiree. Rechargez la page.'];
+            } else {
+                $value = trim((string) $request->request->get('ticket'));
+                $control = $controlService->control($value, $this->getUser() instanceof Utilisateur ? $this->getUser() : null);
+                $result = [
+                    'resultat' => $control['resultat'],
+                    'message' => $this->ticketControlMessage($control['resultat']),
+                    'billet' => $control['billet'],
+                ];
+            }
+
+            if ($request->isXmlHttpRequest()) {
+                return $this->json([
+                    'resultat' => $result['resultat'],
+                    'message' => $this->ticketControlMessage($result['resultat']),
+                    'billet' => isset($result['billet']) && $result['billet'] ? $result['billet']->getReference() : null,
+                ]);
+            }
+        }
+
+        return $this->render('admin/ticket_control.html.twig', ['result' => $result]);
+    }
+
+    #[Route('/olympia-admin/billetterie/export', name: 'app_admin_ticket_export', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function ticketExport(): Response
+    {
+        return $this->render('admin/ticket_export.html.twig', [
+            'events' => $this->events->findBy([], ['dateDebut' => 'ASC', 'titre' => 'ASC']),
+        ]);
+    }
+
+    private function ticketControlMessage(string $result): string
+    {
+        return match ($result) {
+            ControleEntree::RESULTAT_VALIDE => 'Billet valide : entree enregistree.',
+            ControleEntree::RESULTAT_DEJA_UTILISE => 'Ce billet a deja ete utilise.',
+            ControleEntree::RESULTAT_ANNULE => 'Ce billet est annule.',
+            ControleEntree::RESULTAT_INCONNU => 'Billet inconnu ou invalide.',
+            default => 'La requete n a pas pu etre traitee.',
+        };
     }
 
     /*
@@ -98,6 +173,12 @@ final class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::section('Billetterie');
+        yield MenuItem::linkToRoute('Reservations', 'fa fa-ticket', 'app_admin_dashboard_reservation_index');
+        yield MenuItem::linkToRoute('Billets', 'fa fa-qrcode', 'app_admin_dashboard_billet_index');
+        yield MenuItem::linkToRoute('Controle des billets', 'fa fa-qrcode', 'app_ticket_control')
+            ->setPermission('ROLE_TICKET_CONTROL');
+        yield MenuItem::linkToRoute('Export participants CSV', 'fa fa-download', 'app_admin_ticket_export');
         yield MenuItem::section('Galerie');
         yield MenuItem::linkToRoute('Œuvres', 'fa fa-image', 'app_admin_dashboard_oeuvre_index');
         yield MenuItem::linkToRoute('Artistes', 'fa fa-user', 'app_admin_dashboard_artiste_index');

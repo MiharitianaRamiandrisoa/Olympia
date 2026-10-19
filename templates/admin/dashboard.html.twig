@@ -38,4 +38,13 @@
       <a class="btn btn-info" href="{{ path('app_admin_dashboard_evenement_new') }}">Ajouter un événement</a>
     </div>
   </div>
+
+  <div class="content-panel mt-4">
+    <div class="content-panel-header d-flex align-items-center justify-content-between"><h2 class="title">Billetterie Olympia</h2><a class="btn btn-sm btn-outline-primary" href="{{ path('app_admin_ticket_export') }}">Exporter les participants (CSV)</a></div>
+    <div class="content-panel-body table-responsive">
+      <table class="table align-middle mb-0"><thead><tr><th>Evenement</th><th>Date</th><th>Places reservees</th><th>Places restantes</th></tr></thead><tbody>
+      {% for row in ticket_events %}<tr><td>{{ row.event.titre }}</td><td>{{ row.event.dateDebut|date('d/m/Y H:i') }}</td><td>{{ row.reserved }}</td><td>{{ row.remaining is null ? 'Illimite' : row.remaining }}</td></tr>{% else %}<tr><td colspan="4" class="text-muted">Aucun evenement.</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
 {% endblock %}

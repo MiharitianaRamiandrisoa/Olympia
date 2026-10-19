@@ -23,6 +23,13 @@ services:
     App\EventSubscriber\AuthenticationSessionSubscriber:
         arguments:
             $sessionIdleTimeout: '%olympia.session_idle_timeout%'
+    App\Service\ReservationMailer:
+        arguments:
+            $mailerDsn: '%env(MAILER_DSN)%'
+
+    App\Service\ReservationService:
+        arguments:
+            $paymentHoldMinutes: '%env(int:PAYMENT_HOLD_MINUTES)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
