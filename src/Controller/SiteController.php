@@ -22,6 +22,7 @@ use App\Entity\Boutique;
 use App\Entity\Restaurant;
 use App\Entity\MessageContact;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ReservationService;
 
 class SiteController extends AbstractController
 {
@@ -327,13 +328,16 @@ class SiteController extends AbstractController
     }
 
     #[Route('/evenements/{slug}', name: 'app_event_detail', methods: ['GET'])]
-    public function eventDetail(string $slug, EvenementRepository $evenementRepository): Response
+    public function eventDetail(string $slug, EvenementRepository $evenementRepository, ReservationService $reservationService): Response
     {
         $event = $evenementRepository->findOneBy(['slug' => $slug, 'estActif' => true]);
         if (!$event instanceof \App\Entity\Evenement) {
             throw $this->createNotFoundException('Événement introuvable.');
         }
-        return $this->render('evenement/detail.html.twig', ['event' => $event]);
+        return $this->render('evenement/detail.html.twig', [
+            'event' => $event,
+            'places_restantes' => $reservationService->placesRestantes($event),
+        ]);
     }
 
     #[Route('/contact', name: 'app_contact', methods: ['GET', 'POST'])]

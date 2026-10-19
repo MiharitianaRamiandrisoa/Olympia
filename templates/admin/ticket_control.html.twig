@@ -1,0 +1,106 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Controle des billets{% endblock %}
+
+{% block page_actions %}
+  <a class="btn btn-outline-secondary" href="{{ path('app_admin_dashboard') }}">
+    <i class="fa fa-arrow-left"></i> Tableau de bord
+  </a>
+{% endblock %}
+
+{% block main %}
+  <div class="content-panel">
+    <div class="content-panel-header">
+      <h2 class="title">Controle d acces</h2>
+    </div>
+    <div class="content-panel-body p-4 p-lg-5">
+      <p class="text-muted mb-4">Scannez le QR code ou saisissez la reference du billet. Un billet valide ne peut etre utilise qu une seule fois.</p>
+
+      <div class="row g-4">
+        <div class="col-12 col-xl-7">
+          <video id="ticket-camera" class="d-none w-100 rounded bg-dark" style="aspect-ratio: 16 / 9; object-fit: cover;" playsinline></video>
+          <button type="button" id="start-camera" class="btn btn-primary w-100">
+            <i class="fa fa-camera"></i> Activer la camera
+          </button>
+          <p id="camera-help" class="text-muted small text-center mt-2 mb-0">Le scan camera depend des capacites du navigateur. La saisie manuelle reste disponible.</p>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <form id="ticket-control-form" method="post" action="{{ path('app_ticket_control') }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('ticket_control') }}">
+            <div class="mb-3">
+              <label for="ticket" class="form-label">Reference ou code du billet</label>
+              <input id="ticket" name="ticket" required autocomplete="off" class="form-control" placeholder="TKT-... ou code QR">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fa fa-check-circle"></i> Verifier le billet
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div id="control-result" class="mt-4" aria-live="polite">
+        {% if result %}
+          <div class="alert {{ result.resultat == 'valide' ? 'alert-success' : 'alert-danger' }} mb-0">
+            {{ result.message|default('Resultat enregistre.') }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const form = document.getElementById('ticket-control-form');
+    const input = document.getElementById('ticket');
+    const output = document.getElementById('control-result');
+    const video = document.getElementById('ticket-camera');
+    const cameraButton = document.getElementById('start-camera');
+    const message = {
+      valide: 'Billet valide : entree enregistree.',
+      deja_utilise: 'Ce billet a deja ete utilise.',
+      annule: 'Ce billet est annule.',
+      inconnu: 'Billet inconnu ou invalide.'
+    };
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'}
+      });
+      const data = await response.json();
+      const valid = data.resultat === 'valide';
+      output.innerHTML = '<div class="alert ' + (valid ? 'alert-success' : 'alert-danger') + ' mb-0">' + (message[data.resultat] || data.message) + '</div>';
+      input.select();
+    });
+
+    cameraButton.addEventListener('click', async () => {
+      if (!('BarcodeDetector' in window) || !navigator.mediaDevices?.getUserMedia) {
+        document.getElementById('camera-help').textContent = 'Ce navigateur ne propose pas le scan natif. Saisissez la reference manuellement.';
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({video: {facingMode: {ideal: 'environment'}}});
+      video.srcObject = stream;
+      video.classList.remove('d-none');
+      await video.play();
+      cameraButton.disabled = true;
+      const detector = new BarcodeDetector({formats: ['qr_code']});
+      const scan = async () => {
+        const codes = await detector.detect(video);
+        if (codes[0]?.rawValue) {
+          input.value = codes[0].rawValue;
+          stream.getTracks().forEach((track) => track.stop());
+          video.classList.add('d-none');
+          form.requestSubmit();
+          return;
+        }
+        window.requestAnimationFrame(scan);
+      };
+      scan();
+    });
+  })();
+  </script>
+{% endblock %}

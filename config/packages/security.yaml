@@ -1,4 +1,6 @@
 security:
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_TICKET_CONTROL]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -34,6 +36,7 @@ security:
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/olympia-admin/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/olympia-admin/controle-billets$, roles: ROLE_TICKET_CONTROL }
         - { path: ^/olympia-admin, roles: ROLE_ADMIN }
 
 when@test:

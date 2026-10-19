@@ -38,6 +38,8 @@ use App\Entity\InformationPratique;
 use App\Entity\Actualite;
 use App\Entity\MessageContact;
 use App\Entity\Utilisateur;
+use App\Entity\Reservation;
+use App\Entity\Billet;
 use App\Service\ImageOptimizer;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -78,6 +80,8 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             Actualite::class => 'une actualite',
             Media::class => 'un media',
             Utilisateur::class => 'un utilisateur',
+            Reservation::class => 'une reservation',
+            Billet::class => 'un billet',
             CategorieBoutique::class => 'une categorie de boutique',
             CategorieRestaurant::class => 'une categorie de restaurant',
             CategoriePromotion::class => 'une categorie de promotion',
@@ -106,6 +110,12 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             MessageContact::class => ['singular' => 'message', 'new' => 'Ajouter un message'],
             AbonnementNewsletter::class => ['singular' => 'abonné', 'new' => 'Ajouter un abonné'],
         ][static::$entityClass] ?? ['singular' => 'élément', 'new' => 'Ajouter'];
+
+        if (static::$entityClass === Reservation::class) {
+            $labels = ['singular' => 'reservation', 'new' => 'Ajouter une reservation'];
+        } elseif (static::$entityClass === Billet::class) {
+            $labels = ['singular' => 'billet', 'new' => 'Ajouter un billet'];
+        }
 
         return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($labels['new']))
