@@ -17,24 +17,40 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        admin:
+            pattern: ^/olympia-admin
+            lazy: true
+            provider: app_user_provider
+            context: shared
+            form_login:
+                login_path: app_admin_login
+                check_path: app_admin_login
+                enable_csrf: true
+                default_target_path: /olympia-admin
+            logout:
+                path: app_admin_logout
+                target: app_admin_login
         main:
             lazy: true
             provider: app_user_provider
+            context: shared
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             form_login:
-                login_path: app_admin_login
-                check_path: app_admin_login
+                login_path: app_login
+                check_path: app_login
                 enable_csrf: true
+                default_target_path: /galerie
             logout:
-                path: app_admin_logout
-                target: app_admin_login
+                path: app_logout
+                target: app_login
 
     # Note: Only the *first* matching rule is applied
     access_control:
+        - { path: ^/connexion$, roles: PUBLIC_ACCESS }
         - { path: ^/olympia-admin/login$, roles: PUBLIC_ACCESS }
         - { path: ^/olympia-admin/controle-billets$, roles: ROLE_TICKET_CONTROL }
         - { path: ^/olympia-admin, roles: ROLE_ADMIN }
