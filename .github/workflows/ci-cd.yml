@@ -84,14 +84,17 @@ jobs:
               exit 1
             fi
 
+            command -v php >/dev/null 2>&1 || { echo "ERREUR : PHP n'est pas disponible."; exit 1; }
+            DB_USER_URL="$(php -r 'echo rawurlencode(getenv("DB_USER"));')"
+            DB_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("DB_PASSWORD"));')"
+            DB_NAME_URL="$(php -r 'echo rawurlencode(getenv("DB_NAME"));')"
             printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=8.0.0&charset=utf8mb4"\n' \
-              "$APP_SECRET" "$DB_USER" "$DB_PASSWORD" "$DB_HOST" "$DB_NAME" > .env.local
+              "$APP_SECRET" "$DB_USER_URL" "$DB_PASSWORD_URL" "$DB_HOST" "$DB_NAME_URL" > .env.local
 
             export APP_ENV=prod
             export APP_DEBUG=0
             mkdir -p var/cache var/log var/share
 
-            command -v php >/dev/null 2>&1 || { echo "ERREUR : PHP n'est pas disponible."; exit 1; }
             command -v composer >/dev/null 2>&1 || { echo "ERREUR : Composer n'est pas disponible."; exit 1; }
 
             composer install \
@@ -183,6 +186,7 @@ jobs:
               exit 1
             fi
 
+            command -v php >/dev/null 2>&1 || { echo "ERROR: PHP is not available."; exit 1; }
             printf '%s\n' \
               'APP_ENV=prod' \
               'APP_DEBUG=0' \
@@ -191,14 +195,16 @@ jobs:
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
               'MAILER_DSN=null://null' > .env
 
+            DB_USER_URL="$(php -r 'echo rawurlencode(getenv("DB_USER"));')"
+            DB_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("DB_PASSWORD"));')"
+            DB_NAME_URL="$(php -r 'echo rawurlencode(getenv("DB_NAME"));')"
             printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=%s&charset=utf8mb4"\n' \
-              "$APP_SECRET" "$DB_USER" "$DB_PASSWORD" "$DB_HOST" "$DB_NAME" "$DB_SERVER_VERSION" > .env.local
+              "$APP_SECRET" "$DB_USER_URL" "$DB_PASSWORD_URL" "$DB_HOST" "$DB_NAME_URL" "$DB_SERVER_VERSION" > .env.local
 
             export APP_ENV=prod
             export APP_DEBUG=0
             mkdir -p var/cache var/log var/share
 
-            command -v php >/dev/null 2>&1 || { echo "ERROR: PHP is not available."; exit 1; }
             command -v composer >/dev/null 2>&1 || { echo "ERROR: Composer is not available."; exit 1; }
             php --version | head -n 1
             composer --version
