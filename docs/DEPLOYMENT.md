@@ -1,6 +1,26 @@
 # Procédure de déploiement Olympia
 
-Le CI/CD transfère uniquement les sources. La compilation des assets est effectuée manuellement sur le serveur.
+Le CI/CD transfère uniquement les sources. La compilation des assets est effectuée manuellement sur le serveur pour la production.
+
+## Préproduction
+
+Chaque push sur `Dev` (ou `dev`) déploie automatiquement vers `https://test.olympia-madagascar.mg` et utilise une base de données séparée.
+
+Le job de préproduction attend les secrets GitHub suivants :
+
+- `PREPROD_APP_SECRET`
+- `PREPROD_DB_NAME`
+- `PREPROD_DB_USER`
+- `PREPROD_DB_PASSWORD`
+- `PREPROD_DB_HOST` (facultatif, `localhost` par défaut)
+- `PREPROD_DB_SERVER_VERSION` (facultatif, `10.11.19-MariaDB` par défaut)
+- `PREPROD_FTP_HOST` (facultatif si le serveur est identique à la production), `PREPROD_FTP_USER`, `PREPROD_FTP_PASSWORD` (obligatoires pour le compte FTP du sous-domaine)
+- `PREPROD_SSH_SERVER_DIR` (facultatif, `/home/olympiam/domains/test.olympia-madagascar.mg/public_html` par défaut)
+- `PREPROD_FTP_SERVER_DIR` (facultatif, `/public_html/` lorsque le compte FTP est positionné dans le dossier du sous-domaine)
+
+Les identifiants SSH de production sont réutilisés par défaut. Le serveur FTP de production peut être réutilisé via `FTP_HOST`, mais le login et le mot de passe préproduction restent obligatoires afin d'éviter tout envoi avec le compte de production.
+
+Le mot de passe de la base ne doit pas être ajouté dans `.env`, dans le dépôt ou dans le workflow. Il doit uniquement être enregistré dans le secret GitHub `PREPROD_DB_PASSWORD`.
 
 ## 1. Transférer les sources
 

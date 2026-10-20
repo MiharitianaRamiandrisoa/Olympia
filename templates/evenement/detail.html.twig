@@ -47,7 +47,7 @@
     <div class="mt-10"><h2 class="text-xl font-bold text-olympia">Description</h2><p class="mt-3 text-sm leading-6 text-olympia-muted">{{ event.description }}</p></div>
   </div>
 </section>
-<section class="container-site pb-8">
+{# <section class="container-site pb-8">
   <div class="flex flex-col items-start justify-between gap-5 rounded-2xl bg-olympia p-7 text-white md:flex-row md:items-center md:p-9">
     <div>
       <p class="text-xs font-bold uppercase tracking-[0.16em] text-olympia-gold">Billetterie Olympia</p>
@@ -60,6 +60,6 @@
       <span class="rounded-full bg-white/10 px-6 py-3 text-sm font-semibold">Reservations indisponibles</span>
     {% endif %}
   </div>
-</section>
+</section> #}
 <section class="container-site pb-16"><div class="flex flex-col items-start justify-between gap-4 bg-sand-50 px-8 py-7 md:flex-row md:items-center"><div><h2 class="text-2xl font-medium text-olympia">Ne manquez aucun evenement !</h2><p class="mt-1 text-sm text-olympia-muted">Consultez toutes les animations du centre commercial.</p></div><a href="{{ path('app_events') }}" class="rounded-full bg-olympia-gold px-6 py-3 text-sm font-bold text-olympia">Voir le calendrier →</a></div></section>
 {% endblock %}
