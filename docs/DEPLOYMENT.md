@@ -34,13 +34,15 @@ git push origin main
 
 Attendre la fin du workflow `Deploy Olympia` dans GitHub Actions.
 
-Pour la préproduction, le workflow exécute le même processus que la production : `composer install`, la compilation Tailwind, l'installation de l'ImportMap, les migrations et le nettoyage du cache directement sur le serveur SSH.
+Pour la préproduction, le workflow exécute `composer install`, les migrations et le nettoyage du cache. L'installation de l'ImportMap et la compilation JavaScript/Tailwind restent manuelles sur le serveur SSH.
 
-## 2. Compiler manuellement sur le serveur de production
+## 2. Installer et compiler manuellement les assets
 
 ```bash
 ssh olympiam@web1.simafri.cloud
-cd /home/olympiam/domains/olympia-madagascar.mg/public_html
+# Production : /home/olympiam/domains/olympia-madagascar.mg/public_html
+# Préproduction : /home/olympiam/domains/test.olympia-madagascar.mg/public_html
+cd /home/olympiam/domains/test.olympia-madagascar.mg/public_html
 
 # Le dossier public/build est ignoré par Git : il faut le reconstruire après chaque déploiement.
 npm ci --include=dev
@@ -50,10 +52,6 @@ php bin/console assets:install public --env=prod --no-interaction
 
 export APP_ENV=prod
 export APP_DEBUG=0
-
-php bin/console tailwind:build --env=prod --no-interaction
-
-rm -rf public/assets
 
 php bin/console importmap:install --env=prod --no-interaction
 php bin/console assets:install public --env=prod --no-interaction
