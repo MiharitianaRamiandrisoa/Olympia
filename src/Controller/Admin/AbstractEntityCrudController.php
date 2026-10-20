@@ -268,7 +268,11 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         if (!in_array($entity::class, [Boutique::class, Restaurant::class], true)) {
             return;
         }
-        $enseigne = $entity->getEnseigne() ?? new Enseigne();
+        $enseigne = $entity->getEnseigne();
+        if (!$enseigne) {
+            $enseigne = new Enseigne();
+            $entityManager->persist($enseigne);
+        }
         $nom = trim((string) $entity->getEnseigneNom());
         $logo = $entity->getEnseigneLogoUpload();
         if ($logo) {
