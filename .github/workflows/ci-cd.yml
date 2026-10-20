@@ -77,7 +77,9 @@ jobs:
               'APP_SHARE_DIR=var/share' \
               'DEFAULT_URI=https://olympia-madagascar.mg' \
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
-              'MAILER_DSN=null:/  /null' > .env
+              'MAILER_DSN=null://null' \
+              'OLYMPIA_SESSION_IDLE_TIMEOUT=3600' \
+              'PAYMENT_HOLD_MINUTES=15' > .env
 
             if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
               echo "ERREUR : les secrets de production sont incomplets."
@@ -193,7 +195,9 @@ jobs:
               'APP_SHARE_DIR=var/share' \
               'DEFAULT_URI=https://test.olympia-madagascar.mg' \
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
-              'MAILER_DSN=null://null' > .env
+              'MAILER_DSN=null://null' \
+              'OLYMPIA_SESSION_IDLE_TIMEOUT=3600' \
+              'PAYMENT_HOLD_MINUTES=15' > .env
 
             DB_USER_URL="$(php -r 'echo rawurlencode(getenv("DB_USER"));')"
             DB_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("DB_PASSWORD"));')"
@@ -216,6 +220,22 @@ jobs:
               --prefer-dist \
               --no-progress \
               --optimize-autoloader
+
+            php bin/console assets:install public --env=prod --no-interaction
+            php bin/console tailwind:build --env=prod --no-interaction
+            rm -rf public/assets
+            php bin/console importmap:install --env=prod --no-interaction
+            php bin/console assets:install public --env=prod --no-interaction
+            php bin/console asset-map:compile --env=prod --no-interaction
+
+            mkdir -p public/assets/vendor/hotwired
+            cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
+            mkdir -p public/assets/symfony
+            cp -R public/assets/@symfony/. public/assets/symfony/
+            sed -i \
+              -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
+              -e 's#/assets/@symfony/#/assets/symfony/#g' \
+              public/assets/importmap.json
 
             php bin/console doctrine:migrations:sync-metadata-storage --env=prod --no-interaction
             php bin/console doctrine:migrations:migrate --env=prod --no-interaction --allow-no-migration

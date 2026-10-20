@@ -34,7 +34,7 @@ git push origin main
 
 Attendre la fin du workflow `Deploy Olympia` dans GitHub Actions.
 
-Pour la préproduction, le workflow exécute le même processus que la production : `composer install`, les migrations et le nettoyage du cache directement sur le serveur SSH.
+Pour la préproduction, le workflow exécute le même processus que la production : `composer install`, la compilation Tailwind, l'installation de l'ImportMap, les migrations et le nettoyage du cache directement sur le serveur SSH.
 
 ## 2. Compiler manuellement sur le serveur de production
 
