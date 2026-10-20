@@ -45,13 +45,13 @@ ssh olympiam@web1.simafri.cloud
 cd /home/olympiam/domains/test.olympia-madagascar.mg/public_html
 
 # Le dossier public/build est ignoré par Git : il faut le reconstruire après chaque déploiement.
-npm ci --include=dev
+npm ci --include=dev --no-audit --no-fund
+mkdir -p public/build
 npm run build
 
-php bin/console assets:install public --env=prod --no-interaction
-
-export APP_ENV=prod
-export APP_DEBUG=0
+# SymfonyCasts Tailwind doit aussi trouver le CSS généré par npm.
+mkdir -p var/tailwind
+cp public/build/app.css var/tailwind/app.built.css
 
 php bin/console importmap:install --env=prod --no-interaction
 php bin/console assets:install public --env=prod --no-interaction
@@ -68,7 +68,7 @@ sed -i \
   -e 's#/assets/@symfony/#/assets/symfony/#g' \
   public/assets/importmap.json
 
-  find public -type d -exec chmod 755 {} +
+find public -type d -exec chmod 755 {} +
 find public -type f -exec chmod 644 {} +
 php bin/console cache:clear --env=prod
 ```
