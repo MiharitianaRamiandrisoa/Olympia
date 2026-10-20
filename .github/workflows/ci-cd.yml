@@ -160,10 +160,10 @@ jobs:
           DB_PASSWORD: ${{ secrets.PREPROD_DB_PASSWORD }}
           DB_SERVER_VERSION: ${{ secrets.PREPROD_DB_SERVER_VERSION || '10.11.19-MariaDB' }}
         with:
-          host: ${{ secrets.PREPROD_SSH_HOST || secrets.SSH_HOST }}
-          username: ${{ secrets.PREPROD_SSH_USER || secrets.SSH_USER }}
-          key: ${{ secrets.PREPROD_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PREPROD_SSH_PORT || secrets.SSH_PORT || 22 }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
           script_stop: true
           envs: APP_SECRET,DB_HOST,DB_NAME,DB_USER,DB_PASSWORD,DB_SERVER_VERSION
           script: |
@@ -171,6 +171,11 @@ jobs:
 
             SERVER_DIR='${{ secrets.PREPROD_SSH_SERVER_DIR || '/home/olympiam/domains/test.olympia-madagascar.mg/public_html' }}'
             cd "$SERVER_DIR"
+            export PATH="$HOME/.local/bin:$PATH"
+            echo "SSH user: $(whoami)"
+            echo "Working directory: $(pwd)"
+            test -f composer.json || { echo "ERROR: composer.json is missing from the preproduction directory."; exit 1; }
+            test -f bin/console || { echo "ERROR: Symfony bin/console is missing from the preproduction directory."; exit 1; }
 
             umask 077
             if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
@@ -194,60 +199,17 @@ jobs:
             mkdir -p var/cache var/log var/share
 
             command -v php >/dev/null 2>&1 || { echo "ERROR: PHP is not available."; exit 1; }
-            php -r 'if (PHP_VERSION_ID < 80200) { fwrite(STDERR, "ERROR: PHP 8.2 or newer is required.\n"); exit(1); }'
+            command -v composer >/dev/null 2>&1 || { echo "ERROR: Composer is not available."; exit 1; }
+            php --version | head -n 1
+            composer --version
 
-            if command -v composer >/dev/null 2>&1; then
-              COMPOSER_BIN="$(command -v composer)"
-            elif [ -x "$HOME/.local/bin/composer" ]; then
-              COMPOSER_BIN="$HOME/.local/bin/composer"
-            else
-              command -v curl >/dev/null 2>&1 || { echo "ERROR: Composer is not available and curl is missing."; exit 1; }
-              COMPOSER_DIR="$HOME/.local/bin"
-              INSTALLER_DIR="$(mktemp -d)"
-              curl -fsSL https://composer.github.io/installer.sig -o "$INSTALLER_DIR/installer.sig"
-              curl -fsSL https://getcomposer.org/installer -o "$INSTALLER_DIR/composer-setup.php"
-              EXPECTED_CHECKSUM="$(tr -d '\r\n' < "$INSTALLER_DIR/installer.sig")"
-              ACTUAL_CHECKSUM="$(php -r 'echo hash_file("sha384", $argv[1]);' "$INSTALLER_DIR/composer-setup.php")"
-              if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
-                echo "ERROR: Composer installer checksum is invalid."
-                rm -rf "$INSTALLER_DIR"
-                exit 1
-              fi
-              mkdir -p "$COMPOSER_DIR"
-              php "$INSTALLER_DIR/composer-setup.php" --install-dir="$COMPOSER_DIR" --filename=composer
-              rm -rf "$INSTALLER_DIR"
-              COMPOSER_BIN="$COMPOSER_DIR/composer"
-            fi
-
-            "$COMPOSER_BIN" --version
-            command -v npm >/dev/null 2>&1 || { echo "ERROR: npm is not available on the SSH server. Enable Node.js/npm in the hosting panel."; exit 1; }
-
-            "$COMPOSER_BIN" install \
+            composer install \
               --no-dev \
               --no-scripts \
               --no-interaction \
               --prefer-dist \
               --no-progress \
               --optimize-autoloader
-
-            npm ci --include=dev --no-audit --no-fund
-            npm run build
-
-            php bin/console assets:install public --env=prod --no-interaction
-            php bin/console tailwind:build --env=prod --no-interaction
-            rm -rf public/assets
-            php bin/console importmap:install --env=prod --no-interaction
-            php bin/console assets:install public --env=prod --no-interaction
-            php bin/console asset-map:compile --env=prod --no-interaction
-
-            mkdir -p public/assets/vendor/hotwired
-            cp -R public/assets/vendor/@hotwired/. public/assets/vendor/hotwired/
-            mkdir -p public/assets/symfony
-            cp -R public/assets/@symfony/. public/assets/symfony/
-            sed -i \
-              -e 's#/assets/vendor/@hotwired/#/assets/vendor/hotwired/#g' \
-              -e 's#/assets/@symfony/#/assets/symfony/#g' \
-              public/assets/importmap.json
 
             php bin/console doctrine:migrations:sync-metadata-storage --env=prod --no-interaction
             php bin/console doctrine:migrations:migrate --env=prod --no-interaction --allow-no-migration
@@ -256,4 +218,4 @@ jobs:
             find public -type d -exec chmod 755 {} +
             find public -type f -exec chmod 644 {} +
 
-            echo "Preproduction deployment completed."
+            echo "Preproduction deployment completed. Same process as production, with the preproduction directory and database."

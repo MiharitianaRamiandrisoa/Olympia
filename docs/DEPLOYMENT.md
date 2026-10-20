@@ -1,6 +1,6 @@
 # Procédure de déploiement Olympia
 
-Le CI/CD transfère uniquement les sources par FTP. Composer, npm et la compilation des assets sont exécutés sur le serveur via SSH, afin de ne pas transférer `vendor`, `node_modules` ou les assets compilés par FTP.
+Le CI/CD transfère uniquement les sources par FTP. Composer et les migrations sont exécutés sur le serveur via SSH, afin de ne pas transférer `vendor`, `node_modules` ou les assets compilés par FTP.
 
 ## Préproduction
 
@@ -20,7 +20,7 @@ Le job de préproduction attend les secrets GitHub suivants :
 
 Les identifiants SSH de production sont réutilisés par défaut. Le serveur FTP de production peut être réutilisé via `FTP_HOST`, mais le login et le mot de passe préproduction restent obligatoires afin d'éviter tout envoi avec le compte de production.
 
-Le serveur SSH de préproduction doit disposer de PHP 8.2 ou supérieur et de npm/Node.js. Si Composer n'est pas installé globalement, le workflow télécharge Composer dans `~/.local/bin` du compte SSH et l'utilise sans l'envoyer par FTP.
+Le serveur SSH de préproduction doit disposer de PHP 8.2 ou supérieur et de Composer, comme le serveur de production. Les assets peuvent être compilés séparément sur le serveur avec npm si nécessaire.
 
 Le mot de passe de la base ne doit pas être ajouté dans `.env`, dans le dépôt ou dans le workflow. Il doit uniquement être enregistré dans le secret GitHub `PREPROD_DB_PASSWORD`.
 
@@ -34,7 +34,7 @@ git push origin main
 
 Attendre la fin du workflow `Deploy Olympia` dans GitHub Actions.
 
-Pour la préproduction, le workflow exécute `composer install`, `npm ci`, `npm run build` et les commandes Symfony directement sur le serveur SSH.
+Pour la préproduction, le workflow exécute le même processus que la production : `composer install`, les migrations et le nettoyage du cache directement sur le serveur SSH.
 
 ## 2. Compiler manuellement sur le serveur de production
 
