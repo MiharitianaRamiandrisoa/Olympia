@@ -77,7 +77,7 @@ jobs:
               'APP_SHARE_DIR=var/share' \
               'DEFAULT_URI=https://olympia-madagascar.mg' \
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
-              'MAILER_DSN=null://null' > .env
+              'MAILER_DSN=null:/  /null' > .env
 
             if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
               echo "ERREUR : les secrets de production sont incomplets."
@@ -194,10 +194,35 @@ jobs:
             mkdir -p var/cache var/log var/share
 
             command -v php >/dev/null 2>&1 || { echo "ERROR: PHP is not available."; exit 1; }
-            command -v composer >/dev/null 2>&1 || { echo "ERROR: Composer is not available."; exit 1; }
-            command -v npm >/dev/null 2>&1 || { echo "ERROR: npm is not available."; exit 1; }
+            php -r 'if (PHP_VERSION_ID < 80200) { fwrite(STDERR, "ERROR: PHP 8.2 or newer is required.\n"); exit(1); }'
 
-            composer install \
+            if command -v composer >/dev/null 2>&1; then
+              COMPOSER_BIN="$(command -v composer)"
+            elif [ -x "$HOME/.local/bin/composer" ]; then
+              COMPOSER_BIN="$HOME/.local/bin/composer"
+            else
+              command -v curl >/dev/null 2>&1 || { echo "ERROR: Composer is not available and curl is missing."; exit 1; }
+              COMPOSER_DIR="$HOME/.local/bin"
+              INSTALLER_DIR="$(mktemp -d)"
+              curl -fsSL https://composer.github.io/installer.sig -o "$INSTALLER_DIR/installer.sig"
+              curl -fsSL https://getcomposer.org/installer -o "$INSTALLER_DIR/composer-setup.php"
+              EXPECTED_CHECKSUM="$(tr -d '\r\n' < "$INSTALLER_DIR/installer.sig")"
+              ACTUAL_CHECKSUM="$(php -r 'echo hash_file("sha384", $argv[1]);' "$INSTALLER_DIR/composer-setup.php")"
+              if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
+                echo "ERROR: Composer installer checksum is invalid."
+                rm -rf "$INSTALLER_DIR"
+                exit 1
+              fi
+              mkdir -p "$COMPOSER_DIR"
+              php "$INSTALLER_DIR/composer-setup.php" --install-dir="$COMPOSER_DIR" --filename=composer
+              rm -rf "$INSTALLER_DIR"
+              COMPOSER_BIN="$COMPOSER_DIR/composer"
+            fi
+
+            "$COMPOSER_BIN" --version
+            command -v npm >/dev/null 2>&1 || { echo "ERROR: npm is not available on the SSH server. Enable Node.js/npm in the hosting panel."; exit 1; }
+
+            "$COMPOSER_BIN" install \
               --no-dev \
               --no-scripts \
               --no-interaction \
