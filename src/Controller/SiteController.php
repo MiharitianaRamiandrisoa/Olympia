@@ -22,6 +22,8 @@ use App\Entity\Boutique;
 use App\Entity\Restaurant;
 use App\Entity\MessageContact;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Service\ReservationService;
 
 class SiteController extends AbstractController
 {
@@ -274,6 +276,7 @@ class SiteController extends AbstractController
     }
 
     #[Route('/galerie', name: 'app_galerie_virtuelle', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function galerieVirtuelle(OeuvreRepository $oeuvreRepository): Response
     {
         $works = array_map(static function (\App\Entity\Oeuvre $oeuvre): array {
@@ -296,6 +299,7 @@ class SiteController extends AbstractController
     }
 
     #[Route('/galerie-virtuelle/artistes/{id}', name: 'app_galerie_artiste_detail', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function galerieArtisteDetail(int $id, ArtisteRepository $artisteRepository, OeuvreRepository $oeuvreRepository): Response
     {
         $artiste = $artisteRepository->findOneBy(['id' => $id, 'estActif' => true]);
@@ -327,13 +331,16 @@ class SiteController extends AbstractController
     }
 
     #[Route('/evenements/{slug}', name: 'app_event_detail', methods: ['GET'])]
-    public function eventDetail(string $slug, EvenementRepository $evenementRepository): Response
+    public function eventDetail(string $slug, EvenementRepository $evenementRepository, ReservationService $reservationService): Response
     {
         $event = $evenementRepository->findOneBy(['slug' => $slug, 'estActif' => true]);
         if (!$event instanceof \App\Entity\Evenement) {
             throw $this->createNotFoundException('Événement introuvable.');
         }
-        return $this->render('evenement/detail.html.twig', ['event' => $event]);
+        return $this->render('evenement/detail.html.twig', [
+            'event' => $event,
+            'places_restantes' => $reservationService->placesRestantes($event),
+        ]);
     }
 
     #[Route('/contact', name: 'app_contact', methods: ['GET', 'POST'])]

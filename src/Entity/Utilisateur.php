@@ -30,7 +30,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $motDePasse = null;
 
     #[ORM\Column(length: 30)]
-    private string $role = 'ROLE_ADMIN';
+    private string $role = 'ROLE_USER';
 
     #[ORM\Column]
     private bool $estActif = true;

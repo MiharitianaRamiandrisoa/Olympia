@@ -1,0 +1,37 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block content_title %}Export des participants{% endblock %}
+
+{% block page_actions %}
+  <a class="btn btn-outline-secondary" href="{{ path('app_admin_dashboard') }}">
+    <i class="fa fa-arrow-left"></i> Tableau de bord
+  </a>
+{% endblock %}
+
+{% block main %}
+  <div class="content-panel">
+    <div class="content-panel-header">
+      <h2 class="title">Exporter les participants</h2>
+    </div>
+    <div class="content-panel-body p-4 p-lg-5">
+      <p class="text-muted">Sélectionnez un événement pour exporter uniquement ses réservations, ou choisissez tous les événements.</p>
+
+      <form method="get" action="{{ path('app_admin_ticket_participants_csv') }}" class="row g-3 align-items-end">
+        <div class="col-12 col-lg-8">
+          <label for="event" class="form-label">Événement</label>
+          <select id="event" name="event" class="form-select">
+            <option value="">Tous les événements</option>
+            {% for event in events %}
+              <option value="{{ event.id }}">{{ event.titre }} — {{ event.dateDebut|date('d/m/Y H:i') }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12 col-lg-4">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="fa fa-download"></i> Télécharger le CSV
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

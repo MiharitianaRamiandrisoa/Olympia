@@ -1,0 +1,6 @@
+<h1>Votre reservation Olympia est confirmee</h1>
+<p>Bonjour {{ reservation.nom }},</p>
+<p>Votre reservation <strong>{{ reservation.reference }}</strong> pour <strong>{{ reservation.evenement.titre }}</strong> est confirmee.</p>
+<p>Date : {{ reservation.evenement.dateDebut|date('d/m/Y a H\\hi') }}{% if reservation.evenement.lieu %}<br>Lieu : {{ reservation.evenement.lieu }}{% endif %}</p>
+<p><a href="{{ ticketsUrl }}">Acceder a mes billets numeriques</a></p>
+<p>Conservez ce lien prive et presentez le QR code de chaque billet a l entree.</p>
