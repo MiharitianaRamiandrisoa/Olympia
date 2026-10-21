@@ -22,6 +22,7 @@ class BoutiqueRepository extends ServiceEntityRepository
             ->leftJoin('b.categorie', 'c')
             ->addSelect('c')
             ->andWhere('b.estActif = :active')
+            ->andWhere('e.estActif = :active')
             ->setParameter('active', true)
             ->orderBy('e.nom', 'ASC');
 
@@ -50,6 +51,7 @@ class BoutiqueRepository extends ServiceEntityRepository
             ->join('b.enseigne', 'e')->addSelect('e')
             ->leftJoin('b.categorie', 'c')->addSelect('c')
             ->andWhere('b.estActif = :active')->setParameter('active', true)
+            ->andWhere('e.estActif = :active')
             ->andWhere('b.estMisEnAvant = :featured')->setParameter('featured', true)
             ->orderBy('e.nom', 'ASC')->setMaxResults($limit)
             ->getQuery()->getResult();
@@ -63,6 +65,7 @@ class BoutiqueRepository extends ServiceEntityRepository
             ->leftJoin('b.photoMedia', 'm')->addSelect('m')
             ->andWhere('e.slug = :slug')->setParameter('slug', $slug)
             ->andWhere('b.estActif = :active')->setParameter('active', true)
+            ->andWhere('e.estActif = :active')
             ->getQuery()->getOneOrNullResult();
     }
 }

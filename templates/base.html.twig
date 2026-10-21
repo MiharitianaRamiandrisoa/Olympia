@@ -38,7 +38,7 @@
   <title>{{ seo_title }}</title>
   {% block head_preloads %}{% endblock %}
   {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}
-  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261014-5">
+  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261020-7">
   {{ importmap('app') }}
   {% block stylesheets %}{% endblock %}
   {% block structured_data %}
@@ -63,6 +63,12 @@
   {% endblock %}
 </head>
 <body class="flex min-h-screen flex-col">
+  <div id="page-navigation-loader" class="page-navigation-loader" data-turbo-temporary hidden role="status" aria-live="polite" aria-label="Chargement de la page">
+    <div class="page-navigation-loader__message">
+      <span class="page-navigation-loader__spinner" aria-hidden="true"></span>
+    </div>
+  </div>
+
   {% include 'components/_header.html.twig' %}
 
   <main class="brand-pattern flex-1 {% block main_background %}bg-olympia-cream{% endblock %}">

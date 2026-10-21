@@ -13,6 +13,7 @@ class EvenementRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('e')->leftJoin('e.enseigne', 'brand')->addSelect('brand')
             ->leftJoin('e.categorie', 'c')->addSelect('c')
             ->andWhere('e.estActif = :active')->setParameter('active', true)
+            ->andWhere('(brand.id IS NULL OR brand.estActif = :active)')
             ->andWhere('e.dateDebut >= :today')->setParameter('today', new \DateTimeImmutable('today'));
         if ($category !== null && trim($category) !== '') {
             $qb->andWhere('c.slug = :category')->setParameter('category', $category);
@@ -26,6 +27,7 @@ class EvenementRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')->leftJoin('e.enseigne', 'brand')->addSelect('brand')
             ->leftJoin('e.categorie', 'c')->addSelect('c')
             ->andWhere('e.estActif = :active')->setParameter('active', true)
+            ->andWhere('(brand.id IS NULL OR brand.estActif = :active)')
             ->andWhere('e.estMisEnAvant = :featured')->setParameter('featured', true)
             ->andWhere('e.dateDebut >= :today')->setParameter('today', new \DateTimeImmutable('today'))
             ->orderBy('e.dateDebut', 'ASC')->getQuery()->getResult();
@@ -38,6 +40,7 @@ class EvenementRepository extends ServiceEntityRepository
             ->leftJoin('e.enseigne', 'brand')->addSelect('brand')
             ->leftJoin('e.categorie', 'c')->addSelect('c')
             ->andWhere('e.estActif = :active')->setParameter('active', true)
+            ->andWhere('(brand.id IS NULL OR brand.estActif = :active)')
             ->andWhere('e.dateDebut >= :now')->setParameter('now', new \DateTimeImmutable())
             ->orderBy('e.dateDebut', 'ASC');
 

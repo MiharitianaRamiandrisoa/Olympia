@@ -155,6 +155,11 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             if ($fieldName === 'motDePasse') {
                 continue;
             }
+            if ($fieldName === 'estActif' && static::$entityClass === Boutique::class && $pageName === Crud::PAGE_NEW) {
+                // Une boutique créée avec son enseigne est active par défaut.
+                // Le statut de l'enseigne est géré dans le même formulaire.
+                continue;
+            }
             if ($fieldName === 'id') {
                 yield IdField::new($fieldName)->hideOnForm();
                 continue;
@@ -188,6 +193,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->synchronizeEnseigne($entityManager, $entityInstance);
+        $this->synchronizeCategorie($entityManager, $entityInstance);
         $this->synchronizeSlug($entityInstance);
         $this->synchronizePhoto($entityManager, $entityInstance);
         $this->synchronizeImage($entityManager, $entityInstance);
@@ -197,6 +203,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->synchronizeEnseigne($entityManager, $entityInstance);
+        $this->synchronizeCategorie($entityManager, $entityInstance);
         $this->synchronizeSlug($entityInstance);
         $this->synchronizePhoto($entityManager, $entityInstance);
         $this->synchronizeImage($entityManager, $entityInstance);
@@ -304,6 +311,20 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             ->setEstActif($entity->isEnseigneEstActif());
         $entity->setEnseigne($enseigne);
         $entity->setHoraires($entity->getHorairesFormData());
+    }
+
+    private function synchronizeCategorie(EntityManagerInterface $entityManager, object $entity): void
+    {
+        if (!$entity instanceof Boutique || null === $categorie = $entity->getCategorie()) {
+            return;
+        }
+
+        $categorie->setNom(trim((string) $categorie->getNom()))
+            ->setSlug($this->slugger->slug((string) $categorie->getNom())->lower()->toString());
+
+        if (null === $categorie->getId()) {
+            $entityManager->persist($categorie);
+        }
     }
 
     private function synchronizeSlug(object $entity): void

@@ -12,6 +12,7 @@ class PromotionRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')->join('p.enseigne', 'e')->addSelect('e')
             ->leftJoin('p.categorie', 'c')->addSelect('c')
             ->andWhere('p.estActif = :active')->setParameter('active', true)
+            ->andWhere('e.estActif = :active')
             ->andWhere('p.dateDebut <= :now')->setParameter('now', new \DateTimeImmutable())
             ->andWhere('p.dateFin IS NULL OR p.dateFin >= :today')->setParameter('today', new \DateTimeImmutable('today'));
         if ($category !== null && trim($category) !== '') {
@@ -26,6 +27,7 @@ class PromotionRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')->join('p.enseigne', 'e')->addSelect('e')
             ->leftJoin('p.categorie', 'c')->addSelect('c')
             ->andWhere('p.estActif = :active')->setParameter('active', true)
+            ->andWhere('e.estActif = :active')
             ->andWhere('p.estMisEnAvant = :featured')->setParameter('featured', true)
             ->andWhere('p.dateDebut <= :now')->setParameter('now', new \DateTimeImmutable())
             ->andWhere('p.dateFin IS NULL OR p.dateFin >= :today')->setParameter('today', new \DateTimeImmutable('today'))

@@ -32,6 +32,8 @@ final class ImageExtension extends AbstractExtension
             return '';
         }
 
+        $path = $this->resolveLocalPath($path);
+
         $srcset = [];
         foreach (self::VARIANT_WIDTHS as $width) {
             $variant = $this->variantPath($path, $width);
@@ -53,6 +55,8 @@ final class ImageExtension extends AbstractExtension
             $path = self::FALLBACK_IMAGE;
         }
 
+        $path = $this->resolveLocalPath($path);
+
         $variant = $this->variantPath($path, 1600);
         if ($variant && is_file($this->kernel->getProjectDir().'/public/'.$variant)) {
             $source = $this->kernel->getProjectDir().'/public/'.ltrim(str_replace('\\', '/', $path), '/');
@@ -62,6 +66,29 @@ final class ImageExtension extends AbstractExtension
         }
 
         return $this->assets->getUrl(ltrim(str_replace('\\', '/', $path), '/'));
+    }
+
+    private function resolveLocalPath(string $path): string
+    {
+        $path = ltrim(str_replace('\\', '/', $path), '/');
+        $source = $this->kernel->getProjectDir().'/public/'.$path;
+
+        if (is_file($source)) {
+            return $path;
+        }
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        if ($extension !== '') {
+            $basePath = substr($path, 0, -strlen($extension) - 1);
+            foreach (['webp', 'jpg', 'jpeg', 'png', 'JPG', 'PNG'] as $alternateExtension) {
+                $alternatePath = $basePath.'.'.$alternateExtension;
+                if (is_file($this->kernel->getProjectDir().'/public/'.$alternatePath)) {
+                    return $alternatePath;
+                }
+            }
+        }
+
+        return self::FALLBACK_IMAGE;
     }
 
     private function variantPath(string $path, int $width): ?string

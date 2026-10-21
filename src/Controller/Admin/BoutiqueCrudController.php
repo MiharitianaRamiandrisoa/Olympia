@@ -33,6 +33,14 @@ final class BoutiqueCrudController extends AbstractEntityCrudController
 
         return array_merge([
             TextField::new('enseigneNom', 'Nom de l’enseigne')->onlyOnForms()->setRequired(true),
+            TextareaField::new('enseigneDescription', 'Description de l’enseigne')->onlyOnForms(),
+            AssociationField::new('categorie', 'Catégorie')
+                ->renderAsNativeWidget()
+                ->setFormTypeOption('required', false)
+                ->setFormTypeOption('placeholder', 'Choisir une catégorie')
+                ->setFormTypeOption('choice_label', 'nom')
+                ->setQueryBuilder(static fn ($queryBuilder) => $queryBuilder->orderBy('entity.nom', 'ASC'))
+                ->onlyOnForms(),
             Field::new('enseigneLogoUpload', 'Logo de l’enseigne')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)

@@ -160,7 +160,7 @@ final class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()->setTitle(
-            '<img src="/images/logo/logo-footer-creme.png" alt="Olympia" style="max-width: 150px; max-height: 60px; object-fit: contain;">'
+            '<img class="admin-olympia-logo" src="/images/logo/OLY_LOGO HOR.png" alt="Olympia Centre Commercial">'
         )->setFaviconPath('images/logo/favico/favicon.ico')
             ->disableDarkMode()
             ->setDefaultColorScheme(ColorScheme::LIGHT);

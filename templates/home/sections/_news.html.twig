@@ -7,6 +7,19 @@
     link_href: '/evenements'
   } only %}
 
+  {# Marqueur fixe de disponibilité, indépendant du carrousel. #}
+  <div class="mt-8 flex flex-col items-center justify-between gap-6 overflow-hidden rounded-2xl bg-olympia px-6 py-7 text-white shadow-lg md:flex-row md:px-10 md:py-9">
+    <div class="max-w-3xl">
+      <p class="text-xs font-bold uppercase tracking-[0.2em] text-olympia-gold">Opportunité au centre</p>
+      <h3 class="mt-2 text-2xl font-semibold leading-tight md:text-4xl">Des enseignes encore disponibles dans le centre</h3>
+      <p class="mt-3 max-w-2xl text-sm leading-relaxed text-white/75">Rejoignez Olympia et présentez votre activité à nos visiteurs.</p>
+    </div>
+    <div class="flex shrink-0 items-center gap-4">
+    
+      <a href="{{ path('app_contact') }}" class="rounded-full bg-olympia-gold px-5 py-3 text-sm font-bold text-olympia transition hover:bg-white">Nous contacter</a>
+    </div>
+  </div>
+
   <div class="home-carousel mt-10" data-home-carousel>
     <div class="home-carousel-viewport news-carousel-viewport">
       <div class="home-carousel-track news-carousel-track">

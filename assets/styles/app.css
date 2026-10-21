@@ -232,6 +232,11 @@
 
 @layer base {
 
+    /* Turbo affiche par défaut une barre bleue en haut pendant les visites. */
+    .turbo-progress-bar {
+        display: none !important;
+    }
+
     body {
         background-color: var(--color-olympia-cream);
         color: var(--color-olympia-ink);
@@ -295,6 +300,56 @@
 */
 
 @layer components {
+
+    .page-navigation-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+        background: rgb(16 59 67 / 32%);
+        backdrop-filter: blur(2px);
+    }
+
+    .page-navigation-loader__message {
+        display: grid;
+        width: 52px;
+        height: 52px;
+        place-items: center;
+        overflow: hidden;
+        border: 1px solid var(--color-olympia-gold);
+        border-radius: 50%;
+        background: var(--color-olympia-cream);
+        box-shadow: 0 18px 50px rgb(6 18 22 / 28%);
+    }
+
+    .page-navigation-loader__message > span:not(.page-navigation-loader__spinner) {
+        display: none !important;
+    }
+
+    .page-navigation-loader__spinner {
+        width: 22px;
+        height: 22px;
+        flex: 0 0 22px;
+        border: 3px solid rgb(21 73 83 / 22%);
+        border-top-color: var(--color-olympia);
+        border-radius: 50%;
+        animation: page-navigation-spinner .75s linear infinite;
+    }
+
+    .navigation-link-loading {
+        cursor: wait !important;
+        opacity: .65;
+        pointer-events: none;
+    }
+
+    @keyframes page-navigation-spinner {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .page-navigation-loader__spinner { animation: none; }
+    }
 
     .home-carousel-viewport {
         overflow: hidden;
