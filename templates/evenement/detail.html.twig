@@ -3,18 +3,49 @@
 {% block title %}{{ event.titre }} | Olympia{% endblock %}
 {% block structured_data %}
   {{ parent() }}
+  {% set event_image_path = event.imageMedia ? event.imageMedia.chemin : 'images/hero-olympia.png' %}
+  {% set event_url = app.request.schemeAndHttpHost ~ path('app_event_detail', {slug: event.slug}) %}
+  {% set performer_name = event.enseigne ? event.enseigne.nom : 'Olympia Madagascar' %}
   <script type="application/ld+json">
     {{ {
       '@context': 'https://schema.org',
       '@type': 'Event',
       'name': event.titre,
       'description': event.description|default(''),
+      'image': app.request.schemeAndHttpHost ~ optimized_image(event_image_path),
+      'url': event_url,
       'startDate': event.dateDebut|date('c'),
       'endDate': event.dateFin ? event.dateFin|date('c') : event.dateDebut|date('c'),
       'eventStatus': 'https://schema.org/EventScheduled',
       'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
-      'location': {'@type': 'Place', 'name': event.lieu|default('Centre commercial Olympia')},
-      'organizer': {'@type': 'Organization', 'name': 'Olympia Madagascar'}
+      'location': {
+        '@type': 'Place',
+        'name': event.lieu|default('Centre commercial Olympia'),
+        'address': {
+          '@type': 'PostalAddress',
+          'streetAddress': 'En face du pont',
+          'addressLocality': 'Tanjombato',
+          'addressRegion': 'Antananarivo',
+          'postalCode': '102',
+          'addressCountry': 'MG'
+        }
+      },
+      'organizer': {
+        '@type': 'Organization',
+        'name': 'Olympia Madagascar',
+        'url': app.request.schemeAndHttpHost
+      },
+      'performer': {
+        '@type': 'Organization',
+        'name': performer_name
+      },
+      'offers': {
+        '@type': 'Offer',
+        'url': event_url,
+        'price': event.isGratuit ? 0 : event.tarif,
+        'priceCurrency': 'MGA',
+        'availability': event.isReservationOuverte ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder'
+      }
     }|json_encode|raw }}
   </script>
 {% endblock %}

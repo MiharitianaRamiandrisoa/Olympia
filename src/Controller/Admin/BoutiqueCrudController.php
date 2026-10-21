@@ -19,6 +19,17 @@ final class BoutiqueCrudController extends AbstractEntityCrudController
 {
     protected static string $entityClass = Boutique::class;
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return parent::configureCrud($crud)
+            ->setSearchFields([
+                'enseigne.nom',
+                'enseigne.slug',
+                'categorie.nom',
+                'description',
+            ]);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         if ($pageName === Crud::PAGE_INDEX) {
