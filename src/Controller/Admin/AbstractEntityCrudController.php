@@ -160,6 +160,15 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
                 // Le statut de l'enseigne est géré dans le même formulaire.
                 continue;
             }
+            if (
+                $pageName === Crud::PAGE_EDIT
+                && in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)
+                && in_array($fieldName, ['description', 'estActif'], true)
+            ) {
+                // Les champs de l'enseigne sont déjà affichés dans ce formulaire.
+                // Ne pas afficher les champs génériques de la boutique/du restaurant une seconde fois.
+                continue;
+            }
             if ($fieldName === 'id') {
                 yield IdField::new($fieldName)->hideOnForm();
                 continue;
