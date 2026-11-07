@@ -118,6 +118,7 @@ jobs:
               --no-interaction \
               --allow-no-migration
 
+            php bin/console asset-map:compile --env=prod
             php bin/console cache:clear --env=prod
             find public -type d -exec chmod 755 {} +
             find public -type f -exec chmod 644 {} +

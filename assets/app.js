@@ -282,8 +282,10 @@ document.addEventListener('click', async (event) => {
     catch (error) { console.error(error); window.location.href = link.href; }
 });
 
-const newsletterModal = document.querySelector('#newsletter-modal');
 document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element)) return;
+
+    const newsletterModal = document.querySelector('#newsletter-modal');
     if (event.target.closest('[data-newsletter-open]')) {
         newsletterModal?.classList.remove('hidden');
         newsletterModal?.classList.add('flex');
