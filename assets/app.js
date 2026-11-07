@@ -300,11 +300,17 @@ document.addEventListener('submit', async (event) => {
     if (!form) return;
     event.preventDefault();
     const message = form.querySelector('[data-newsletter-message]');
-    const response = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-    const data = await response.json();
-    message.textContent = data.message;
-    message.className = `text-sm ${data.success ? 'text-green-700' : 'text-red-600'}`;
-    if (data.success) form.reset();
+    try {
+        const response = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+        const data = await response.json();
+        message.textContent = data.message;
+        message.className = `text-sm ${data.success ? 'text-green-700' : 'text-red-600'}`;
+        if (data.success) form.reset();
+    } catch (error) {
+        console.error(error);
+        message.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+        message.className = 'text-sm text-red-600';
+    }
 });
 
 document.addEventListener('submit', async (event) => {

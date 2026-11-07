@@ -1,0 +1,30 @@
+<h1>Bienvenue dans la newsletter Olympia</h1>
+
+<p>Merci pour votre inscription. Vous recevrez désormais les nouvelles offres et actualités d'Olympia dans votre boîte mail.</p>
+
+{% if promotions is not empty %}
+    <h2>Les offres du moment</h2>
+    <ul>
+        {% for promotion in promotions %}
+            <li>
+                <strong>{{ promotion.titre }}</strong>
+                {% if promotion.enseigne %} — {{ promotion.enseigne.nom }}{% endif %}
+                {% if promotion.description %}<br>{{ promotion.description|striptags|slice(0, 240) }}{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if actualites is not empty %}
+    <h2>Les dernières actualités</h2>
+    <ul>
+        {% for actualite in actualites %}
+            <li>
+                <strong>{{ actualite.titre }}</strong>
+                {% if actualite.chapeau %}<br>{{ actualite.chapeau|striptags|slice(0, 240) }}{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<p>À bientôt chez Olympia.</p>

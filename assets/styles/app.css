@@ -311,6 +311,10 @@
         backdrop-filter: blur(2px);
     }
 
+    .page-navigation-loader[hidden] {
+        display: none;
+    }
+
     .page-navigation-loader__message {
         display: grid;
         width: 52px;

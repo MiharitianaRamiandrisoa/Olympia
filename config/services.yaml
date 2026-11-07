@@ -27,6 +27,11 @@ services:
         arguments:
             $mailerDsn: '%env(MAILER_DSN)%'
 
+    App\Service\NewsletterMailer:
+        arguments:
+            $mailerDsn: '%env(MAILER_DSN)%'
+            $fromAddress: '%env(NEWSLETTER_FROM)%'
+
     App\Service\ReservationService:
         arguments:
             $paymentHoldMinutes: '%env(int:PAYMENT_HOLD_MINUTES)%'
