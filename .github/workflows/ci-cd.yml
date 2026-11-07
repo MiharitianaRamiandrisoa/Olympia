@@ -57,13 +57,15 @@ jobs:
           DB_NAME: ${{ secrets.NOM_BASE }}
           DB_USER: ${{ secrets.NOM_UTILISATEUR }}
           DB_PASSWORD: ${{ secrets.MOT_DE_PASSE }}
+          MAILER_USERNAME: ${{ secrets.NEWSLETTER_SMTP_USERNAME }}
+          MAILER_PASSWORD: ${{ secrets.NEWSLETTER_SMTP_PASSWORD }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
           script_stop: true
-          envs: APP_SECRET,DB_HOST,DB_NAME,DB_USER,DB_PASSWORD
+          envs: APP_SECRET,DB_HOST,DB_NAME,DB_USER,DB_PASSWORD,MAILER_USERNAME,MAILER_PASSWORD
           script: |
             set -e
 
@@ -77,12 +79,12 @@ jobs:
               'APP_SHARE_DIR=var/share' \
               'DEFAULT_URI=https://olympia-madagascar.mg' \
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
-              'MAILER_DSN=null://null' \
+              'NEWSLETTER_FROM=newsletter@olympia-madagascar.mg' \
               'OLYMPIA_SESSION_IDLE_TIMEOUT=3600' \
               'PAYMENT_HOLD_MINUTES=15' > .env
 
-            if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
-              echo "ERREUR : les secrets de production sont incomplets."
+            if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ] || [ -z "${MAILER_USERNAME:-}" ] || [ -z "${MAILER_PASSWORD:-}" ]; then
+              echo "ERREUR : secrets de production incomplets, y compris ceux du SMTP newsletter."
               exit 1
             fi
 
@@ -90,6 +92,10 @@ jobs:
             DB_USER_URL="$(php -r 'echo rawurlencode(getenv("DB_USER"));')"
             DB_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("DB_PASSWORD"));')"
             DB_NAME_URL="$(php -r 'echo rawurlencode(getenv("DB_NAME"));')"
+            MAILER_USERNAME_URL="$(php -r 'echo rawurlencode(getenv("MAILER_USERNAME"));')"
+            MAILER_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("MAILER_PASSWORD"));')"
+            printf 'MAILER_DSN=smtp://%s:%s@mail.olympia-madagascar.mg:587?encryption=tls&auth_mode=login\n' \
+              "$MAILER_USERNAME_URL" "$MAILER_PASSWORD_URL" >> .env
             printf 'APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=%s\nDATABASE_URL="mysql://%s:%s@%s:3306/%s?serverVersion=8.0.0&charset=utf8mb4"\n' \
               "$APP_SECRET" "$DB_USER_URL" "$DB_PASSWORD_URL" "$DB_HOST" "$DB_NAME_URL" > .env.local
 
@@ -196,6 +202,7 @@ jobs:
               'DEFAULT_URI=https://test.olympia-madagascar.mg' \
               'MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0' \
               'MAILER_DSN=null://null' \
+              'NEWSLETTER_FROM=newsletter@olympia-madagascar.mg' \
               'OLYMPIA_SESSION_IDLE_TIMEOUT=3600' \
               'PAYMENT_HOLD_MINUTES=15' > .env
 
