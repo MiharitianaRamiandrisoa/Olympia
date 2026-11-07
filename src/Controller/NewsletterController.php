@@ -25,21 +25,34 @@ final class NewsletterController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Veuillez saisir une adresse email valide.'], 422);
         }
 
-        $isNewSubscriber = $repository->findOneBy(['email' => $email]) === null;
+        $subscriber = $repository->findOneBy(['email' => $email]);
+        $isNewSubscriber = $subscriber === null;
         if ($isNewSubscriber) {
-            $entityManager->persist((new AbonnementNewsletter())->setEmail($email));
+            $subscriber = (new AbonnementNewsletter())->setEmail($email);
+            $entityManager->persist($subscriber);
             $entityManager->flush();
         }
 
-        $emailSent = $isNewSubscriber && $newsletterMailer->sendWelcome($email);
+        $emailSent = false;
+        if ($subscriber->getWelcomeEmailSentAt() === null) {
+            $emailSent = $newsletterMailer->sendWelcome($email);
+            if ($emailSent) {
+                $subscriber->markWelcomeEmailSent();
+                $entityManager->flush();
+            }
+        }
+
+        $alreadyWelcomed = $subscriber->getWelcomeEmailSentAt() !== null && !$emailSent;
+
         return $this->json([
-            'success' => true,
-            'message' => $isNewSubscriber
-                ? ($emailSent
-                    ? 'Votre inscription est confirmée. Un email de bienvenue vient de vous être envoyé.'
-                    : 'Votre inscription est enregistrée. L’envoi de l’email sera disponible après configuration du serveur mail.')
-                : 'Cette adresse est déjà inscrite à la newsletter.',
+            'success' => $emailSent || $alreadyWelcomed,
+            'message' => $emailSent
+                ? 'Votre inscription est confirmée. Un email de bienvenue vient de vous être envoyé.'
+                : ($alreadyWelcomed
+                    ? 'Cette adresse est déjà inscrite et son email de bienvenue a déjà été envoyé.'
+                    : 'Votre inscription est enregistrée, mais l’email n’a pas pu être envoyé. Réessayez dans quelques instants.'),
             'emailSent' => $emailSent,
+            'isNewSubscriber' => $isNewSubscriber,
         ]);
     }
 }
