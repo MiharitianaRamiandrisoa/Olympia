@@ -32,6 +32,7 @@ final class NewsletterMailer
                 ->to($recipient)
                 ->subject('Bienvenue dans la newsletter Olympia')
                 ->htmlTemplate('email/newsletter_welcome.html.twig')
+                ->textTemplate('email/newsletter_welcome.txt.twig')
                 ->context([
                     'promotions' => array_slice($this->promotions->findActive(), 0, 6),
                     'actualites' => array_slice($this->actualites->findActive(), 0, 4),

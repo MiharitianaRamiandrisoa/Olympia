@@ -1,30 +1,112 @@
-<h1>Bienvenue dans la newsletter Olympia</h1>
+{% set promotionsUrl = absolute_url(path('app_promotions')) %}
+{% set actualitesUrl = absolute_url(path('app_actualites')) %}
+{% set logoUrl = absolute_url(asset('images/logo/logo-footer-creme.png')) %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Bienvenue dans la newsletter Olympia</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f2efe7;font-family:Arial,Helvetica,sans-serif;color:#23383b;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+        Merci de rejoindre Olympia : découvrez les offres et actualités du moment.
+    </div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f2efe7;">
+        <tr>
+            <td align="center" style="padding:28px 12px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border-radius:18px;overflow:hidden;">
+                    <tr>
+                        <td align="center" style="padding:28px 24px 24px;background-color:#154953;border-bottom:5px solid #dfcfac;">
+                            <a href="https://olympia-madagascar.mg" style="text-decoration:none;">
+                                <img src="{{ logoUrl }}" width="190" alt="Olympia Madagascar" style="display:block;width:190px;max-width:80%;height:auto;border:0;">
+                            </a>
+                            <p style="margin:17px 0 0;color:#dfcfac;font-size:11px;line-height:16px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;">Le plaisir de se retrouver</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:38px 36px 30px;">
+                            <p style="margin:0 0 12px;color:#7e8e6c;font-size:12px;line-height:18px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;">Bienvenue chez Olympia</p>
+                            <h1 style="margin:0 0 16px;color:#154953;font-size:30px;line-height:38px;font-weight:700;">Votre prochaine belle découverte commence ici.</h1>
+                            <p style="margin:0;color:#536267;font-size:16px;line-height:26px;">
+                                Merci de vous être inscrit·e à la newsletter Olympia. Retrouvez dans votre boîte mail nos offres, nos nouveautés et les moments à partager au centre.
+                            </p>
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-top:25px;">
+                                <tr>
+                                    <td align="center" bgcolor="#dfcfac" style="border-radius:24px;">
+                                        <a href="{{ promotionsUrl }}" style="display:inline-block;padding:13px 24px;color:#154953;font-size:14px;line-height:20px;font-weight:bold;text-decoration:none;">Découvrir les offres&nbsp; →</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
 
-<p>Merci pour votre inscription. Vous recevrez désormais les nouvelles offres et actualités d'Olympia dans votre boîte mail.</p>
+                    {% if promotions is not empty %}
+                    <tr>
+                        <td style="padding:0 36px 28px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="padding:0 0 13px;border-bottom:1px solid #e8e5dc;">
+                                        <h2 style="margin:0;color:#154953;font-size:20px;line-height:28px;">Les offres du moment</h2>
+                                    </td>
+                                </tr>
+                                {% for promotion in promotions %}
+                                <tr>
+                                    <td style="padding:16px 0;border-bottom:1px solid #efede7;">
+                                        <p style="margin:0 0 5px;color:#154953;font-size:16px;line-height:22px;font-weight:bold;">
+                                            <a href="{{ absolute_url(path('app_promotion_detail', {slug: promotion.slug})) }}" style="color:#154953;text-decoration:none;">{{ promotion.titre }}</a>
+                                        </p>
+                                        {% if promotion.enseigne %}
+                                        <p style="margin:0 0 6px;color:#7e8e6c;font-size:12px;line-height:18px;font-weight:bold;">{{ promotion.enseigne.nom }}</p>
+                                        {% endif %}
+                                        {% if promotion.description %}
+                                        <p style="margin:0;color:#536267;font-size:14px;line-height:22px;">{{ promotion.description|striptags|trim|slice(0, 220) }}{% if promotion.description|striptags|length > 220 %}…{% endif %}</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+                    {% endif %}
 
-{% if promotions is not empty %}
-    <h2>Les offres du moment</h2>
-    <ul>
-        {% for promotion in promotions %}
-            <li>
-                <strong>{{ promotion.titre }}</strong>
-                {% if promotion.enseigne %} — {{ promotion.enseigne.nom }}{% endif %}
-                {% if promotion.description %}<br>{{ promotion.description|striptags|slice(0, 240) }}{% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+                    {% if actualites is not empty %}
+                    <tr>
+                        <td style="padding:0 36px 34px;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td style="padding:0 0 13px;border-bottom:1px solid #e8e5dc;">
+                                        <h2 style="margin:0;color:#154953;font-size:20px;line-height:28px;">Les dernières actualités</h2>
+                                    </td>
+                                </tr>
+                                {% for actualite in actualites %}
+                                <tr>
+                                    <td style="padding:16px 0;border-bottom:1px solid #efede7;">
+                                        <p style="margin:0 0 6px;color:#154953;font-size:16px;line-height:22px;font-weight:bold;">
+                                            <a href="{{ absolute_url(path('app_actualite_detail', {slug: actualite.slug})) }}" style="color:#154953;text-decoration:none;">{{ actualite.titre }}</a>
+                                        </p>
+                                        {% if actualite.chapeau %}
+                                        <p style="margin:0;color:#536267;font-size:14px;line-height:22px;">{{ actualite.chapeau|striptags|trim|slice(0, 220) }}{% if actualite.chapeau|striptags|length > 220 %}…{% endif %}</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+                    {% endif %}
 
-{% if actualites is not empty %}
-    <h2>Les dernières actualités</h2>
-    <ul>
-        {% for actualite in actualites %}
-            <li>
-                <strong>{{ actualite.titre }}</strong>
-                {% if actualite.chapeau %}<br>{{ actualite.chapeau|striptags|slice(0, 240) }}{% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-<p>À bientôt chez Olympia.</p>
+                    <tr>
+                        <td align="center" style="padding:26px 30px;background-color:#154953;">
+                            <p style="margin:0 0 8px;color:#ffffff;font-size:15px;line-height:22px;font-weight:bold;">À très bientôt chez Olympia&nbsp;!</p>
+                            <p style="margin:0;color:#dfcfac;font-size:12px;line-height:20px;">Retrouvez toutes nos actualités sur <a href="https://olympia-madagascar.mg" style="color:#ffffff;text-decoration:underline;">olympia-madagascar.mg</a></p>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin:16px 0 0;color:#7a8583;font-size:11px;line-height:17px;">Vous recevez ce message après votre inscription à la newsletter d’Olympia Madagascar.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

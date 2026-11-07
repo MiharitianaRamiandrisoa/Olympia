@@ -1,0 +1,31 @@
+Bienvenue dans la newsletter Olympia
+=====================================
+
+Merci de vous être inscrit·e à la newsletter Olympia. Nous vous enverrons nos offres, nos nouveautés et les moments à partager au centre.
+
+Découvrir les offres : {{ absolute_url(path('app_promotions')) }}
+
+{% if promotions is not empty %}
+LES OFFRES DU MOMENT
+--------------------
+{% for promotion in promotions %}
+{{ promotion.titre }}{% if promotion.enseigne %} — {{ promotion.enseigne.nom }}{% endif %}
+{% if promotion.description %}{{ promotion.description|striptags|trim|slice(0, 220) }}{% endif %}
+Voir l’offre : {{ absolute_url(path('app_promotion_detail', {slug: promotion.slug})) }}
+
+{% endfor %}
+{% endif %}
+{% if actualites is not empty %}
+LES DERNIÈRES ACTUALITÉS
+------------------------
+{% for actualite in actualites %}
+{{ actualite.titre }}
+{% if actualite.chapeau %}{{ actualite.chapeau|striptags|trim|slice(0, 220) }}{% endif %}
+Lire l’actualité : {{ absolute_url(path('app_actualite_detail', {slug: actualite.slug})) }}
+
+{% endfor %}
+{% endif %}
+À très bientôt chez Olympia !
+
+Retrouvez-nous sur https://olympia-madagascar.mg
+Vous recevez ce message après votre inscription à la newsletter d’Olympia Madagascar.
