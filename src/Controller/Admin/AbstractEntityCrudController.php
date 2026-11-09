@@ -137,6 +137,9 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $metadata = $this->entityManager->getClassMetadata(static::$entityClass);
 
         foreach ($metadata->getFieldNames() as $fieldName) {
+            if (static::$entityClass === Actualite::class && in_array($fieldName, ['origine', 'identifiantExterne', 'urlExterne', 'urlImageExterne', 'images'], true)) {
+                continue;
+            }
             if ($fieldName === 'slug') {
                 continue;
             }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Api;
 
 use App\Entity\Actualite;
+use App\Entity\ActualiteImage;
 use App\Repository\ActualiteRepository;
 use App\Service\FacebookActualiteImageImporter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -59,7 +60,7 @@ final class ActualiteImportController extends AbstractController
             $excerpt = $this->optionalText($payload, ['excerpt', 'chapeau', 'summary']) ?? $this->excerptFromContent($message);
             $publishedAt = $this->parseDate($this->optionalText($payload, ['published_at', 'date_publication', 'created_time']));
             $externalUrl = $this->optionalUrl($payload, ['permalink_url', 'facebook_url', 'url']);
-            $imageUrl = $this->optionalUrl($payload, ['image_url', 'image']);
+            $imageUrls = $this->imageUrlsFromPayload($payload);
             $active = $this->optionalBoolean($payload, ['active', 'est_actif'], true);
             $featured = $this->optionalBoolean($payload, ['featured', 'est_mis_en_avant'], false);
 
@@ -88,12 +89,8 @@ final class ActualiteImportController extends AbstractController
                 ->setUrlExterne($externalUrl)
                 ->setDateModification(new \DateTimeImmutable());
 
-            if ($imageUrl !== null && $imageUrl !== $actualite->getUrlImageExterne()) {
-                $media = $this->imageImporter->import($imageUrl, $externalId);
-                $entityManager->persist($media);
-                $actualite
-                    ->setImageMedia($media)
-                    ->setUrlImageExterne($imageUrl);
+            if ($imageUrls !== null) {
+                $this->synchronizeImages($actualite, $imageUrls, $externalId, $entityManager);
             }
 
             $entityManager->flush();
@@ -158,12 +155,151 @@ final class ActualiteImportController extends AbstractController
             return null;
         }
 
+        return $this->normalizeUrl($value);
+    }
+
+    /** @param array<string, mixed> $payload */
+    /** @return list<string>|null */
+    private function imageUrlsFromPayload(array $payload): ?array
+    {
+        $values = [];
+        $hasImageField = false;
+
+        foreach (['image_url', 'image', 'image_urls', 'images', 'attachments'] as $key) {
+            if (!array_key_exists($key, $payload)) {
+                continue;
+            }
+
+            $hasImageField = true;
+            $this->collectImageUrls($payload[$key], $values);
+        }
+
+        if (!$hasImageField) {
+            return null;
+        }
+
+        $urls = [];
+        foreach ($values as $value) {
+            $url = $this->normalizeUrl($value);
+            if (!in_array($url, $urls, true)) {
+                $urls[] = $url;
+            }
+        }
+
+        if (count($urls) > 10) {
+            throw new \InvalidArgumentException('Une publication ne peut pas contenir plus de 10 images.');
+        }
+
+        return $urls;
+    }
+
+    /** @param list<string> $urls */
+    private function collectImageUrls(mixed $value, array &$urls, int $depth = 0): void
+    {
+        if ($depth > 4 || $value === null) {
+            return;
+        }
+
+        if (is_scalar($value)) {
+            $text = trim((string) $value);
+            if ($text === '') {
+                return;
+            }
+
+            if (str_starts_with($text, '[') || str_starts_with($text, '{')) {
+                try {
+                    $decoded = json_decode($text, true, 20, JSON_THROW_ON_ERROR);
+                    $this->collectImageUrls($decoded, $urls, $depth + 1);
+                    return;
+                } catch (\JsonException) {
+                    // Le texte sera traité comme une URL et rejeté avec un message explicite.
+                }
+            }
+
+            $urls[] = $text;
+            return;
+        }
+
+        if (!is_array($value)) {
+            return;
+        }
+
+        foreach (['url', 'image_url', 'src', 'full_picture', 'media_url'] as $key) {
+            if (array_key_exists($key, $value)) {
+                $this->collectImageUrls($value[$key], $urls, $depth + 1);
+            }
+        }
+
+        foreach (['data', 'attachments', 'subattachments', 'images'] as $key) {
+            if (array_key_exists($key, $value)) {
+                $this->collectImageUrls($value[$key], $urls, $depth + 1);
+            }
+        }
+    }
+
+    private function normalizeUrl(string $value): string
+    {
         $parts = parse_url($value);
         if (!is_array($parts) || !in_array(strtolower((string) ($parts['scheme'] ?? '')), ['http', 'https'], true) || empty($parts['host'])) {
             throw new \InvalidArgumentException('Une URL fournie par Make est invalide.');
         }
 
         return $value;
+    }
+
+    /** @param list<string> $imageUrls */
+    private function synchronizeImages(
+        Actualite $actualite,
+        array $imageUrls,
+        string $externalId,
+        EntityManagerInterface $entityManager,
+    ): void {
+        $existingByUrl = [];
+        foreach ($actualite->getImages() as $image) {
+            $existingByUrl[$image->getUrlExterne()] = $image;
+        }
+
+        foreach ($existingByUrl as $url => $image) {
+            if (!in_array($url, $imageUrls, true)) {
+                $actualite->removeImage($image);
+            }
+        }
+
+        $primaryMedia = null;
+        $primaryUrl = null;
+        foreach ($imageUrls as $ordre => $url) {
+            $image = $existingByUrl[$url] ?? null;
+
+            // Reprend l’ancienne image principale des publications importées
+            // avant l’ajout de la galerie, sans la télécharger une seconde fois.
+            if (!$image && $url === $actualite->getUrlImageExterne() && $actualite->getImageMedia() !== null) {
+                $image = (new ActualiteImage())
+                    ->setMedia($actualite->getImageMedia())
+                    ->setUrlExterne($url);
+                $actualite->addImage($image);
+                $entityManager->persist($image);
+            }
+
+            if (!$image) {
+                $media = $this->imageImporter->import($url, $externalId.'-'.$ordre);
+                $entityManager->persist($media);
+                $image = (new ActualiteImage())
+                    ->setMedia($media)
+                    ->setUrlExterne($url);
+                $actualite->addImage($image);
+                $entityManager->persist($image);
+            }
+
+            $image->setOrdre($ordre);
+            if ($ordre === 0) {
+                $primaryMedia = $image->getMedia();
+                $primaryUrl = $url;
+            }
+        }
+
+        $actualite
+            ->setImageMedia($primaryMedia)
+            ->setUrlImageExterne($primaryUrl);
     }
 
     private function parseDate(?string $value): \DateTimeImmutable
