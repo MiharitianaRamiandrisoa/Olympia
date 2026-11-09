@@ -3,16 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\ActualiteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use SortDirection;
 
 #[ORM\Entity(repositoryClass: ActualiteRepository::class)]
-#[ORM\Table(
-    name: 'actualite',
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(name: 'UNIQ_ACTUALITE_ORIGINE_EXTERNE', columns: ['origine', 'identifiant_externe']),
-    ],
-)]
+#[ORM\Table(name: 'actualite')]
+#[ORM\UniqueConstraint(name: 'UNIQ_ACTUALITE_ORIGINE_EXTERNE', columns: ['origine', 'identifiant_externe'])]
 class Actualite
 {
     use ImageUploadTrait;
@@ -51,6 +50,11 @@ class Actualite
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Media $imageMedia = null;
 
+    /** @var Collection<int, ActualiteImage> */
+    #[ORM\OneToMany(mappedBy: 'actualite', targetEntity: ActualiteImage::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['ordre' => SortDirection::Ascending])]
+    private Collection $images;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $datePublication = null;
 
@@ -72,6 +76,7 @@ class Actualite
         $this->datePublication = $now;
         $this->dateCreation = $now;
         $this->dateModification = $now;
+        $this->images = new ArrayCollection();
     }
 
     public function __toString(): string { return $this->titre ?? 'Actualité'; }
@@ -96,6 +101,25 @@ class Actualite
     public function setContenu(?string $value): static { $this->contenu = $value; return $this; }
     public function getImageMedia(): ?Media { return $this->imageMedia; }
     public function setImageMedia(?Media $value): static { $this->imageMedia = $value; return $this; }
+    /** @return Collection<int, ActualiteImage> */
+    public function getImages(): Collection { return $this->images; }
+    public function addImage(ActualiteImage $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setActualite($this);
+        }
+
+        return $this;
+    }
+    public function removeImage(ActualiteImage $image): static
+    {
+        if ($this->images->removeElement($image) && $image->getActualite() === $this) {
+            $image->setActualite(null);
+        }
+
+        return $this;
+    }
     public function getDatePublication(): ?\DateTimeImmutable { return $this->datePublication; }
     public function setDatePublication(\DateTimeImmutable $value): static { $this->datePublication = $value; return $this; }
     public function isEstActif(): bool { return $this->estActif; }
