@@ -32,6 +32,10 @@ services:
             $mailerDsn: '%env(MAILER_DSN)%'
             $fromAddress: '%env(NEWSLETTER_FROM)%'
 
+    App\Controller\Api\ActualiteImportController:
+        arguments:
+            $apiKey: '%env(string:ACTUALITE_IMPORT_API_KEY)%'
+
     App\Service\ReservationService:
         arguments:
             $paymentHoldMinutes: '%env(int:PAYMENT_HOLD_MINUTES)%'

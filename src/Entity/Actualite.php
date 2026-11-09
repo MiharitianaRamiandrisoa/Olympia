@@ -7,7 +7,12 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActualiteRepository::class)]
-#[ORM\Table(name: 'actualite')]
+#[ORM\Table(
+    name: 'actualite',
+    uniqueConstraints: [
+        new ORM\UniqueConstraint(name: 'UNIQ_ACTUALITE_ORIGINE_EXTERNE', columns: ['origine', 'identifiant_externe']),
+    ],
+)]
 class Actualite
 {
     use ImageUploadTrait;
@@ -23,6 +28,18 @@ class Actualite
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $categorie = null;
+
+    #[ORM\Column(length: 30)]
+    private string $origine = 'manuelle';
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $identifiantExterne = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $urlExterne = null;
+
+    #[ORM\Column(length: 1000, nullable: true)]
+    private ?string $urlImageExterne = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $chapeau = null;
@@ -65,6 +82,14 @@ class Actualite
     public function setSlug(string $value): static { $this->slug = $value; return $this; }
     public function getCategorie(): ?string { return $this->categorie; }
     public function setCategorie(?string $value): static { $this->categorie = $value; return $this; }
+    public function getOrigine(): string { return $this->origine; }
+    public function setOrigine(string $value): static { $this->origine = $value; return $this; }
+    public function getIdentifiantExterne(): ?string { return $this->identifiantExterne; }
+    public function setIdentifiantExterne(?string $value): static { $this->identifiantExterne = $value; return $this; }
+    public function getUrlExterne(): ?string { return $this->urlExterne; }
+    public function setUrlExterne(?string $value): static { $this->urlExterne = $value; return $this; }
+    public function getUrlImageExterne(): ?string { return $this->urlImageExterne; }
+    public function setUrlImageExterne(?string $value): static { $this->urlImageExterne = $value; return $this; }
     public function getChapeau(): ?string { return $this->chapeau; }
     public function setChapeau(?string $value): static { $this->chapeau = $value; return $this; }
     public function getContenu(): ?string { return $this->contenu; }
