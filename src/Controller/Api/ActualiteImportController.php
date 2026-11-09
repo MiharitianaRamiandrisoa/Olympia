@@ -224,13 +224,13 @@ final class ActualiteImportController extends AbstractController
             return;
         }
 
-        foreach (['url', 'image_url', 'src', 'full_picture', 'media_url'] as $key) {
+        foreach (['url', 'image_url', 'src', 'full_picture', 'media_url', 'source', 'unshimmed_url', 'unshimmedUrl'] as $key) {
             if (array_key_exists($key, $value)) {
                 $this->collectImageUrls($value[$key], $urls, $depth + 1);
             }
         }
 
-        foreach (['data', 'attachments', 'subattachments', 'images'] as $key) {
+        foreach (['data', 'attachments', 'subattachments', 'images', 'media', 'image'] as $key) {
             if (array_key_exists($key, $value)) {
                 $this->collectImageUrls($value[$key], $urls, $depth + 1);
             }
