@@ -38,13 +38,6 @@
       'performer': {
         '@type': 'Organization',
         'name': performer_name
-      },
-      'offers': {
-        '@type': 'Offer',
-        'url': event_url,
-        'price': event.isGratuit ? 0 : event.tarif,
-        'priceCurrency': 'MGA',
-        'availability': event.isReservationOuverte ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder'
       }
     }|json_encode|raw }}
   </script>
@@ -73,24 +66,9 @@
       <div><dt class="font-bold text-olympia">Date</dt><dd class="mt-1 text-olympia-muted">{{ event.dateDebut|date('d/m/Y') }}</dd></div>
       <div><dt class="font-bold text-olympia">Heure</dt><dd class="mt-1 text-olympia-muted">{{ event.dateDebut|date('H\\hi') }}{% if event.dateFin %} - {{ event.dateFin|date('H\\hi') }}{% endif %}</dd></div>
       {% if event.lieu %}<div><dt class="font-bold text-olympia">Lieu</dt><dd class="mt-1 text-olympia-muted">{{ event.lieu }}</dd></div>{% endif %}
-      <div><dt class="font-bold text-olympia">Billetterie</dt><dd class="mt-1 text-olympia-muted">{{ event.isGratuit ? 'Acces gratuit sur reservation' : 'Evenement payant - paiement en ligne prochainement' }}</dd></div>
     </dl>
     <div class="mt-10"><h2 class="text-xl font-bold text-olympia">Description</h2><p class="mt-3 text-sm leading-6 text-olympia-muted">{{ event.description }}</p></div>
   </div>
 </section>
-{# <section class="container-site pb-8">
-  <div class="flex flex-col items-start justify-between gap-5 rounded-2xl bg-olympia p-7 text-white md:flex-row md:items-center md:p-9">
-    <div>
-      <p class="text-xs font-bold uppercase tracking-[0.16em] text-olympia-gold">Billetterie Olympia</p>
-      <h2 class="mt-2 text-2xl font-semibold">{{ event.isGratuit ? 'Reservez votre place gratuitement' : 'Reservation en preparation' }}</h2>
-      {% if places_restantes is not null %}<p class="mt-2 text-sm text-white/80">{{ places_restantes }} place{{ places_restantes == 1 ? '' : 's' }} restante{{ places_restantes == 1 ? '' : 's' }}.</p>{% endif %}
-    </div>
-    {% if event.isReservationOuverte and (places_restantes is null or places_restantes > 0) %}
-      <a href="{{ path('app_event_reservation', {slug: event.slug}) }}" class="rounded-full bg-olympia-gold px-6 py-3 text-sm font-bold text-olympia">Reserver ma place</a>
-    {% else %}
-      <span class="rounded-full bg-white/10 px-6 py-3 text-sm font-semibold">Reservations indisponibles</span>
-    {% endif %}
-  </div>
-</section> #}
 <section class="container-site pb-16"><div class="flex flex-col items-start justify-between gap-4 bg-sand-50 px-8 py-7 md:flex-row md:items-center"><div><h2 class="text-2xl font-medium text-olympia">Ne manquez aucun evenement !</h2><p class="mt-1 text-sm text-olympia-muted">Consultez toutes les animations du centre commercial.</p></div><a href="{{ path('app_events') }}" class="rounded-full bg-olympia-gold px-6 py-3 text-sm font-bold text-olympia">Voir le calendrier →</a></div></section>
 {% endblock %}
