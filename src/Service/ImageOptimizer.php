@@ -37,6 +37,46 @@ final class ImageOptimizer
         ];
     }
 
+    /** @return array{filename: string, path: string, mime: string, size: int} */
+    public function storeSvg(UploadedFile $file): array
+    {
+        $directory = $this->kernel->getProjectDir().'/public/uploads/media';
+        if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
+            throw new \RuntimeException('Impossible de créer le dossier de stockage des images.');
+        }
+
+        $sourcePath = $file->getPathname();
+        $content = file_get_contents($sourcePath);
+        if (false === $content || !preg_match('/<svg(?:\s|>)/i', $content)) {
+            throw new \RuntimeException('Le fichier envoyé n’est pas un SVG valide.');
+        }
+
+        $basename = bin2hex(random_bytes(16));
+        $filename = $basename.'.svg';
+        $destination = $directory.'/'.$filename;
+        if (!copy($sourcePath, $destination)) {
+            throw new \RuntimeException('Impossible de stocker le logo SVG.');
+        }
+
+        return [
+            'filename' => $filename,
+            'path' => 'uploads/media/'.$filename,
+            'mime' => 'image/svg+xml',
+            'size' => filesize($destination) ?: 0,
+        ];
+    }
+
+    /** @return array{filename: string, path: string, mime: string, size: int} */
+    public function processLogo(UploadedFile $file): array
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $mimeType = strtolower((string) $file->getMimeType());
+
+        return 'svg' === $extension || 'image/svg+xml' === $mimeType
+            ? $this->storeSvg($file)
+            : $this->convertToWebp($file);
+    }
+
     /**
      * Creates WebP variants for an existing image under public/images.
      * The source file is deliberately kept untouched.

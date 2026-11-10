@@ -13,6 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Image;
 
 final class RestaurantCrudController extends AbstractEntityCrudController
@@ -38,9 +39,13 @@ final class RestaurantCrudController extends AbstractEntityCrudController
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)
                 ->setFormTypeOption('required', false)
-                ->setFormTypeOption('constraints', [new Image(maxSize: '8M', maxWidth: 8000, maxHeight: 8000)])
-                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif'])
-                ->setHelp('Laissez vide pour conserver le logo actuel. Il sera converti automatiquement en WebP.')
+                ->setFormTypeOption('constraints', [new File(
+                    maxSize: '8M',
+                    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml'],
+                    mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
+                )])
+                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
+                ->setHelp('Laissez vide pour conserver le logo actuel. Les logos SVG sont conservés ; les autres images sont converties en WebP.')
                 ->onlyOnForms(),
             TextField::new('enseigneTelephone', 'Téléphone de l’enseigne')->onlyOnForms(),
             TextField::new('enseigneEmail', 'Email de l’enseigne')->onlyOnForms(),

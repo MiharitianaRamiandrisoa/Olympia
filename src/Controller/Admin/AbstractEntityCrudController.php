@@ -285,7 +285,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $nom = trim((string) $entity->getEnseigneNom());
         $logo = $entity->getEnseigneLogoUpload();
         if ($logo) {
-            $optimized = $this->imageOptimizer->convertToWebp($logo);
+            $optimized = $this->imageOptimizer->processLogo($logo);
             $logoMedia = (new Media())
                 ->setNomOriginal($logo->getClientOriginalName())
                 ->setNomFichier($optimized['filename'])
