@@ -17,6 +17,7 @@ use App\Repository\CategorieEvenementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\OeuvreRepository;
 use App\Repository\ArtisteRepository;
+use App\Repository\InformationPratiqueRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Boutique;
 use App\Entity\Restaurant;
@@ -272,6 +273,21 @@ class SiteController extends AbstractController
             'services' => $pagination['items'],
             'pagination' => $pagination,
         ]);
+    }
+
+    #[Route('/informations-pratiques', name: 'app_informations_pratiques', methods: ['GET'])]
+    public function informationsPratiques(InformationPratiqueRepository $informationPratiqueRepository): Response
+    {
+        return $this->render('info/pratiques.html.twig', [
+            'items' => $informationPratiqueRepository->findActiveOrdered(),
+            'address' => $informationPratiqueRepository->findActiveAddress(),
+        ]);
+    }
+
+    #[Route('/informations', name: 'app_informations_legacy', methods: ['GET'])]
+    public function informationsLegacy(): Response
+    {
+        return $this->redirectToRoute('app_informations_pratiques', [], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     #[Route('/galerie', name: 'app_galerie_virtuelle', methods: ['GET'])]

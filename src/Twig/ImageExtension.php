@@ -60,7 +60,8 @@ final class ImageExtension extends AbstractExtension
         $variant = $this->variantPath($path, 1600);
         if ($variant && is_file($this->kernel->getProjectDir().'/public/'.$variant)) {
             $source = $this->kernel->getProjectDir().'/public/'.ltrim(str_replace('\\', '/', $path), '/');
-            if (!is_file($source) || filesize($variant) < filesize($source)) {
+            $variantFile = $this->kernel->getProjectDir().'/public/'.ltrim(str_replace('\\', '/', $variant), '/');
+            if (!is_file($source) || filesize($variantFile) < filesize($source)) {
                 return $this->assets->getUrl($variant);
             }
         }

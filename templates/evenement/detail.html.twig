@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
-{% block meta_description %}{{ event.titre }} a Olympia Madagascar : date, horaires, lieu et informations sur cet evenement a Tanjombato.{% endblock %}
-{% block title %}{{ event.titre }} | Olympia{% endblock %}
+{% block meta_description %}{{ event.titre }} à Olympia Madagascar : date, horaires, lieu et informations sur cet événement à Tanjombato.{% endblock %}
+{% block title %}{{ event.titre }} | Événement Olympia Madagascar{% endblock %}
 {% block structured_data %}
   {{ parent() }}
   {% set event_image_path = event.imageMedia ? event.imageMedia.chemin : 'images/hero-olympia.png' %}

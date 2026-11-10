@@ -6,15 +6,20 @@
   {% set seo_title %}{% block title %}Olympia Centre Commercial{% endblock %}{% endset %}
   {% set seo_title = seo_title|striptags|trim %}
   {% set seo_description %}{% block meta_description %}Shopping, restauration, espace bien-être, enfant, services à une même adresse{% endblock %}{% endset %}
-  {% set seo_description = seo_description|striptags|trim %}
+  {% set seo_description = seo_description|striptags|trim|slice(0, 160) %}
+  {% set seo_og_type %}{% block og_type %}website{% endblock %}{% endset %}
+  {% set seo_og_type = seo_og_type|striptags|trim %}
+  {% set seo_image_path %}{% block social_image %}images/hero-olympia.png{% endblock %}{% endset %}
+  {% set seo_image_path = seo_image_path|striptags|trim %}
+  {% set seo_has_filter_query = app.request.query.has('q') or app.request.query.has('category') or app.request.query.has('sort') %}
   {% set canonical_url = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ app.request.pathInfo %}
   {% if app.request.query.get('page') %}
     {% set canonical_url = canonical_url ~ '?page=' ~ app.request.query.get('page') %}
   {% endif %}
-  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ optimized_image('images/hero-olympia.png') %}
+  {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ optimized_image(seo_image_path) %}
   <meta name="description" content="{{ seo_description }}">
   <meta name="author" content="Olympia Madagascar">
-  <meta name="robots" content="index,follow">
+  <meta name="robots" content="{{ seo_has_filter_query ? 'noindex,follow' : 'index,follow' }}">
   <meta name="theme-color" content="#154953">
   <link rel="canonical" href="{{ canonical_url }}">
   <link rel="icon" href="{{ asset('images/logo/favico/favicon.ico') }}?v=olympia-4" sizes="any">
@@ -22,7 +27,7 @@
   <link rel="icon" href="{{ asset('images/logo/favico/favicon-16x16.png') }}?v=olympia-4" type="image/png" sizes="16x16">
   <link rel="apple-touch-icon" href="{{ asset('images/logo/favico/apple-touch-icon.png') }}?v=olympia-4">
   <link rel="manifest" href="{{ asset('images/logo/favico/site.webmanifest') }}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{{ seo_og_type }}">
   <meta property="og:locale" content="fr_MG">
   <meta property="og:site_name" content="Olympia Madagascar">
   <meta property="og:title" content="{{ seo_title }}">
@@ -35,6 +40,7 @@
   <meta name="twitter:description" content="{{ seo_description }}">
   <meta name="twitter:image" content="{{ seo_image }}">
   <meta name="twitter:image:alt" content="Centre commercial Olympia à Tanjombato">
+  {% block social_meta %}{% endblock %}
   <title>{{ seo_title }}</title>
   {% block head_preloads %}{% endblock %}
   {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}

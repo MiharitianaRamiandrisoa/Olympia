@@ -22,6 +22,7 @@ final class PublicSiteTestAgentCommand extends Command
         '/promotions' => 'Promotions',
         '/evenements' => 'Événements',
         '/services' => 'Services',
+        '/informations-pratiques' => 'Informations pratiques',
         '/contact' => 'Contact',
     ];
 
