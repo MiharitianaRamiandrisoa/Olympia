@@ -67,7 +67,7 @@ final class ImageOptimizer
     }
 
     /** @return array{filename: string, path: string, mime: string, size: int} */
-    public function processLogo(UploadedFile $file): array
+    public function processImage(UploadedFile $file): array
     {
         $extension = strtolower($file->getClientOriginalExtension());
         $mimeType = strtolower((string) $file->getMimeType());

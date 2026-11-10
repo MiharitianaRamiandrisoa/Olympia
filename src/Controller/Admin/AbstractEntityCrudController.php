@@ -223,7 +223,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             return;
         }
 
-        $optimized = $this->imageOptimizer->convertToWebp($photoUpload);
+        $optimized = $this->imageOptimizer->processImage($photoUpload);
         $dimensions = @getimagesize($photoUpload->getPathname()) ?: [];
         $media = (new Media())
             ->setNomOriginal($photoUpload->getClientOriginalName())
@@ -253,7 +253,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             return;
         }
 
-        $optimized = $this->imageOptimizer->convertToWebp($imageUpload);
+        $optimized = $this->imageOptimizer->processImage($imageUpload);
         $dimensions = @getimagesize($imageUpload->getPathname()) ?: [];
         $media = (new Media())
             ->setNomOriginal($imageUpload->getClientOriginalName())
@@ -285,7 +285,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $nom = trim((string) $entity->getEnseigneNom());
         $logo = $entity->getEnseigneLogoUpload();
         if ($logo) {
-            $optimized = $this->imageOptimizer->processLogo($logo);
+            $optimized = $this->imageOptimizer->processImage($logo);
             $logoMedia = (new Media())
                 ->setNomOriginal($logo->getClientOriginalName())
                 ->setNomFichier($optimized['filename'])
