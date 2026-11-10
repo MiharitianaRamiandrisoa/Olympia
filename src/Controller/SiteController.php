@@ -386,7 +386,7 @@ class SiteController extends AbstractController
     }
 
     /** @return array{items: array, current_page: int, total_pages: int, total_items: int, per_page: int} */
-    private function paginate(array $items, Request $request, int $perPage = 9): array
+    private function paginate(array $items, Request $request, int $perPage = 10): array
     {
         $totalItems = count($items);
         $totalPages = max(1, (int) ceil($totalItems / $perPage));
