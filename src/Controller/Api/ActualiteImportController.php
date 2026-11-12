@@ -48,6 +48,28 @@ final class ActualiteImportController extends AbstractController
 
         try {
             $externalId = $this->requiredText($payload, ['external_id', 'post_id', 'facebook_post_id', 'id'], 'external_id');
+
+            $existingActualite = $actualiteRepository->findOneBy([
+                'origine' => 'facebook',
+                'identifiantExterne' => $externalId,
+            ]);
+            if ($existingActualite instanceof Actualite) {
+                $this->logger->info('Import Make ignore : publication deja presente.', [
+                    'external_id' => $externalId,
+                    'actualite_id' => $existingActualite->getId(),
+                ]);
+
+                return $this->json([
+                    'success' => true,
+                    'action' => 'skipped',
+                    'message' => 'Publication deja presente. Aucune modification effectuee.',
+                    'id' => $existingActualite->getId(),
+                    'external_id' => $existingActualite->getIdentifiantExterne(),
+                    'slug' => $existingActualite->getSlug(),
+                    'url' => '/actualites/'.$existingActualite->getSlug(),
+                ], Response::HTTP_OK);
+            }
+
             $message = $this->optionalText($payload, ['content', 'message', 'text', 'description']) ?? '';
             $title = $this->optionalText($payload, ['title', 'titre']) ?? $this->titleFromContent($message);
 
@@ -63,19 +85,12 @@ final class ActualiteImportController extends AbstractController
             $active = $this->optionalBoolean($payload, ['active', 'est_actif'], true);
             $featured = $this->optionalBoolean($payload, ['featured', 'est_mis_en_avant'], false);
 
-            $actualite = $actualiteRepository->findOneBy([
-                'origine' => 'facebook',
-                'identifiantExterne' => $externalId,
-            ]);
-            $action = $actualite instanceof Actualite ? 'updated' : 'created';
-
-            if (!$actualite instanceof Actualite) {
-                $actualite = (new Actualite())
-                    ->setOrigine('facebook')
-                    ->setIdentifiantExterne($externalId)
-                    ->setSlug($this->buildSlug($title, $externalId));
-                $entityManager->persist($actualite);
-            }
+            $actualite = (new Actualite())
+                ->setOrigine('facebook')
+                ->setIdentifiantExterne($externalId)
+                ->setSlug($this->buildSlug($title, $externalId));
+            $entityManager->persist($actualite);
+            $action = 'created';
 
             $actualite
                 ->setTitre($this->truncate($title, 200))

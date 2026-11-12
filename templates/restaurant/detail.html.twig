@@ -32,4 +32,60 @@
       </div>
     </div>
   </section>
+
+  {% if restaurant_photos is not empty %}
+    <section class="border-t border-sand-200 bg-sand-50 py-12 md:py-16">
+      <div class="container-site">
+        <div class="mb-7 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-olympia-gold">L’ambiance</p>
+            <h2 class="mt-2 text-3xl font-semibold text-olympia">Photos du restaurant</h2>
+          </div>
+          <p class="max-w-md text-sm leading-6 text-olympia-muted">Découvrez le cadre et l’atmosphère de {{ restaurant.enseigne.nom }}.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+          {% for photo in restaurant_photos %}
+            {% set photo_path = photo.imageMedia ? photo.imageMedia.chemin : null %}
+            {% if photo_path %}
+              <a href="{{ asset(photo_path) }}" target="_blank" rel="noopener" class="group relative overflow-hidden rounded-2xl bg-white shadow-sm md:first:col-span-2 md:first:row-span-2">
+                <img src="{{ optimized_image(photo_path) }}"{% set photo_srcset = responsive_srcset(photo_path) %}{% if photo_srcset %} srcset="{{ photo_srcset }}" sizes="(max-width: 768px) 50vw, 25vw"{% endif %} alt="{{ photo.legende ?: 'Photo du restaurant ' ~ restaurant.enseigne.nom }}" width="800" height="600" loading="lazy" decoding="async" class="aspect-[4/3] size-full object-cover transition duration-300 group-hover:scale-105 md:first:aspect-square">
+                {% if photo.legende %}<span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8 text-sm text-white">{{ photo.legende }}</span>{% endif %}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if restaurant_plats is not empty %}
+    <section class="container-site py-12 md:py-16">
+      <div class="mb-7">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-olympia-gold">À déguster</p>
+        <h2 class="mt-2 text-3xl font-semibold text-olympia">Nos plats</h2>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {% for plat in restaurant_plats %}
+          <article class="overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-sm">
+            {% if plat.imageMedia %}
+              {% set plat_path = plat.imageMedia.chemin %}
+              {% set plat_srcset = responsive_srcset(plat_path) %}
+              <img src="{{ optimized_image(plat_path) }}"{% if plat_srcset %} srcset="{{ plat_srcset }}" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"{% endif %} alt="{{ plat.nom }} - {{ restaurant.enseigne.nom }}" width="800" height="600" loading="lazy" decoding="async" class="aspect-[4/3] w-full object-cover">
+            {% else %}
+              <div class="flex aspect-[4/3] items-center justify-center bg-sand-100 text-4xl" aria-hidden="true">🍽️</div>
+            {% endif %}
+            <div class="p-5">
+              <div class="flex items-start justify-between gap-4">
+                <h3 class="text-xl font-semibold text-olympia">{{ plat.nom }}</h3>
+                {% if plat.prix is not null %}<span class="shrink-0 text-sm font-bold text-olympia-gold">{{ plat.prix|number_format(0, ',', ' ') }} Ar</span>{% endif %}
+              </div>
+              {% if plat.description %}<p class="mt-3 text-sm leading-6 text-olympia-muted">{{ plat.description }}</p>{% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
 {% endblock %}

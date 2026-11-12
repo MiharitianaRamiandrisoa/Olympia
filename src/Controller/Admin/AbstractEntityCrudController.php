@@ -30,6 +30,8 @@ use App\Entity\CategoriePromotion;
 use App\Entity\CategorieRestaurant;
 use App\Entity\Enseigne;
 use App\Entity\Restaurant;
+use App\Entity\RestaurantPhoto;
+use App\Entity\RestaurantPlat;
 use App\Entity\Media;
 use App\Entity\Promotion;
 use App\Entity\Evenement;
@@ -71,6 +73,8 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         return [
             Boutique::class => 'une boutique',
             Restaurant::class => 'un restaurant',
+            RestaurantPhoto::class => 'une photo de restaurant',
+            RestaurantPlat::class => 'un plat',
             Service::class => 'un service',
             Promotion::class => 'une promotion',
             Evenement::class => 'un evenement',
@@ -92,6 +96,8 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $labels = [
             Boutique::class => ['singular' => 'boutique', 'new' => 'Ajouter une boutique'],
             Restaurant::class => ['singular' => 'restaurant', 'new' => 'Ajouter un restaurant'],
+            RestaurantPhoto::class => ['singular' => 'photo de restaurant', 'new' => 'Ajouter une photo de restaurant'],
+            RestaurantPlat::class => ['singular' => 'plat', 'new' => 'Ajouter un plat'],
             Service::class => ['singular' => 'service', 'new' => 'Ajouter un service'],
             Promotion::class => ['singular' => 'promotion', 'new' => 'Ajouter une promotion'],
             Evenement::class => ['singular' => 'événement', 'new' => 'Ajouter un événement'],
@@ -244,7 +250,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
     private function synchronizeImage(EntityManagerInterface $entityManager, object $entity): void
     {
-        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre) {
+        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre && !$entity instanceof RestaurantPhoto && !$entity instanceof RestaurantPlat) {
             return;
         }
 

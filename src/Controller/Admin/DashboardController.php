@@ -19,6 +19,8 @@ use App\Entity\Media;
 use App\Entity\MessageContact;
 use App\Entity\Promotion;
 use App\Entity\Restaurant;
+use App\Entity\RestaurantPhoto;
+use App\Entity\RestaurantPlat;
 use App\Entity\Utilisateur;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
@@ -108,6 +110,8 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Contenu du site');
         yield MenuItem::linkToRoute('Boutiques', 'fa fa-store', 'app_admin_dashboard_boutique_index');
         yield MenuItem::linkToRoute('Restaurants', 'fa fa-utensils', 'app_admin_dashboard_restaurant_index');
+        yield MenuItem::linkToCrud('Photos des restaurants', 'fa fa-images', RestaurantPhoto::class);
+        yield MenuItem::linkToCrud('Plats', 'fa fa-utensil-spoon', RestaurantPlat::class);
         yield MenuItem::linkToRoute('Services', 'fa fa-concierge-bell', 'app_admin_dashboard_service_index');
         yield MenuItem::linkToRoute('Informations pratiques', 'fa fa-info-circle', 'app_admin_dashboard_information_pratique_index');
         yield MenuItem::linkToRoute('Promotions', 'fa fa-tags', 'app_admin_dashboard_promotion_index');

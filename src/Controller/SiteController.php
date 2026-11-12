@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\BoutiqueRepository;
 use App\Repository\RestaurantRepository;
+use App\Repository\RestaurantPhotoRepository;
+use App\Repository\RestaurantPlatRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\ActualiteRepository;
 use App\Repository\EvenementRepository;
@@ -131,14 +133,18 @@ class SiteController extends AbstractController
     }
 
     #[Route('/restaurants/{slug}', name: 'app_restaurant_detail', methods: ['GET'])]
-    public function restaurantDetail(string $slug, RestaurantRepository $restaurantRepository): Response
+    public function restaurantDetail(string $slug, RestaurantRepository $restaurantRepository, RestaurantPhotoRepository $restaurantPhotoRepository, RestaurantPlatRepository $restaurantPlatRepository): Response
     {
         $restaurant = $restaurantRepository->findActiveByEnseigneSlug($slug);
         if (!$restaurant instanceof Restaurant) {
             throw $this->createNotFoundException('Restaurant introuvable.');
         }
 
-        return $this->render('restaurant/detail.html.twig', ['restaurant' => $restaurant]);
+        return $this->render('restaurant/detail.html.twig', [
+            'restaurant' => $restaurant,
+            'restaurant_photos' => $restaurantPhotoRepository->findActiveForRestaurant($restaurant),
+            'restaurant_plats' => $restaurantPlatRepository->findActiveForRestaurant($restaurant),
+        ]);
     }
 
     #[Route('/promotions', name: 'app_promotions')]
