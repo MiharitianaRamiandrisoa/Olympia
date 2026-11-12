@@ -13,6 +13,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\File;
 
 final class RestaurantCrudController extends AbstractEntityCrudController
@@ -64,6 +65,19 @@ final class RestaurantCrudController extends AbstractEntityCrudController
                 )])
                 ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
                 ->setHelp('Une image déjà liée ? Laissez vide pour la conserver, ou choisissez une nouvelle image pour la remplacer. Les SVG sont conservés tels quels.')
+                ->onlyOnForms(),
+            Field::new('galleryUploads', 'Ajouter des photos du restaurant')
+                ->setFormType(FileType::class)
+                ->setFormTypeOption('mapped', true)
+                ->setFormTypeOption('multiple', true)
+                ->setFormTypeOption('required', false)
+                ->setFormTypeOption('constraints', [new All(constraints: [new File(
+                    maxSize: '8M',
+                    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml'],
+                    mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
+                )])])
+                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
+                ->setHelp('Sélectionnez plusieurs photos à ajouter à la galerie de ce restaurant. Les photos existantes sont conservées.')
                 ->onlyOnForms(),
             ChoiceField::new('horaireMode', 'Type d’horaire')->onlyOnForms()->setChoices([
                 'Même horaire tous les jours' => 'fixe',

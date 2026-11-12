@@ -13,6 +13,7 @@ class Restaurant
     use EnseigneFormDataTrait;
     use HorairesFormDataTrait;
     use PhotoUploadTrait;
+    use GalleryUploadTrait;
     public function __toString(): string { return (string) ($this->enseigne ?? 'Restaurant'); }
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;

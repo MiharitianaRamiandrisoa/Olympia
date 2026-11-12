@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\BoutiqueRepository;
+use App\Repository\BoutiquePhotoRepository;
 use App\Repository\RestaurantRepository;
 use App\Repository\RestaurantPhotoRepository;
 use App\Repository\RestaurantPlatRepository;
@@ -116,14 +117,17 @@ class SiteController extends AbstractController
     }
 
     #[Route('/enseignes/{slug}', name: 'app_enseigne_detail', methods: ['GET'])]
-    public function boutiqueDetail(string $slug, BoutiqueRepository $boutiqueRepository): Response
+    public function boutiqueDetail(string $slug, BoutiqueRepository $boutiqueRepository, BoutiquePhotoRepository $boutiquePhotoRepository): Response
     {
         $boutique = $boutiqueRepository->findActiveByEnseigneSlug($slug);
         if (!$boutique instanceof Boutique) {
             throw $this->createNotFoundException('Boutique introuvable.');
         }
 
-        return $this->render('boutique/detail.html.twig', ['boutique' => $boutique]);
+        return $this->render('boutique/detail.html.twig', [
+            'boutique' => $boutique,
+            'boutique_photos' => $boutiquePhotoRepository->findActiveForBoutique($boutique),
+        ]);
     }
 
     #[Route('/boutiques/{slug}', name: 'app_boutique_detail_legacy', methods: ['GET'])]

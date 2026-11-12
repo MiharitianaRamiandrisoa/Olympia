@@ -42,4 +42,30 @@
       </div>
     </div>
   </section>
+
+  {% if boutique_photos is not empty %}
+    <section class="border-t border-sand-200 bg-sand-50 py-12 md:py-16">
+      <div class="container-site">
+        <div class="mb-7 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-olympia-gold">L’univers de l’enseigne</p>
+            <h2 class="mt-2 text-3xl font-semibold text-olympia">Photos de la boutique</h2>
+          </div>
+          <p class="max-w-md text-sm leading-6 text-olympia-muted">Découvrez l’espace et l’ambiance de {{ boutique.enseigne.nom }}.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+          {% for photo in boutique_photos %}
+            {% set photo_path = photo.imageMedia ? photo.imageMedia.chemin : null %}
+            {% if photo_path %}
+              <a href="{{ asset(photo_path) }}" target="_blank" rel="noopener" class="group relative overflow-hidden rounded-2xl bg-white shadow-sm md:first:col-span-2 md:first:row-span-2">
+                <img src="{{ optimized_image(photo_path) }}"{% set photo_srcset = responsive_srcset(photo_path) %}{% if photo_srcset %} srcset="{{ photo_srcset }}" sizes="(max-width: 768px) 50vw, 25vw"{% endif %} alt="{{ photo.legende ?: 'Photo de la boutique ' ~ boutique.enseigne.nom }}" width="800" height="600" loading="lazy" decoding="async" class="aspect-[4/3] size-full object-cover transition duration-300 group-hover:scale-105 md:first:aspect-square">
+                {% if photo.legende %}<span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8 text-sm text-white">{{ photo.legende }}</span>{% endif %}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
 {% endblock %}

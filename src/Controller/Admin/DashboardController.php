@@ -107,6 +107,7 @@ final class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
         yield MenuItem::section('Contenu du site');
         yield MenuItem::linkToRoute('Boutiques', 'fa fa-store', 'app_admin_dashboard_boutique_index');
+        yield MenuItem::linkTo(BoutiquePhotoCrudController::class, 'Photos des boutiques', 'fa fa-images');
         yield MenuItem::linkToRoute('Restaurants', 'fa fa-utensils', 'app_admin_dashboard_restaurant_index');
         yield MenuItem::linkTo(RestaurantPhotoCrudController::class, 'Photos des restaurants', 'fa fa-images');
         yield MenuItem::linkTo(RestaurantPlatCrudController::class, 'Plats', 'fa fa-utensil-spoon');

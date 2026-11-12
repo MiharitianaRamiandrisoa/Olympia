@@ -23,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Entity\Boutique;
+use App\Entity\BoutiquePhoto;
 use App\Entity\AbonnementNewsletter;
 use App\Entity\CategorieBoutique;
 use App\Entity\CategorieEvenement;
@@ -73,6 +74,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         return [
             Boutique::class => 'une boutique',
             Restaurant::class => 'un restaurant',
+            BoutiquePhoto::class => 'une photo de boutique',
             RestaurantPhoto::class => 'une photo de restaurant',
             RestaurantPlat::class => 'un plat',
             Service::class => 'un service',
@@ -96,6 +98,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $labels = [
             Boutique::class => ['singular' => 'boutique', 'new' => 'Ajouter une boutique'],
             Restaurant::class => ['singular' => 'restaurant', 'new' => 'Ajouter un restaurant'],
+            BoutiquePhoto::class => ['singular' => 'photo de boutique', 'new' => 'Ajouter une photo de boutique'],
             RestaurantPhoto::class => ['singular' => 'photo de restaurant', 'new' => 'Ajouter une photo de restaurant'],
             RestaurantPlat::class => ['singular' => 'plat', 'new' => 'Ajouter un plat'],
             Service::class => ['singular' => 'service', 'new' => 'Ajouter un service'],
@@ -205,6 +208,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $this->synchronizeSlug($entityInstance);
         $this->synchronizePhoto($entityManager, $entityInstance);
         $this->synchronizeImage($entityManager, $entityInstance);
+        $this->synchronizeGallery($entityManager, $entityInstance);
         parent::persistEntity($entityManager, $entityInstance);
     }
 
@@ -215,6 +219,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $this->synchronizeSlug($entityInstance);
         $this->synchronizePhoto($entityManager, $entityInstance);
         $this->synchronizeImage($entityManager, $entityInstance);
+        $this->synchronizeGallery($entityManager, $entityInstance);
         parent::updateEntity($entityManager, $entityInstance);
     }
 
@@ -250,7 +255,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
     private function synchronizeImage(EntityManagerInterface $entityManager, object $entity): void
     {
-        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre && !$entity instanceof RestaurantPhoto && !$entity instanceof RestaurantPlat) {
+        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre && !$entity instanceof BoutiquePhoto && !$entity instanceof RestaurantPhoto && !$entity instanceof RestaurantPlat) {
             return;
         }
 
@@ -276,6 +281,52 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             ->setDateModification(new \DateTimeImmutable('now', new \DateTimeZone('UTC')));
         $entityManager->persist($media);
         $entity->setImageMedia($media);
+    }
+
+    private function synchronizeGallery(EntityManagerInterface $entityManager, object $entity): void
+    {
+        if (!$entity instanceof Boutique && !$entity instanceof Restaurant) {
+            return;
+        }
+
+        $uploads = $entity->getGalleryUploads();
+        if ($uploads === []) {
+            return;
+        }
+
+        $order = $entity->getPhotos()->count();
+        foreach ($uploads as $upload) {
+            $optimized = $this->imageOptimizer->processImage($upload);
+            $dimensions = @getimagesize($upload->getPathname()) ?: [];
+            $media = (new Media())
+                ->setNomOriginal($upload->getClientOriginalName())
+                ->setNomFichier($optimized['filename'])
+                ->setChemin($optimized['path'])
+                ->setType('image')
+                ->setTypeMime($optimized['mime'])
+                ->setTaille((string) $optimized['size'])
+                ->setLargeur(isset($dimensions[0]) ? (int) $dimensions[0] : null)
+                ->setHauteur(isset($dimensions[1]) ? (int) $dimensions[1] : null)
+                ->setTexteAlternatif((string) $entity)
+                ->setEstActif(true)
+                ->setDateCreation(new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
+                ->setDateModification(new \DateTimeImmutable('now', new \DateTimeZone('UTC')));
+            $entityManager->persist($media);
+
+            if ($entity instanceof Boutique) {
+                $entity->addPhoto(
+                    (new BoutiquePhoto())
+                        ->setImageMedia($media)
+                        ->setOrdre($order++)
+                );
+            } else {
+                $entity->addPhoto(
+                    (new \App\Entity\RestaurantPhoto())
+                        ->setImageMedia($media)
+                        ->setOrdre($order++)
+                );
+            }
+        }
     }
 
     private function synchronizeEnseigne(EntityManagerInterface $entityManager, object $entity): void
