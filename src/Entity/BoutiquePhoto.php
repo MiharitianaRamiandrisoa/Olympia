@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\BoutiquePhotoRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BoutiquePhotoRepository::class)]
@@ -28,6 +29,9 @@ class BoutiquePhoto
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $legende = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
     #[ORM\Column]
     private int $ordre = 0;
 
@@ -46,6 +50,8 @@ class BoutiquePhoto
     public function setImageMedia(?Media $imageMedia): static { $this->imageMedia = $imageMedia; return $this; }
     public function getLegende(): ?string { return $this->legende; }
     public function setLegende(?string $legende): static { $this->legende = $legende; return $this; }
+    public function getDescription(): ?string { return $this->description; }
+    public function setDescription(?string $description): static { $this->description = $description; return $this; }
     public function getOrdre(): int { return $this->ordre; }
     public function setOrdre(int $ordre): static { $this->ordre = $ordre; return $this; }
     public function isEstActif(): bool { return $this->estActif; }

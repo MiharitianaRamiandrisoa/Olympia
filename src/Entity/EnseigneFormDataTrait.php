@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 trait EnseigneFormDataTrait
 {
     private ?string $enseigneNom = null;
-    private ?string $enseigneDescription = null;
     private ?string $enseigneTelephone = null;
     private ?string $enseigneEmail = null;
     private ?string $enseigneSiteWeb = null;
@@ -20,8 +19,6 @@ trait EnseigneFormDataTrait
 
     public function getEnseigneNom(): ?string { return $this->enseigneNom ?? $this->getEnseigne()?->getNom(); }
     public function setEnseigneNom(?string $value): static { $this->enseigneNom = $value; return $this; }
-    public function getEnseigneDescription(): ?string { return $this->enseigneDescription ?? $this->getEnseigne()?->getDescription(); }
-    public function setEnseigneDescription(?string $value): static { $this->enseigneDescription = $value; return $this; }
     public function getEnseigneTelephone(): ?string { return $this->enseigneTelephone ?? $this->getEnseigne()?->getTelephone(); }
     public function setEnseigneTelephone(?string $value): static { $this->enseigneTelephone = $value; return $this; }
     public function getEnseigneEmail(): ?string { return $this->enseigneEmail ?? $this->getEnseigne()?->getEmail(); }

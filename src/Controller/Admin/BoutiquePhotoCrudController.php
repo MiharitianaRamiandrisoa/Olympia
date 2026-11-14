@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
 
@@ -46,6 +47,8 @@ final class BoutiquePhotoCrudController extends AbstractEntityCrudController
                 ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
                 ->setHelp('Ajoutez une photo de la boutique ou de son espace de vente.'),
             TextField::new('legende', 'Légende')->setRequired(false),
+            TextareaField::new('description', 'Description de la photo')->setRequired(false)
+                ->setHelp('Expliquez ce que montre la photo. Cette description sera visible sur le site.'),
             IntegerField::new('ordre', 'Ordre d’affichage')->setHelp('0 apparaît en premier.'),
             BooleanField::new('estActif', 'Afficher sur le site')->renderAsSwitch(),
         ];

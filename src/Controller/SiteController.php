@@ -51,17 +51,7 @@ class SiteController extends AbstractController
             'url' => '/enseignes/'.($boutique->getEnseigne()?->getSlug() ?? ''),
         ], $boutiqueRepository->findActive($search, $category, $sort));
         $pagination = $this->paginate($shops, $request);
-        /*
-        $shops = [
-            ['name' => 'ZARA', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/zara.jpg'],
-            ['name' => 'H&M', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/hm.jpg'],
-            ['name' => 'LC Waikiki', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/lcw.jpg'],
-            ['name' => 'Bata', 'category' => 'Chaussures', 'floor' => 'RDC', 'image' => 'images/shops/bata.jpg'],
-            ['name' => 'Jumbo', 'category' => 'Alimentation', 'floor' => 'RDC', 'image' => 'images/shops/jumbo.jpg'],
-            ['name' => 'C&A', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/ca.jpg'],
-            ['name' => 'Watsons', 'category' => 'Beauté & Santé', 'floor' => 'R+1', 'image' => 'images/shops/watsons.jpg'],
-            ['name' => 'Orange', 'category' => 'High-Tech', 'floor' => 'RDC', 'image' => 'images/shops/orange.jpg'],
-        ]; */
+       
 
         return $this->render('boutique/index.html.twig', [
             'shops' => $pagination['items'],
@@ -100,20 +90,6 @@ class SiteController extends AbstractController
             'active_category' => $category,
         ]);
 
-        /*
-        $restaurants = [
-            ['name' => 'Le Jardin', 'cuisine' => 'Cuisine locale', 'floor' => 'RDC', 'image' => 'images/resto/jardin.jpg'],
-            ['name' => 'Pizza & Co', 'cuisine' => 'Italienne', 'floor' => 'R+1', 'image' => 'images/resto/pizza.jpg'],
-            ['name' => 'Sushi Time', 'cuisine' => 'Japonaise', 'floor' => 'R+1', 'image' => 'images/resto/sushi.jpg'],
-            ['name' => 'La Table', 'cuisine' => 'Française', 'floor' => 'RDC', 'image' => 'images/resto/table.jpg'],
-            ['name' => 'Burger House', 'cuisine' => 'Fast Food', 'floor' => 'R+1', 'image' => 'images/resto/burger.jpg'],
-            ['name' => 'Café des Amis', 'cuisine' => 'Café & Pâtisserie', 'floor' => 'RDC', 'image' => 'images/resto/cafe.jpg'],
-            ['name' => 'Spice & Grill', 'cuisine' => 'Internationale', 'floor' => 'R+1', 'image' => 'images/resto/spice.jpg'],
-            ['name' => 'Fresh Bowl', 'cuisine' => 'Healthy Food', 'floor' => 'RDC', 'image' => 'images/resto/bowl.jpg'],
-        ];
-
-        return $this->render('restaurant/index.html.twig', ['restaurants' => $restaurants]);
-        */
     }
 
     #[Route('/enseignes/{slug}', name: 'app_enseigne_detail', methods: ['GET'])]
@@ -168,17 +144,6 @@ class SiteController extends AbstractController
         $pagination = $this->paginate($promotions, $request);
         return $this->render('promotion/index.html.twig', ['promotions' => $pagination['items'], 'pagination' => $pagination, 'categories' => $categories, 'active_category' => $category]);
 
-        /*
-        $promotions = [
-            ['tag' => 'Restauration', 'title' => 'MENU SPÉCIAL', 'date' => 'Du 5 au 18 Mai 2025', 'shop' => 'Gastro',
-             'description' => "Découvrez une formule spéciale pour profiter d'un repas complet à prix avantageux.", 'image' => 'images/promo/menu.jpg'],
-            ['tag' => 'Mode', 'title' => "Jusqu'à -50%", 'date' => 'Du 5 au 18 Mai 2025', 'shop' => 'Zara',
-             'description' => 'Profitez de réductions exceptionnelles dans toutes vos boutiques préférées.', 'image' => 'images/promo/mode.jpg'],
-            ['tag' => 'Nouveauté', 'title' => 'Atelier créatif enfants', 'date' => '18 Mai 2025', 'shop' => 'Garderie',
-             'description' => 'Des activités créatives encadrées pour vos enfants pendant votre séance shopping.', 'image' => 'images/promo/atelier.jpg'],
-        ];
-
-        return $this->render('promotion/index.html.twig', ['promotions' => $promotions]); */
     }
 
     #[Route('/evenements', name: 'app_events')]
@@ -219,43 +184,6 @@ class SiteController extends AbstractController
         $featured = $articles[0] ?? null;
         $pagination = $this->paginate(array_slice($articles, 1), $request);
 
-        /*
-
-        $promotions = array_map(static fn ($promotion) => [
-            'type' => 'promotion',
-            'badge' => $promotion->getCategorie()?->getNom() ?? 'Nouveautés',
-            'title' => $promotion->getTitre(),
-            'date' => $promotion->getDateDebut()?->format('d/m/Y'),
-            'timestamp' => $promotion->getDateDebut()?->getTimestamp() ?? 0,
-            'text' => $promotion->getDescription() ?? '',
-            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/promo/default.jpg',
-            'href' => '/promotions/'.$promotion->getSlug(),
-        ], $promotionRepository->findActive());
-
-        $events = array_map(static fn ($event) => [
-            'type' => 'event',
-            'badge' => 'Événement',
-            'title' => $event->getTitre(),
-            'date' => $event->getDateDebut()?->format('d/m/Y'),
-            'timestamp' => $event->getDateDebut()?->getTimestamp() ?? 0,
-            'text' => $event->getDescription() ?? '',
-            'image' => $event->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
-            'href' => '/evenements/'.$event->getSlug(),
-        ], $evenementRepository->findActive());
-
-        $articles = array_merge($promotions, $events);
-        usort($articles, static fn (array $left, array $right) => $right['timestamp'] <=> $left['timestamp']);
-        $articles = array_values(array_filter($articles, static function (array $article) use ($type, $search): bool {
-            if ($type !== 'all' && $article['type'] !== $type) {
-                return false;
-            }
-            if ($search === '') {
-                return true;
-            }
-            return str_contains(mb_strtolower($article['title'].' '.$article['text'].' '.$article['badge']), mb_strtolower($search));
-        }));
-
-        */
         return $this->render('actualite/index.html.twig', [
             'articles' => $pagination['items'],
             'pagination' => $pagination,

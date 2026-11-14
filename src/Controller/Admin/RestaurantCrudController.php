@@ -34,7 +34,7 @@ final class RestaurantCrudController extends AbstractEntityCrudController
 
         return array_merge([
             TextField::new('enseigneNom', 'Nom de l’enseigne')->onlyOnForms()->setRequired(true),
-            TextareaField::new('enseigneDescription', 'Description de l’enseigne')->onlyOnForms(),
+            TextareaField::new('description', 'Description du restaurant')->onlyOnForms(),
             Field::new('enseigneLogoUpload', 'Logo de l’enseigne')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)

@@ -45,7 +45,7 @@ final class BoutiqueCrudController extends AbstractEntityCrudController
 
         return array_merge([
             TextField::new('enseigneNom', 'Nom de l’enseigne')->onlyOnForms()->setRequired(true),
-            TextareaField::new('enseigneDescription', 'Description de l’enseigne')->onlyOnForms(),
+            TextareaField::new('description', 'Description de la boutique')->onlyOnForms(),
             AssociationField::new('categorie', 'Catégorie')
                 ->renderAsNativeWidget()
                 ->setFormTypeOption('required', false)

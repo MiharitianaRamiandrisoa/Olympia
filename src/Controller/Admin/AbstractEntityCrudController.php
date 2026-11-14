@@ -163,12 +163,18 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
                 continue;
             }
             if (
+                in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)
+                && $fieldName === 'description'
+            ) {
+                // La description est configurée explicitement par chaque CRUD.
+                continue;
+            }
+            if (
                 $pageName === Crud::PAGE_EDIT
                 && in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)
-                && in_array($fieldName, ['description', 'estActif'], true)
+                && $fieldName === 'estActif'
             ) {
-                // Les champs de l'enseigne sont déjà affichés dans ce formulaire.
-                // Ne pas afficher les champs génériques de la boutique/du restaurant une seconde fois.
+                // Le statut de l'enseigne est géré dans ce formulaire.
                 continue;
             }
             if ($fieldName === 'id') {
@@ -360,7 +366,6 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
         $enseigne->setNom($nom)
             ->setSlug($this->slugger->slug($nom)->lower()->toString())
-            ->setDescription($entity->getEnseigneDescription())
             ->setTelephone($entity->getEnseigneTelephone())
             ->setEmail($entity->getEnseigneEmail())
             ->setLogoMedia($enseigne->getLogoMedia())
