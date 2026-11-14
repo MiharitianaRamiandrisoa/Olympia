@@ -14,6 +14,7 @@ class Evenement
     #[ORM\Id, ORM\GeneratedValue, ORM\Column] private ?int $id = null;
     #[ORM\ManyToOne(targetEntity: CategorieEvenement::class)] #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] private ?CategorieEvenement $categorie = null;
     #[ORM\ManyToOne(targetEntity: Enseigne::class)] #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] private ?Enseigne $enseigne = null;
+    #[ORM\Column(length: 255, nullable: true)] private ?string $organisateur = null;
     #[ORM\Column(length: 200)] private ?string $titre = null;
     #[ORM\Column(length: 220, unique: true)] private ?string $slug = null;
     #[ORM\Column(length: 30)] private string $origine = 'manuelle';
@@ -31,6 +32,8 @@ class Evenement
     public function setCategorie(?CategorieEvenement $v): static { $this->categorie = $v; return $this; }
     public function getEnseigne(): ?Enseigne { return $this->enseigne; }
     public function setEnseigne(?Enseigne $v): static { $this->enseigne = $v; return $this; }
+    public function getOrganisateur(): ?string { return $this->organisateur; }
+    public function setOrganisateur(?string $v): static { $this->organisateur = $v; return $this; }
     public function getTitre(): ?string { return $this->titre; }
     public function setTitre(string $v): static { $this->titre = $v; return $this; }
     public function getSlug(): ?string { return $this->slug; }

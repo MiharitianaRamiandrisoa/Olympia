@@ -36,7 +36,7 @@ Exemple :
 }
 ```
 
-`external_id`, `title` et `start_at` sont obligatoires. L’enseigne est facultative pour un événement.
+`external_id`, `title` et `start_at` sont obligatoires. Pour un événement, `enseigne` peut être le nom d’une enseigne existante ou un texte libre. Une valeur inconnue est enregistrée comme `organisateur`.
 
 ## Promotions
 

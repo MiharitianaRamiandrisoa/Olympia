@@ -67,6 +67,9 @@ final class MakeEventPromotionImportController extends AbstractController
                 throw new \InvalidArgumentException('La date de fin doit être postérieure à la date de début.');
             }
 
+            $enseigneValue = $this->optionalText($payload, ['organisateur', 'organizer', 'enseigne_id', 'enseigne_slug', 'brand_slug', 'shop_slug', 'enseigne', 'brand', 'shop']);
+            $enseigne = $this->resolveEnseigne($enseigneValue, $enseigneRepository, false, true);
+
             $event = (new Evenement())
                 ->setOrigine('make')
                 ->setIdentifiantExterne($externalId)
@@ -80,11 +83,8 @@ final class MakeEventPromotionImportController extends AbstractController
                 ->setEstActif($this->optionalBoolean($payload, ['active', 'est_actif'], true))
                 ->setEstMisEnAvant($this->optionalBoolean($payload, ['featured', 'est_mis_en_avant'], false))
                 ->setCategorie($this->resolveEventCategory($this->optionalText($payload, ['category_slug', 'category', 'categorie']), $categorieRepository))
-                ->setEnseigne($this->resolveEnseigne(
-                    $this->optionalText($payload, ['enseigne_id', 'enseigne_slug', 'brand_slug', 'shop_slug', 'enseigne', 'brand', 'shop']),
-                    $enseigneRepository,
-                    false,
-                ));
+                ->setEnseigne($enseigne)
+                ->setOrganisateur($enseigne === null ? $enseigneValue : null);
 
             $this->attachImage($event, $payload, $externalId);
             $this->entityManager->persist($event);
@@ -285,7 +285,7 @@ final class MakeEventPromotionImportController extends AbstractController
         return $value;
     }
 
-    private function resolveEnseigne(?string $value, EnseigneRepository $repository, bool $required): ?Enseigne
+    private function resolveEnseigne(?string $value, EnseigneRepository $repository, bool $required, bool $allowFreeText = false): ?Enseigne
     {
         if ($value === null) {
             if ($required) {
@@ -302,6 +302,10 @@ final class MakeEventPromotionImportController extends AbstractController
         $enseigne ??= $repository->findFlexibleByName($value);
 
         if (!$enseigne instanceof Enseigne) {
+            if ($allowFreeText) {
+                return null;
+            }
+
             throw new \InvalidArgumentException(sprintf('Enseigne introuvable : %s.', $value));
         }
 

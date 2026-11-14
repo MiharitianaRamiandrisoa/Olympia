@@ -5,7 +5,7 @@
   {{ parent() }}
   {% set event_image_path = event.imageMedia ? event.imageMedia.chemin : 'images/hero-olympia.png' %}
   {% set event_url = app.request.schemeAndHttpHost ~ path('app_event_detail', {slug: event.slug}) %}
-  {% set performer_name = event.enseigne ? event.enseigne.nom : 'Olympia Madagascar' %}
+  {% set performer_name = event.enseigne ? event.enseigne.nom : (event.organisateur ?: 'Olympia Madagascar') %}
   <script type="application/ld+json">
     {{ {
       '@context': 'https://schema.org',
@@ -66,6 +66,7 @@
       <div><dt class="font-bold text-olympia">Date</dt><dd class="mt-1 text-olympia-muted">{{ event.dateDebut|date('d/m/Y') }}</dd></div>
       <div><dt class="font-bold text-olympia">Heure</dt><dd class="mt-1 text-olympia-muted">{{ event.dateDebut|date('H\\hi') }}{% if event.dateFin %} - {{ event.dateFin|date('H\\hi') }}{% endif %}</dd></div>
       {% if event.lieu %}<div><dt class="font-bold text-olympia">Lieu</dt><dd class="mt-1 text-olympia-muted">{{ event.lieu }}</dd></div>{% endif %}
+      {% if event.organisateur %}<div><dt class="font-bold text-olympia">Organisateur</dt><dd class="mt-1 text-olympia-muted">{{ event.organisateur }}</dd></div>{% endif %}
     </dl>
     <div class="mt-10"><h2 class="text-xl font-bold text-olympia">Description</h2><p class="mt-3 text-sm leading-6 text-olympia-muted">{{ event.description }}</p></div>
   </div>
