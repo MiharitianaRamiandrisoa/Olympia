@@ -5,6 +5,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
+#[ORM\Table(name: 'evenement')]
+#[ORM\UniqueConstraint(name: 'UNIQ_EVENEMENT_ORIGINE_EXTERNE', columns: ['origine', 'identifiant_externe'])]
 class Evenement
 {
     use ImageUploadTrait;
@@ -14,6 +16,8 @@ class Evenement
     #[ORM\ManyToOne(targetEntity: Enseigne::class)] #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] private ?Enseigne $enseigne = null;
     #[ORM\Column(length: 200)] private ?string $titre = null;
     #[ORM\Column(length: 220, unique: true)] private ?string $slug = null;
+    #[ORM\Column(length: 30)] private string $origine = 'manuelle';
+    #[ORM\Column(length: 255, nullable: true)] private ?string $identifiantExterne = null;
     #[ORM\Column(type: 'text', nullable: true)] private ?string $description = null;
     #[ORM\Column(type: 'text', nullable: true)] private ?string $informationsComplementaires = null;
     #[ORM\ManyToOne(targetEntity: Media::class)] #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] private ?Media $imageMedia = null;
@@ -31,6 +35,10 @@ class Evenement
     public function setTitre(string $v): static { $this->titre = $v; return $this; }
     public function getSlug(): ?string { return $this->slug; }
     public function setSlug(string $v): static { $this->slug = $v; return $this; }
+    public function getOrigine(): string { return $this->origine; }
+    public function setOrigine(string $v): static { $this->origine = $v; return $this; }
+    public function getIdentifiantExterne(): ?string { return $this->identifiantExterne; }
+    public function setIdentifiantExterne(?string $v): static { $this->identifiantExterne = $v; return $this; }
     public function getDescription(): ?string { return $this->description; }
     public function getInformationsComplementaires(): ?string { return $this->informationsComplementaires; }
     public function setInformationsComplementaires(?string $v): static { $this->informationsComplementaires = $v; return $this; }

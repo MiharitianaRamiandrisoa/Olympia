@@ -24,7 +24,7 @@ Le serveur SSH de préproduction doit disposer de PHP 8.2 ou supérieur et de Co
 
 Le mot de passe de la base ne doit pas être ajouté dans `.env`, dans le dépôt ou dans le workflow. Il doit uniquement être enregistré dans le secret GitHub `PREPROD_DB_PASSWORD`.
 
-La clé d'import des actualités est écrite automatiquement dans `.env.local` sur le serveur par le workflow. Le secret GitHub `ACTUALITE_IMPORT_API_KEY` peut être défini pour utiliser une clé personnalisée ; à défaut, la valeur `test-key` est utilisée.
+Les clés d'import Make sont écrites automatiquement dans `.env.local` sur le serveur par le workflow. Les secrets GitHub `ACTUALITE_IMPORT_API_KEY`, `EVENEMENT_IMPORT_API_KEY` et `PROMOTION_IMPORT_API_KEY` permettent de définir les clés respectives ; à défaut, la valeur `test-key` est utilisée.
 
 ## 1. Transférer les sources
 
