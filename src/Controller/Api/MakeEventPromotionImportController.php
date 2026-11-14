@@ -299,6 +299,7 @@ final class MakeEventPromotionImportController extends AbstractController
             ? $repository->find((int) $value)
             : $repository->findOneBy(['slug' => $this->slugger->slug($value)->lower()->toString()]);
         $enseigne ??= $repository->findOneBy(['nom' => $value]);
+        $enseigne ??= $repository->findFlexibleByName($value);
 
         if (!$enseigne instanceof Enseigne) {
             throw new \InvalidArgumentException(sprintf('Enseigne introuvable : %s.', $value));
