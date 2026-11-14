@@ -30,7 +30,9 @@ final class HomeController extends AbstractController
     {
         $featuredShops = $this->boutiqueRepository->findFeatured();
         if ($featuredShops === []) {
-            $featuredShops = array_slice($this->boutiqueRepository->findActive(), 0, 5);
+            $featuredShops = $this->boutiqueRepository->findActive();
+            shuffle($featuredShops);
+            $featuredShops = array_slice($featuredShops, 0, 5);
         }
 
         $shops = array_map(static fn ($boutique) => [

@@ -47,14 +47,17 @@ class BoutiqueRepository extends ServiceEntityRepository
     /** @return Boutique[] */
     public function findFeatured(int $limit = 5): array
     {
-        return $this->createQueryBuilder('b')
+        $featured = $this->createQueryBuilder('b')
             ->join('b.enseigne', 'e')->addSelect('e')
             ->leftJoin('b.categorie', 'c')->addSelect('c')
             ->andWhere('b.estActif = :active')->setParameter('active', true)
             ->andWhere('e.estActif = :active')
             ->andWhere('b.estMisEnAvant = :featured')->setParameter('featured', true)
-            ->orderBy('e.nom', 'ASC')->setMaxResults($limit)
             ->getQuery()->getResult();
+
+        shuffle($featured);
+
+        return array_slice($featured, 0, $limit);
     }
 
     public function findActiveByEnseigneSlug(string $slug): ?Boutique
