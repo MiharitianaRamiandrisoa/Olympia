@@ -36,7 +36,7 @@ final class RestaurantPhotoCrudController extends AbstractEntityCrudController
 
         return [
             AssociationField::new('restaurant', 'Restaurant')->setRequired(true),
-            Field::new('imageUpload', 'Photo du restaurant')
+            Field::new('imageUpload', 'Photo de l’album du restaurant')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)
                 ->setFormTypeOption('required', $pageName === Crud::PAGE_NEW)
@@ -46,7 +46,7 @@ final class RestaurantPhotoCrudController extends AbstractEntityCrudController
                     mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
                 )])
                 ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
-                ->setHelp('Choisissez une photo de la salle, de la terrasse ou de l’ambiance du restaurant.'),
+                ->setHelp('Ajoutez une photo à l’album de la salle, de la terrasse ou de l’ambiance du restaurant.'),
             TextField::new('legende', 'Légende')->setRequired(false),
             TextareaField::new('description', 'Description de la photo')->setRequired(false)
                 ->setHelp('Expliquez ce que montre la photo. Cette description sera visible sur le site.'),

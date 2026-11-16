@@ -24,7 +24,7 @@ final class RestaurantCrudController extends AbstractEntityCrudController
     {
         if ($pageName === Crud::PAGE_INDEX) {
             return [
-                ImageField::new('photoMedia', 'Photo')->setBasePath('')->formatValue(static fn (?Media $media): ?string => $media?->getChemin()),
+                ImageField::new('photoMedia', 'Logo')->setBasePath('')->formatValue(static fn (?Media $media): ?string => $media?->getChemin()),
                 AssociationField::new('enseigne', 'Nom du restaurant'),
                 AssociationField::new('categorie', 'Catégorie'),
                 TextareaField::new('description', 'Description'),
@@ -35,18 +35,6 @@ final class RestaurantCrudController extends AbstractEntityCrudController
         return array_merge([
             TextField::new('enseigneNom', 'Nom de l’enseigne')->onlyOnForms()->setRequired(true),
             TextareaField::new('description', 'Description du restaurant')->onlyOnForms(),
-            Field::new('enseigneLogoUpload', 'Logo de l’enseigne')
-                ->setFormType(FileType::class)
-                ->setFormTypeOption('mapped', true)
-                ->setFormTypeOption('required', false)
-                ->setFormTypeOption('constraints', [new File(
-                    maxSize: '8M',
-                    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml'],
-                    mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
-                )])
-                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
-                ->setHelp('Laissez vide pour conserver le logo actuel. Les logos SVG sont conservés ; les autres images sont converties en WebP.')
-                ->onlyOnForms(),
             TextField::new('enseigneTelephone', 'Téléphone de l’enseigne')->onlyOnForms(),
             TextField::new('enseigneEmail', 'Email de l’enseigne')->onlyOnForms(),
             TextField::new('enseigneSiteWeb', 'Site web de l’enseigne')->onlyOnForms(),
@@ -54,7 +42,7 @@ final class RestaurantCrudController extends AbstractEntityCrudController
             TextField::new('enseigneInstagram', 'Instagram de l’enseigne')->onlyOnForms(),
             BooleanField::new('enseigneEstActif', 'Enseigne active')->onlyOnForms(),
         ], iterator_to_array(parent::configureFields($pageName)), [
-            Field::new('photoUpload', 'Photo du restaurant')
+            Field::new('photoUpload', 'Logo du restaurant')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)
                 ->setFormTypeOption('required', $pageName === Crud::PAGE_NEW)
@@ -64,9 +52,9 @@ final class RestaurantCrudController extends AbstractEntityCrudController
                     mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
                 )])
                 ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
-                ->setHelp('Une image déjà liée ? Laissez vide pour la conserver, ou choisissez une nouvelle image pour la remplacer. Les SVG sont conservés tels quels.')
+                ->setHelp('Laissez vide pour conserver le logo actuel, ou choisissez un nouveau logo pour le remplacer. Les SVG sont conservés tels quels.')
                 ->onlyOnForms(),
-            Field::new('galleryUploads', 'Ajouter des photos du restaurant')
+            Field::new('galleryUploads', 'Ajouter des photos à l’album du restaurant')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)
                 ->setFormTypeOption('multiple', true)
@@ -77,7 +65,7 @@ final class RestaurantCrudController extends AbstractEntityCrudController
                     mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
                 )])])
                 ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
-                ->setHelp('Sélectionnez plusieurs photos à ajouter à la galerie de ce restaurant. Les photos existantes sont conservées.')
+                ->setHelp('Sélectionnez plusieurs photos à ajouter à l’album de ce restaurant. Les photos existantes sont conservées.')
                 ->onlyOnForms(),
             ChoiceField::new('horaireMode', 'Type d’horaire')->onlyOnForms()->setChoices([
                 'Même horaire tous les jours' => 'fixe',

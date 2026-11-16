@@ -35,7 +35,7 @@ final class BoutiquePhotoCrudController extends AbstractEntityCrudController
 
         return [
             AssociationField::new('boutique', 'Boutique')->setRequired(true),
-            Field::new('imageUpload', 'Photo de la boutique')
+            Field::new('imageUpload', 'Photo de l’album de la boutique')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)
                 ->setFormTypeOption('required', $pageName === Crud::PAGE_NEW)
@@ -45,7 +45,7 @@ final class BoutiquePhotoCrudController extends AbstractEntityCrudController
                     mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
                 )])
                 ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
-                ->setHelp('Ajoutez une photo de la boutique ou de son espace de vente.'),
+                ->setHelp('Ajoutez une photo à l’album de la boutique ou de son espace de vente.'),
             TextField::new('legende', 'Légende')->setRequired(false),
             TextareaField::new('description', 'Description de la photo')->setRequired(false)
                 ->setHelp('Expliquez ce que montre la photo. Cette description sera visible sur le site.'),

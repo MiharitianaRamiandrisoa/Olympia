@@ -9,11 +9,12 @@
     {% endif %}
 
     {% if current_media is not null %}
+        {% set current_media_label = form.vars.name == 'photoUpload' ? 'Logo actuel' : 'Image actuelle' %}
         <div class="mb-3">
-            <p class="form-label">Image actuelle</p>
+            <p class="form-label">{{ current_media_label }}</p>
             <img
                 src="{{ asset(current_media.chemin) }}"
-                alt="Image actuelle"
+                alt="{{ current_media_label }}"
                 style="display:block; max-width:320px; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:10px;"
             >
         </div>

@@ -14,7 +14,7 @@
         {% set image_path = boutique.photoMedia ? boutique.photoMedia.chemin : 'images/Minimal Storefront Badge Illustration.png' %}
         {% set srcset = responsive_srcset(image_path) %}
         <img src="{{ optimized_image(image_path) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, 1000px"{% endif %} width="1000" height="700" loading="lazy" decoding="async"
-             alt="{{ boutique.enseigne.nom }}"
+             alt="Logo de la boutique {{ boutique.enseigne.nom }}"
              class="h-auto max-h-[300px] max-w-full object-contain sm:max-h-[420px]">
       </div>
 
