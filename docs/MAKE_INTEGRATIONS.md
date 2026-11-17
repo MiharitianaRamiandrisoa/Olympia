@@ -10,6 +10,26 @@ Header : `X-Actualite-Api-Key`
 
 Clé serveur : `ACTUALITE_IMPORT_API_KEY`
 
+Le scénario Make doit analyser la publication puis envoyer le titre clair et précis généré par l’IA dans `title`. Le champ `titre` est également accepté comme alias. Le titre envoyé est utilisé pour le titre de l’actualité, son slug et son affichage sur le site ; il est obligatoire.
+
+Exemple :
+
+```json
+{
+  "external_id": "facebook-post-123",
+  "title": "Jaintilal K ouvre sa nouvelle boutique de bijoux à Olympia",
+  "content": "Texte complet de la publication Facebook...",
+  "excerpt": "Découvrez la nouvelle boutique Jaintilal K au centre commercial Olympia.",
+  "published_at": "2026-11-17T09:00:00+03:00",
+  "permalink_url": "https://www.facebook.com/...",
+  "image_url": "https://scontent.xx.fbcdn.net/...",
+  "active": true,
+  "featured": false
+}
+```
+
+`external_id` et `title` sont obligatoires. Si le titre est absent ou vide, l’API répond `422` et aucune actualité n’est créée. La réponse contient également le titre enregistré dans le champ `title`.
+
 ## Événements
 
 URL : `https://olympia-madagascar.mg/api/integrations/make/evenements`

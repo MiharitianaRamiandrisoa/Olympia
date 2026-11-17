@@ -66,16 +66,13 @@ final class ActualiteImportController extends AbstractController
                     'id' => $existingActualite->getId(),
                     'external_id' => $existingActualite->getIdentifiantExterne(),
                     'slug' => $existingActualite->getSlug(),
+                    'title' => $existingActualite->getTitre(),
                     'url' => '/actualites/'.$existingActualite->getSlug(),
                 ], Response::HTTP_OK);
             }
 
             $message = $this->optionalText($payload, ['content', 'message', 'text', 'description']) ?? '';
-            $title = $this->optionalText($payload, ['title', 'titre']) ?? $this->titleFromContent($message);
-
-            if ($title === '') {
-                throw new \InvalidArgumentException('Le champ title ou content est obligatoire.');
-            }
+            $title = $this->requiredText($payload, ['title', 'titre'], 'title');
 
             $category = $this->optionalText($payload, ['category', 'categorie']) ?: 'Facebook';
             $excerpt = $this->optionalText($payload, ['excerpt', 'chapeau', 'summary']) ?? $this->excerptFromContent($message);
@@ -119,6 +116,7 @@ final class ActualiteImportController extends AbstractController
                 'id' => $actualite->getId(),
                 'external_id' => $actualite->getIdentifiantExterne(),
                 'slug' => $actualite->getSlug(),
+                'title' => $actualite->getTitre(),
                 'url' => '/actualites/'.$actualite->getSlug(),
             ], $action === 'created' ? Response::HTTP_CREATED : Response::HTTP_OK);
         } catch (\InvalidArgumentException|\RuntimeException $exception) {
@@ -216,18 +214,6 @@ final class ActualiteImportController extends AbstractController
         }
 
         return $default;
-    }
-
-    private function titleFromContent(string $content): string
-    {
-        foreach (preg_split('/\R/u', $content) ?: [] as $line) {
-            $line = trim($line);
-            if ($line !== '') {
-                return $line;
-            }
-        }
-
-        return '';
     }
 
     private function excerptFromContent(string $content): string
