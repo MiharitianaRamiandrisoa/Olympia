@@ -97,7 +97,7 @@ final class HomeController extends AbstractController
                 ['icon' => 'shopping-bag', 'title' => 'Enseignes', 'text' => 'Boutiques, services, mode, beauté et bien-être.', 'href' => '/enseignes'],
                 ['icon' => 'coffee', 'title' => 'Food court', 'text' => 'Pause gourmande, cafés et restauration.', 'href' => '/restaurants'],
                 ['icon' => 'calendar', 'title' => 'Événements', 'text' => 'Des animations et bons moments à partager.', 'href' => '/evenements'],
-                ['icon' => 'shield', 'title' => 'Services', 'text' => 'Parking gratuit et services pratiques.', 'href' => '/services'],
+                ['icon' => 'newspaper', 'title' => 'Actualités', 'text' => 'Les dernières nouvelles et rendez-vous d’Olympia.', 'href' => '/actualites'],
             ],
             'shops' => $shops,
             'news' => $news,
