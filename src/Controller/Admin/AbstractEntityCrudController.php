@@ -182,7 +182,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
                 yield IdField::new($fieldName)->hideOnForm();
                 continue;
             }
-            if (in_array($fieldName, ['dateCreation', 'dateModification'], true)) {
+            if (in_array($fieldName, ['dateCreation', 'dateModification', 'newsletterEnvoyeeLe'], true)) {
                 yield DateTimeField::new($fieldName)->hideOnForm();
                 continue;
             }

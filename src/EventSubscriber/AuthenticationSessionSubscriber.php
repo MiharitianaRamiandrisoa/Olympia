@@ -52,10 +52,7 @@ final class AuthenticationSessionSubscriber implements EventSubscriberInterface
             $this->tokenStorage->setToken(null);
             $session->invalidate();
 
-            $loginRoute = str_starts_with($request->getPathInfo(), '/olympia-admin')
-                ? 'app_admin_login'
-                : 'app_login';
-            $event->setResponse(new RedirectResponse($this->urlGenerator->generate($loginRoute)));
+            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_home')));
 
             return;
         }

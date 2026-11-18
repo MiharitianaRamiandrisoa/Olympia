@@ -7,6 +7,7 @@ namespace App\Controller\Api;
 use App\Entity\Actualite;
 use App\Repository\ActualiteRepository;
 use App\Service\FacebookActualiteImageImporter;
+use App\Service\NewsletterMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +23,7 @@ final class ActualiteImportController extends AbstractController
         private readonly string $apiKey,
         private readonly SluggerInterface $slugger,
         private readonly FacebookActualiteImageImporter $imageImporter,
+        private readonly NewsletterMailer $newsletterMailer,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -109,6 +111,9 @@ final class ActualiteImportController extends AbstractController
             }
 
             $entityManager->flush();
+            $newsletterSent = $actualite->isPubliee()
+                ? $this->newsletterMailer->sendActualite($actualite)
+                : false;
 
             return $this->json([
                 'success' => true,
@@ -118,6 +123,7 @@ final class ActualiteImportController extends AbstractController
                 'slug' => $actualite->getSlug(),
                 'title' => $actualite->getTitre(),
                 'url' => '/actualites/'.$actualite->getSlug(),
+                'newsletter_sent' => $newsletterSent,
             ], $action === 'created' ? Response::HTTP_CREATED : Response::HTTP_OK);
         } catch (\InvalidArgumentException|\RuntimeException $exception) {
             $this->logger->warning('Import Make d’une actualité refusé.', [

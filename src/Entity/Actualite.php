@@ -70,6 +70,9 @@ class Actualite
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateModification = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $newsletterEnvoyeeLe = null;
+
     public function __construct()
     {
         $now = new \DateTimeImmutable();
@@ -130,4 +133,13 @@ class Actualite
     public function setDateCreation(\DateTimeImmutable $value): static { $this->dateCreation = $value; return $this; }
     public function getDateModification(): ?\DateTimeImmutable { return $this->dateModification; }
     public function setDateModification(\DateTimeImmutable $value): static { $this->dateModification = $value; return $this; }
+    public function getNewsletterEnvoyeeLe(): ?\DateTimeImmutable { return $this->newsletterEnvoyeeLe; }
+    public function markNewsletterEnvoyee(): static { $this->newsletterEnvoyeeLe = new \DateTimeImmutable(); return $this; }
+
+    public function isPubliee(?\DateTimeImmutable $now = null): bool
+    {
+        return $this->estActif
+            && $this->datePublication !== null
+            && $this->datePublication <= ($now ?? new \DateTimeImmutable());
+    }
 }
