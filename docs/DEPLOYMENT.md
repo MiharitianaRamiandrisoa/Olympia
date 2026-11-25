@@ -45,6 +45,7 @@ ssh olympiam@web1.simafri.cloud
 # Production : /home/olympiam/domains/olympia-madagascar.mg/public_html
 # Préproduction : /home/olympiam/domains/test.olympia-madagascar.mg/public_html
 cd /home/olympiam/domains/test.olympia-madagascar.mg/public_html
+# cd /home/olympiam/domains/olympia-madagascar.mg/public_html
 
 # Le dossier public/build est ignoré par Git : il faut le reconstruire après chaque déploiement.
 npm ci --include=dev --no-audit --no-fund
