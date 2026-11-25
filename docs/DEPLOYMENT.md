@@ -14,7 +14,7 @@ Le job de préproduction attend les secrets GitHub suivants :
 - `PREPROD_DB_PASSWORD`
 - `PREPROD_DB_HOST` (facultatif, `localhost` par défaut)
 - `PREPROD_DB_SERVER_VERSION` (facultatif, `10.11.19-MariaDB` par défaut)
-- `PREPROD_FTP_HOST` (facultatif si le serveur est identique à la production), `PREPROD_FTP_USER`, `PREPROD_FTP_PASSWORD` (obligatoires pour le compte FTP du sous-domaine)
+- `PREPROD_FTP_HOST`, `PREPROD_FTP_USER`, `PREPROD_FTP_PASSWORD` (obligatoires pour le compte FTP du sous-domaine)
 - `PREPROD_SSH_SERVER_DIR` (facultatif, `/home/olympiam/domains/test.olympia-madagascar.mg/public_html` par défaut)
 - `PREPROD_FTP_SERVER_DIR` (facultatif, `/public_html/` lorsque le compte FTP est positionné dans le dossier du sous-domaine)
 
@@ -36,6 +36,34 @@ git push origin main
 
 Attendre la fin du workflow `Deploy Olympia` dans GitHub Actions.
 
+## Relancer un déploiement
+
+Le workflow peut être lancé manuellement depuis GitHub :
+
+1. Ouvrir `Actions` puis `Deploy Olympia`.
+2. Cliquer sur `Run workflow`.
+3. Choisir la branche `main` pour la production ou `Dev` pour la préproduction.
+4. Lancer le workflow.
+
+Si un job a échoué, utiliser d’abord `Re-run failed jobs` sur l’exécution concernée.
+
+### Fichier indiqué comme déjà déployé
+
+`SamKirkland/FTP-Deploy-Action` utilise `.ftp-deploy-sync-state.json` pour mémoriser les fichiers déjà transférés. Si le journal indique qu’un fichier est inchangé alors qu’il manque sur le serveur, supprimer uniquement ce fichier d’état dans le dossier FTP cible, puis relancer le workflow manuel. Ne pas supprimer les fichiers du site.
+
+### Assets compilés
+
+Le workflow exclut `public/build` et `public/assets` du transfert FTP. Après le déploiement des sources, reconstruire les assets sur le serveur avec la procédure ci-dessous, ou vérifier que la compilation est bien exécutée par le pipeline :
+
+```bash
+npm ci --include=dev --no-audit --no-fund
+npm run build
+php bin/console importmap:install --env=prod --no-interaction
+php bin/console assets:install public --env=prod --no-interaction
+php bin/console asset-map:compile --env=prod --no-interaction
+php bin/console cache:clear --env=prod
+```
+
 Pour la préproduction, le workflow exécute `composer install`, les migrations et le nettoyage du cache. L'installation de l'ImportMap et la compilation JavaScript/Tailwind restent manuelles sur le serveur SSH.
 
 ## 2. Installer et compiler manuellement les assets
@@ -44,8 +72,8 @@ Pour la préproduction, le workflow exécute `composer install`, les migrations 
 ssh olympiam@web1.simafri.cloud
 # Production : /home/olympiam/domains/olympia-madagascar.mg/public_html
 # Préproduction : /home/olympiam/domains/test.olympia-madagascar.mg/public_html
-cd /home/olympiam/domains/test.olympia-madagascar.mg/public_html
-# cd /home/olympiam/domains/olympia-madagascar.mg/public_html
+# cd /home/olympiam/domains/test.olympia-madagascar.mg/public_html
+cd /home/olympiam/domains/olympia-madagascar.mg/public_html
 
 # Le dossier public/build est ignoré par Git : il faut le reconstruire après chaque déploiement.
 npm ci --include=dev --no-audit --no-fund

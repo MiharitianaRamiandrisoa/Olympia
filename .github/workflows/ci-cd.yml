@@ -6,6 +6,7 @@ name: Deploy Olympia
 on:
   push:
     branches: [main, Dev, dev]
+  workflow_dispatch:
 
 permissions:
   contents: read
