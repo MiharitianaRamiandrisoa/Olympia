@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BoutiqueRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BoutiqueRepository::class)]
@@ -12,6 +14,7 @@ class Boutique
     use EnseigneFormDataTrait;
     use HorairesFormDataTrait;
     use PhotoUploadTrait;
+    use GalleryUploadTrait;
     public function __toString(): string { return (string) ($this->enseigne ?? 'Boutique'); }
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -48,11 +51,17 @@ class Boutique
     #[ORM\Column]
     private ?\DateTimeImmutable $dateModification = null;
 
+    /** @var Collection<int, BoutiquePhoto> */
+    #[ORM\OneToMany(mappedBy: 'boutique', targetEntity: BoutiquePhoto::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['ordre' => 'ASC', 'id' => 'ASC'])]
+    private Collection $photos;
+
     public function __construct()
     {
         $now = new \DateTimeImmutable();
         $this->dateCreation = $now;
         $this->dateModification = $now;
+        $this->photos = new ArrayCollection();
     }
 
     #[ORM\PreUpdate]
@@ -72,4 +81,23 @@ class Boutique
     public function setEstActif(bool $estActif): static { $this->estActif = $estActif; return $this; }
     public function isEstMisEnAvant(): bool { return $this->estMisEnAvant; }
     public function setEstMisEnAvant(bool $estMisEnAvant): static { $this->estMisEnAvant = $estMisEnAvant; return $this; }
+    /** @return Collection<int, BoutiquePhoto> */
+    public function getPhotos(): Collection { return $this->photos; }
+    public function addPhoto(BoutiquePhoto $photo): static
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos->add($photo);
+            $photo->setBoutique($this);
+        }
+
+        return $this;
+    }
+    public function removePhoto(BoutiquePhoto $photo): static
+    {
+        if ($this->photos->removeElement($photo) && $photo->getBoutique() === $this) {
+            $photo->setBoutique(null);
+        }
+
+        return $this;
+    }
 }

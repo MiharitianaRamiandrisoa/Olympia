@@ -4,6 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\Actualite;
 use App\Entity\Media;
+use App\Service\ImageOptimizer;
+use App\Service\NewsletterMailer;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -12,11 +15,40 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Image;
 
 final class ActualiteCrudController extends AbstractEntityCrudController
 {
     protected static string $entityClass = Actualite::class;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ImageOptimizer $imageOptimizer,
+        SluggerInterface $slugger,
+        private readonly NewsletterMailer $newsletterMailer,
+    ) {
+        parent::__construct($entityManager, $imageOptimizer, $slugger);
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::persistEntity($entityManager, $entityInstance);
+        $this->sendNewsletterIfPublished($entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        parent::updateEntity($entityManager, $entityInstance);
+        $this->sendNewsletterIfPublished($entityInstance);
+    }
+
+    private function sendNewsletterIfPublished(object $entityInstance): void
+    {
+        if ($entityInstance instanceof Actualite && $entityInstance->isPubliee()) {
+            $this->newsletterMailer->sendActualite($entityInstance);
+        }
+    }
 
     public function configureFields(string $pageName): iterable
     {

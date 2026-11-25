@@ -10,9 +10,12 @@ class AbonnementNewsletter
     #[ORM\Id, ORM\GeneratedValue, ORM\Column] private ?int $id = null;
     #[ORM\Column(length: 180, unique: true)] private ?string $email = null;
     #[ORM\Column] private ?\DateTimeImmutable $dateCreation = null;
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)] private ?\DateTimeImmutable $welcomeEmailSentAt = null;
     public function __construct() { $this->dateCreation = new \DateTimeImmutable(); }
     public function getId(): ?int { return $this->id; }
     public function getEmail(): ?string { return $this->email; }
     public function setEmail(string $email): static { $this->email = mb_strtolower(trim($email)); return $this; }
     public function getDateCreation(): ?\DateTimeImmutable { return $this->dateCreation; }
+    public function getWelcomeEmailSentAt(): ?\DateTimeImmutable { return $this->welcomeEmailSentAt; }
+    public function markWelcomeEmailSent(): static { $this->welcomeEmailSentAt = new \DateTimeImmutable(); return $this; }
 }

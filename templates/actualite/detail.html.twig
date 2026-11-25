@@ -1,7 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ actualite.titre }} | Olympia{% endblock %}
-{% block meta_description %}{{ actualite.chapeau|default(actualite.contenu|default(''))|striptags|slice(0, 160) }}{% endblock %}
+{% block title %}{{ actualite.titre }} | Actualités Olympia Madagascar{% endblock %}
+{% block meta_description %}{{ actualite.chapeau|default(actualite.contenu|default(actualite.titre))|striptags|trim|slice(0, 160) }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block social_image %}{{ actualite.imageMedia ? actualite.imageMedia.chemin : 'images/hero-olympia.png' }}{% endblock %}
+{% block social_meta %}
+  <meta property="article:published_time" content="{{ actualite.datePublication|date('c') }}">
+  <meta property="article:modified_time" content="{{ actualite.dateModification|default(actualite.datePublication)|date('c') }}">
+{% endblock %}
+{% block structured_data %}
+  {{ parent() }}
+  {% set article_image_path = actualite.imageMedia ? actualite.imageMedia.chemin : 'images/hero-olympia.png' %}
+  {% set article_description = actualite.chapeau|default(actualite.contenu|default(actualite.titre))|striptags|trim|slice(0, 160) %}
+  <script type="application/ld+json">
+    {{ {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      'headline': actualite.titre,
+      'description': article_description,
+      'image': [app.request.schemeAndHttpHost ~ optimized_image(article_image_path)],
+      'datePublished': actualite.datePublication|date('c'),
+      'dateModified': (actualite.dateModification|default(actualite.datePublication))|date('c'),
+      'author': {'@type': 'Organization', 'name': 'Olympia Madagascar'},
+      'publisher': {
+        '@type': 'Organization',
+        'name': 'Olympia Madagascar',
+        'logo': {'@type': 'ImageObject', 'url': app.request.schemeAndHttpHost ~ optimized_image('images/logo/OLY_LOGO HOR.png')}
+      },
+      'mainEntityOfPage': {'@type': 'WebPage', '@id': app.request.uri}
+    }|json_encode|raw }}
+  </script>
+{% endblock %}
 {% block main_background %}bg-white{% endblock %}
 
 {% block body %}
@@ -26,6 +55,11 @@
         <p class="text-sm text-olympia-muted">{{ actualite.datePublication|date('d/m/Y') }}</p>
         {% if actualite.chapeau %}<p class="mt-5 text-xl leading-8 text-olympia">{{ actualite.chapeau }}</p>{% endif %}
         <div class="mt-6 text-base leading-8 text-olympia-muted">{{ actualite.contenu|default('')|nl2br }}</div>
+        {% if actualite.urlExterne %}
+          <a href="{{ actualite.urlExterne }}" target="_blank" rel="noopener noreferrer" class="mt-8 inline-flex w-fit rounded-full border border-olympia px-5 py-3 text-sm font-bold text-olympia hover:bg-olympia-cream">
+            Voir la publication d'origine
+          </a>
+        {% endif %}
       </div>
     </section>
   </article>

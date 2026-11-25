@@ -3,11 +3,15 @@
 namespace App\Entity;
 
 use App\Repository\ActualiteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use SortDirection;
 
 #[ORM\Entity(repositoryClass: ActualiteRepository::class)]
 #[ORM\Table(name: 'actualite')]
+#[ORM\UniqueConstraint(name: 'UNIQ_ACTUALITE_ORIGINE_EXTERNE', columns: ['origine', 'identifiant_externe'])]
 class Actualite
 {
     use ImageUploadTrait;
@@ -24,6 +28,18 @@ class Actualite
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $categorie = null;
 
+    #[ORM\Column(length: 30)]
+    private string $origine = 'manuelle';
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $identifiantExterne = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $urlExterne = null;
+
+    #[ORM\Column(length: 1000, nullable: true)]
+    private ?string $urlImageExterne = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $chapeau = null;
 
@@ -33,6 +49,11 @@ class Actualite
     #[ORM\ManyToOne(targetEntity: Media::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Media $imageMedia = null;
+
+    /** @var Collection<int, ActualiteImage> */
+    #[ORM\OneToMany(mappedBy: 'actualite', targetEntity: ActualiteImage::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['ordre' => SortDirection::Ascending])]
+    private Collection $images;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $datePublication = null;
@@ -49,12 +70,16 @@ class Actualite
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateModification = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $newsletterEnvoyeeLe = null;
+
     public function __construct()
     {
         $now = new \DateTimeImmutable();
         $this->datePublication = $now;
         $this->dateCreation = $now;
         $this->dateModification = $now;
+        $this->images = new ArrayCollection();
     }
 
     public function __toString(): string { return $this->titre ?? 'Actualité'; }
@@ -65,12 +90,39 @@ class Actualite
     public function setSlug(string $value): static { $this->slug = $value; return $this; }
     public function getCategorie(): ?string { return $this->categorie; }
     public function setCategorie(?string $value): static { $this->categorie = $value; return $this; }
+    public function getOrigine(): string { return $this->origine; }
+    public function setOrigine(string $value): static { $this->origine = $value; return $this; }
+    public function getIdentifiantExterne(): ?string { return $this->identifiantExterne; }
+    public function setIdentifiantExterne(?string $value): static { $this->identifiantExterne = $value; return $this; }
+    public function getUrlExterne(): ?string { return $this->urlExterne; }
+    public function setUrlExterne(?string $value): static { $this->urlExterne = $value; return $this; }
+    public function getUrlImageExterne(): ?string { return $this->urlImageExterne; }
+    public function setUrlImageExterne(?string $value): static { $this->urlImageExterne = $value; return $this; }
     public function getChapeau(): ?string { return $this->chapeau; }
     public function setChapeau(?string $value): static { $this->chapeau = $value; return $this; }
     public function getContenu(): ?string { return $this->contenu; }
     public function setContenu(?string $value): static { $this->contenu = $value; return $this; }
     public function getImageMedia(): ?Media { return $this->imageMedia; }
     public function setImageMedia(?Media $value): static { $this->imageMedia = $value; return $this; }
+    /** @return Collection<int, ActualiteImage> */
+    public function getImages(): Collection { return $this->images; }
+    public function addImage(ActualiteImage $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setActualite($this);
+        }
+
+        return $this;
+    }
+    public function removeImage(ActualiteImage $image): static
+    {
+        if ($this->images->removeElement($image) && $image->getActualite() === $this) {
+            $image->setActualite(null);
+        }
+
+        return $this;
+    }
     public function getDatePublication(): ?\DateTimeImmutable { return $this->datePublication; }
     public function setDatePublication(\DateTimeImmutable $value): static { $this->datePublication = $value; return $this; }
     public function isEstActif(): bool { return $this->estActif; }
@@ -81,4 +133,13 @@ class Actualite
     public function setDateCreation(\DateTimeImmutable $value): static { $this->dateCreation = $value; return $this; }
     public function getDateModification(): ?\DateTimeImmutable { return $this->dateModification; }
     public function setDateModification(\DateTimeImmutable $value): static { $this->dateModification = $value; return $this; }
+    public function getNewsletterEnvoyeeLe(): ?\DateTimeImmutable { return $this->newsletterEnvoyeeLe; }
+    public function markNewsletterEnvoyee(): static { $this->newsletterEnvoyeeLe = new \DateTimeImmutable(); return $this; }
+
+    public function isPubliee(?\DateTimeImmutable $now = null): bool
+    {
+        return $this->estActif
+            && $this->datePublication !== null
+            && $this->datePublication <= ($now ?? new \DateTimeImmutable());
+    }
 }

@@ -23,6 +23,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use App\Entity\Boutique;
+use App\Entity\BoutiquePhoto;
 use App\Entity\AbonnementNewsletter;
 use App\Entity\CategorieBoutique;
 use App\Entity\CategorieEvenement;
@@ -30,6 +31,8 @@ use App\Entity\CategoriePromotion;
 use App\Entity\CategorieRestaurant;
 use App\Entity\Enseigne;
 use App\Entity\Restaurant;
+use App\Entity\RestaurantPhoto;
+use App\Entity\RestaurantPlat;
 use App\Entity\Media;
 use App\Entity\Promotion;
 use App\Entity\Evenement;
@@ -38,8 +41,6 @@ use App\Entity\InformationPratique;
 use App\Entity\Actualite;
 use App\Entity\MessageContact;
 use App\Entity\Utilisateur;
-use App\Entity\Reservation;
-use App\Entity\Billet;
 use App\Service\ImageOptimizer;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -73,6 +74,9 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         return [
             Boutique::class => 'une boutique',
             Restaurant::class => 'un restaurant',
+            BoutiquePhoto::class => 'une photo de boutique',
+            RestaurantPhoto::class => 'une photo de restaurant',
+            RestaurantPlat::class => 'un plat',
             Service::class => 'un service',
             Promotion::class => 'une promotion',
             Evenement::class => 'un evenement',
@@ -80,8 +84,6 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             Actualite::class => 'une actualite',
             Media::class => 'un media',
             Utilisateur::class => 'un utilisateur',
-            Reservation::class => 'une reservation',
-            Billet::class => 'un billet',
             CategorieBoutique::class => 'une categorie de boutique',
             CategorieRestaurant::class => 'une categorie de restaurant',
             CategoriePromotion::class => 'une categorie de promotion',
@@ -96,6 +98,9 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $labels = [
             Boutique::class => ['singular' => 'boutique', 'new' => 'Ajouter une boutique'],
             Restaurant::class => ['singular' => 'restaurant', 'new' => 'Ajouter un restaurant'],
+            BoutiquePhoto::class => ['singular' => 'photo de boutique', 'new' => 'Ajouter une photo de boutique'],
+            RestaurantPhoto::class => ['singular' => 'photo de restaurant', 'new' => 'Ajouter une photo de restaurant'],
+            RestaurantPlat::class => ['singular' => 'plat', 'new' => 'Ajouter un plat'],
             Service::class => ['singular' => 'service', 'new' => 'Ajouter un service'],
             Promotion::class => ['singular' => 'promotion', 'new' => 'Ajouter une promotion'],
             Evenement::class => ['singular' => 'événement', 'new' => 'Ajouter un événement'],
@@ -110,12 +115,6 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             MessageContact::class => ['singular' => 'message', 'new' => 'Ajouter un message'],
             AbonnementNewsletter::class => ['singular' => 'abonné', 'new' => 'Ajouter un abonné'],
         ][static::$entityClass] ?? ['singular' => 'élément', 'new' => 'Ajouter'];
-
-        if (static::$entityClass === Reservation::class) {
-            $labels = ['singular' => 'reservation', 'new' => 'Ajouter une reservation'];
-        } elseif (static::$entityClass === Billet::class) {
-            $labels = ['singular' => 'billet', 'new' => 'Ajouter un billet'];
-        }
 
         return $actions
             ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action->setLabel($labels['new']))
@@ -137,6 +136,10 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $metadata = $this->entityManager->getClassMetadata(static::$entityClass);
 
         foreach ($metadata->getFieldNames() as $fieldName) {
+            if (in_array(static::$entityClass, [Actualite::class, Evenement::class, Promotion::class], true)
+                && in_array($fieldName, ['origine', 'identifiantExterne', 'urlExterne', 'urlImageExterne', 'images'], true)) {
+                continue;
+            }
             if ($fieldName === 'slug') {
                 continue;
             }
@@ -155,11 +158,31 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             if ($fieldName === 'motDePasse') {
                 continue;
             }
+            if ($fieldName === 'estActif' && static::$entityClass === Boutique::class && $pageName === Crud::PAGE_NEW) {
+                // Une boutique créée avec son enseigne est active par défaut.
+                // Le statut de l'enseigne est géré dans le même formulaire.
+                continue;
+            }
+            if (
+                in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)
+                && $fieldName === 'description'
+            ) {
+                // La description est configurée explicitement par chaque CRUD.
+                continue;
+            }
+            if (
+                $pageName === Crud::PAGE_EDIT
+                && in_array(static::$entityClass, [Boutique::class, Restaurant::class], true)
+                && $fieldName === 'estActif'
+            ) {
+                // Le statut de l'enseigne est géré dans ce formulaire.
+                continue;
+            }
             if ($fieldName === 'id') {
                 yield IdField::new($fieldName)->hideOnForm();
                 continue;
             }
-            if (in_array($fieldName, ['dateCreation', 'dateModification'], true)) {
+            if (in_array($fieldName, ['dateCreation', 'dateModification', 'newsletterEnvoyeeLe'], true)) {
                 yield DateTimeField::new($fieldName)->hideOnForm();
                 continue;
             }
@@ -188,18 +211,22 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->synchronizeEnseigne($entityManager, $entityInstance);
+        $this->synchronizeCategorie($entityManager, $entityInstance);
         $this->synchronizeSlug($entityInstance);
         $this->synchronizePhoto($entityManager, $entityInstance);
         $this->synchronizeImage($entityManager, $entityInstance);
+        $this->synchronizeGallery($entityManager, $entityInstance);
         parent::persistEntity($entityManager, $entityInstance);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         $this->synchronizeEnseigne($entityManager, $entityInstance);
+        $this->synchronizeCategorie($entityManager, $entityInstance);
         $this->synchronizeSlug($entityInstance);
         $this->synchronizePhoto($entityManager, $entityInstance);
         $this->synchronizeImage($entityManager, $entityInstance);
+        $this->synchronizeGallery($entityManager, $entityInstance);
         parent::updateEntity($entityManager, $entityInstance);
     }
 
@@ -214,7 +241,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             return;
         }
 
-        $optimized = $this->imageOptimizer->convertToWebp($photoUpload);
+        $optimized = $this->imageOptimizer->processImage($photoUpload);
         $dimensions = @getimagesize($photoUpload->getPathname()) ?: [];
         $media = (new Media())
             ->setNomOriginal($photoUpload->getClientOriginalName())
@@ -235,7 +262,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
     private function synchronizeImage(EntityManagerInterface $entityManager, object $entity): void
     {
-        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre) {
+        if (!$entity instanceof Promotion && !$entity instanceof Evenement && !$entity instanceof Service && !$entity instanceof Actualite && !$entity instanceof Exposition && !$entity instanceof Oeuvre && !$entity instanceof BoutiquePhoto && !$entity instanceof RestaurantPhoto && !$entity instanceof RestaurantPlat) {
             return;
         }
 
@@ -244,7 +271,7 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             return;
         }
 
-        $optimized = $this->imageOptimizer->convertToWebp($imageUpload);
+        $optimized = $this->imageOptimizer->processImage($imageUpload);
         $dimensions = @getimagesize($imageUpload->getPathname()) ?: [];
         $media = (new Media())
             ->setNomOriginal($imageUpload->getClientOriginalName())
@@ -263,16 +290,66 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
         $entity->setImageMedia($media);
     }
 
+    private function synchronizeGallery(EntityManagerInterface $entityManager, object $entity): void
+    {
+        if (!$entity instanceof Boutique && !$entity instanceof Restaurant) {
+            return;
+        }
+
+        $uploads = $entity->getGalleryUploads();
+        if ($uploads === []) {
+            return;
+        }
+
+        $order = $entity->getPhotos()->count();
+        foreach ($uploads as $upload) {
+            $optimized = $this->imageOptimizer->processImage($upload);
+            $dimensions = @getimagesize($upload->getPathname()) ?: [];
+            $media = (new Media())
+                ->setNomOriginal($upload->getClientOriginalName())
+                ->setNomFichier($optimized['filename'])
+                ->setChemin($optimized['path'])
+                ->setType('image')
+                ->setTypeMime($optimized['mime'])
+                ->setTaille((string) $optimized['size'])
+                ->setLargeur(isset($dimensions[0]) ? (int) $dimensions[0] : null)
+                ->setHauteur(isset($dimensions[1]) ? (int) $dimensions[1] : null)
+                ->setTexteAlternatif((string) $entity)
+                ->setEstActif(true)
+                ->setDateCreation(new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
+                ->setDateModification(new \DateTimeImmutable('now', new \DateTimeZone('UTC')));
+            $entityManager->persist($media);
+
+            if ($entity instanceof Boutique) {
+                $entity->addPhoto(
+                    (new BoutiquePhoto())
+                        ->setImageMedia($media)
+                        ->setOrdre($order++)
+                );
+            } else {
+                $entity->addPhoto(
+                    (new \App\Entity\RestaurantPhoto())
+                        ->setImageMedia($media)
+                        ->setOrdre($order++)
+                );
+            }
+        }
+    }
+
     private function synchronizeEnseigne(EntityManagerInterface $entityManager, object $entity): void
     {
         if (!in_array($entity::class, [Boutique::class, Restaurant::class], true)) {
             return;
         }
-        $enseigne = $entity->getEnseigne() ?? new Enseigne();
+        $enseigne = $entity->getEnseigne();
+        if (!$enseigne) {
+            $enseigne = new Enseigne();
+            $entityManager->persist($enseigne);
+        }
         $nom = trim((string) $entity->getEnseigneNom());
         $logo = $entity->getEnseigneLogoUpload();
         if ($logo) {
-            $optimized = $this->imageOptimizer->convertToWebp($logo);
+            $optimized = $this->imageOptimizer->processImage($logo);
             $logoMedia = (new Media())
                 ->setNomOriginal($logo->getClientOriginalName())
                 ->setNomFichier($optimized['filename'])
@@ -290,7 +367,6 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
 
         $enseigne->setNom($nom)
             ->setSlug($this->slugger->slug($nom)->lower()->toString())
-            ->setDescription($entity->getEnseigneDescription())
             ->setTelephone($entity->getEnseigneTelephone())
             ->setEmail($entity->getEnseigneEmail())
             ->setLogoMedia($enseigne->getLogoMedia())
@@ -300,6 +376,20 @@ abstract class AbstractEntityCrudController extends AbstractCrudController
             ->setEstActif($entity->isEnseigneEstActif());
         $entity->setEnseigne($enseigne);
         $entity->setHoraires($entity->getHorairesFormData());
+    }
+
+    private function synchronizeCategorie(EntityManagerInterface $entityManager, object $entity): void
+    {
+        if (!$entity instanceof Boutique || null === $categorie = $entity->getCategorie()) {
+            return;
+        }
+
+        $categorie->setNom(trim((string) $categorie->getNom()))
+            ->setSlug($this->slugger->slug((string) $categorie->getNom())->lower()->toString());
+
+        if (null === $categorie->getId()) {
+            $entityManager->persist($categorie);
+        }
     }
 
     private function synchronizeSlug(object $entity): void

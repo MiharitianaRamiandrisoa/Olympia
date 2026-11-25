@@ -53,7 +53,6 @@ final class UtilisateurCrudController extends AbstractEntityCrudController
 
         yield ChoiceField::new('role', 'Rôle')->setChoices([
             'Utilisateur galerie' => 'ROLE_USER',
-            'Contrôleur des billets' => 'ROLE_TICKET_CONTROL',
             'Administrateur' => 'ROLE_ADMIN',
         ]);
         yield BooleanField::new('estActif', 'Compte actif');

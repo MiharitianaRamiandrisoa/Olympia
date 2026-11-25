@@ -1,0 +1,61 @@
+{% set actualiteUrl = absolute_url(path('app_actualite_detail', {slug: actualite.slug})) %}
+{% set logoUrl = absolute_url(asset('images/logo/logo-footer-creme.png')) %}
+{% set imageUrl = actualite.imageMedia ? absolute_url(asset(actualite.imageMedia.chemin)) : null %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>{{ actualite.titre }}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f2efe7;font-family:Arial,Helvetica,sans-serif;color:#23383b;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f2efe7;">
+        <tr>
+            <td align="center" style="padding:28px 12px;">
+                <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border-radius:18px;overflow:hidden;">
+                    <tr>
+                        <td align="center" style="padding:28px 24px 24px;background-color:#154953;border-bottom:5px solid #dfcfac;">
+                            <a href="{{ absolute_url(path('app_home')) }}" style="text-decoration:none;">
+                                <img src="{{ logoUrl }}" width="190" alt="Olympia Madagascar" style="display:block;width:190px;max-width:80%;height:auto;border:0;">
+                            </a>
+                            <p style="margin:17px 0 0;color:#dfcfac;font-size:11px;line-height:16px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;">Les actualités d’Olympia</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:38px 36px 34px;">
+                            {% if actualite.categorie %}
+                            <p style="margin:0 0 12px;color:#7e8e6c;font-size:12px;line-height:18px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;">{{ actualite.categorie }}</p>
+                            {% endif %}
+                            <h1 style="margin:0 0 18px;color:#154953;font-size:30px;line-height:38px;font-weight:700;">{{ actualite.titre }}</h1>
+                            {% if imageUrl %}
+                            <img src="{{ imageUrl }}" alt="{{ actualite.titre }}" style="display:block;width:100%;height:auto;border-radius:12px;margin:0 0 24px;">
+                            {% endif %}
+                            {% if actualite.chapeau %}
+                            <p style="margin:0 0 16px;color:#536267;font-size:17px;line-height:27px;font-weight:bold;">{{ actualite.chapeau|striptags|trim }}</p>
+                            {% endif %}
+                            {% if actualite.contenu %}
+                            <p style="margin:0;color:#536267;font-size:15px;line-height:25px;">{{ actualite.contenu|striptags|trim|slice(0, 700) }}{% if actualite.contenu|striptags|length > 700 %}…{% endif %}</p>
+                            {% endif %}
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin-top:28px;">
+                                <tr>
+                                    <td align="center" bgcolor="#dfcfac" style="border-radius:24px;">
+                                        <a href="{{ actualiteUrl }}" style="display:inline-block;padding:13px 24px;color:#154953;font-size:14px;line-height:20px;font-weight:bold;text-decoration:none;">Lire l’actualité&nbsp; →</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding:26px 30px;background-color:#154953;">
+                            <p style="margin:0 0 8px;color:#ffffff;font-size:15px;line-height:22px;font-weight:bold;">À très bientôt chez Olympia&nbsp;!</p>
+                            <p style="margin:0;color:#dfcfac;font-size:12px;line-height:20px;">Retrouvez toutes nos actualités sur <a href="{{ absolute_url(path('app_actualites')) }}" style="color:#ffffff;text-decoration:underline;">olympia-madagascar.mg</a></p>
+                        </td>
+                    </tr>
+                </table>
+                <p style="margin:16px 0 0;color:#7a8583;font-size:11px;line-height:17px;">Vous recevez ce message après votre inscription à la newsletter d’Olympia Madagascar.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

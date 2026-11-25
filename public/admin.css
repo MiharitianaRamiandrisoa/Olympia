@@ -26,6 +26,23 @@ body { background-color: #FAF6EC; color: #1A4A54; }
 .content-top { background-color: #FFFFFF; border-bottom-color: #DDC9A4; }
 .content-wrapper, .content { background-color: #FAF6EC; }
 
+.ea-sidebar-logo {
+    background-color: transparent;
+    border-bottom: 1px solid #DDC9A4;
+}
+
+.ea-sidebar-logo a {
+    padding: 1rem 1.25rem;
+}
+
+.ea-sidebar-logo .admin-olympia-logo {
+    display: block;
+    width: min(100%, 210px);
+    height: auto;
+    margin: 0 auto;
+    filter: brightness(0) invert(1);
+}
+
 .content-header-title .title {
     color: #1A4A54;
     letter-spacing: -0.02em;

@@ -24,17 +24,23 @@ services:
     App\EventSubscriber\AuthenticationSessionSubscriber:
         arguments:
             $sessionIdleTimeout: '%olympia.session_idle_timeout%'
-    App\Service\ReservationMailer:
+
+    App\Service\NewsletterMailer:
         arguments:
             $mailerDsn: '%env(MAILER_DSN)%'
+            $fromAddress: '%env(NEWSLETTER_FROM)%'
 
-    App\Service\ReservationService:
+    App\Controller\Api\ActualiteImportController:
         arguments:
-            $paymentHoldMinutes: '%env(int:PAYMENT_HOLD_MINUTES)%'
+            $apiKey: '%env(string:ACTUALITE_IMPORT_API_KEY)%'
 
     App\Service\ThemeResolver:
         arguments:
             $override: '%olympia.theme_override%'
 
+    App\Controller\Api\MakeEventPromotionImportController:
+        arguments:
+            $evenementApiKey: '%env(string:EVENEMENT_IMPORT_API_KEY)%'
+            $promotionApiKey: '%env(string:PROMOTION_IMPORT_API_KEY)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

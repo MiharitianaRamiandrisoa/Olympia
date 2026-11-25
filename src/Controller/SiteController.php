@@ -6,7 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\BoutiqueRepository;
+use App\Repository\BoutiquePhotoRepository;
 use App\Repository\RestaurantRepository;
+use App\Repository\RestaurantPhotoRepository;
+use App\Repository\RestaurantPlatRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\ActualiteRepository;
 use App\Repository\EvenementRepository;
@@ -17,13 +20,13 @@ use App\Repository\CategorieEvenementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\OeuvreRepository;
 use App\Repository\ArtisteRepository;
+use App\Repository\InformationPratiqueRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Boutique;
 use App\Entity\Restaurant;
 use App\Entity\MessageContact;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use App\Service\ReservationService;
 
 class SiteController extends AbstractController
 {
@@ -48,17 +51,7 @@ class SiteController extends AbstractController
             'url' => '/enseignes/'.($boutique->getEnseigne()?->getSlug() ?? ''),
         ], $boutiqueRepository->findActive($search, $category, $sort));
         $pagination = $this->paginate($shops, $request);
-        /*
-        $shops = [
-            ['name' => 'ZARA', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/zara.jpg'],
-            ['name' => 'H&M', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/hm.jpg'],
-            ['name' => 'LC Waikiki', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/lcw.jpg'],
-            ['name' => 'Bata', 'category' => 'Chaussures', 'floor' => 'RDC', 'image' => 'images/shops/bata.jpg'],
-            ['name' => 'Jumbo', 'category' => 'Alimentation', 'floor' => 'RDC', 'image' => 'images/shops/jumbo.jpg'],
-            ['name' => 'C&A', 'category' => 'Mode', 'floor' => 'R+1', 'image' => 'images/shops/ca.jpg'],
-            ['name' => 'Watsons', 'category' => 'Beauté & Santé', 'floor' => 'R+1', 'image' => 'images/shops/watsons.jpg'],
-            ['name' => 'Orange', 'category' => 'High-Tech', 'floor' => 'RDC', 'image' => 'images/shops/orange.jpg'],
-        ]; */
+       
 
         return $this->render('boutique/index.html.twig', [
             'shops' => $pagination['items'],
@@ -97,31 +90,20 @@ class SiteController extends AbstractController
             'active_category' => $category,
         ]);
 
-        /*
-        $restaurants = [
-            ['name' => 'Le Jardin', 'cuisine' => 'Cuisine locale', 'floor' => 'RDC', 'image' => 'images/resto/jardin.jpg'],
-            ['name' => 'Pizza & Co', 'cuisine' => 'Italienne', 'floor' => 'R+1', 'image' => 'images/resto/pizza.jpg'],
-            ['name' => 'Sushi Time', 'cuisine' => 'Japonaise', 'floor' => 'R+1', 'image' => 'images/resto/sushi.jpg'],
-            ['name' => 'La Table', 'cuisine' => 'Française', 'floor' => 'RDC', 'image' => 'images/resto/table.jpg'],
-            ['name' => 'Burger House', 'cuisine' => 'Fast Food', 'floor' => 'R+1', 'image' => 'images/resto/burger.jpg'],
-            ['name' => 'Café des Amis', 'cuisine' => 'Café & Pâtisserie', 'floor' => 'RDC', 'image' => 'images/resto/cafe.jpg'],
-            ['name' => 'Spice & Grill', 'cuisine' => 'Internationale', 'floor' => 'R+1', 'image' => 'images/resto/spice.jpg'],
-            ['name' => 'Fresh Bowl', 'cuisine' => 'Healthy Food', 'floor' => 'RDC', 'image' => 'images/resto/bowl.jpg'],
-        ];
-
-        return $this->render('restaurant/index.html.twig', ['restaurants' => $restaurants]);
-        */
     }
 
     #[Route('/enseignes/{slug}', name: 'app_enseigne_detail', methods: ['GET'])]
-    public function boutiqueDetail(string $slug, BoutiqueRepository $boutiqueRepository): Response
+    public function boutiqueDetail(string $slug, BoutiqueRepository $boutiqueRepository, BoutiquePhotoRepository $boutiquePhotoRepository): Response
     {
         $boutique = $boutiqueRepository->findActiveByEnseigneSlug($slug);
         if (!$boutique instanceof Boutique) {
             throw $this->createNotFoundException('Boutique introuvable.');
         }
 
-        return $this->render('boutique/detail.html.twig', ['boutique' => $boutique]);
+        return $this->render('boutique/detail.html.twig', [
+            'boutique' => $boutique,
+            'boutique_photos' => $boutiquePhotoRepository->findActiveForBoutique($boutique),
+        ]);
     }
 
     #[Route('/boutiques/{slug}', name: 'app_boutique_detail_legacy', methods: ['GET'])]
@@ -131,14 +113,18 @@ class SiteController extends AbstractController
     }
 
     #[Route('/restaurants/{slug}', name: 'app_restaurant_detail', methods: ['GET'])]
-    public function restaurantDetail(string $slug, RestaurantRepository $restaurantRepository): Response
+    public function restaurantDetail(string $slug, RestaurantRepository $restaurantRepository, RestaurantPhotoRepository $restaurantPhotoRepository, RestaurantPlatRepository $restaurantPlatRepository): Response
     {
         $restaurant = $restaurantRepository->findActiveByEnseigneSlug($slug);
         if (!$restaurant instanceof Restaurant) {
             throw $this->createNotFoundException('Restaurant introuvable.');
         }
 
-        return $this->render('restaurant/detail.html.twig', ['restaurant' => $restaurant]);
+        return $this->render('restaurant/detail.html.twig', [
+            'restaurant' => $restaurant,
+            'restaurant_photos' => $restaurantPhotoRepository->findActiveForRestaurant($restaurant),
+            'restaurant_plats' => $restaurantPlatRepository->findActiveForRestaurant($restaurant),
+        ]);
     }
 
     #[Route('/promotions', name: 'app_promotions')]
@@ -158,17 +144,6 @@ class SiteController extends AbstractController
         $pagination = $this->paginate($promotions, $request);
         return $this->render('promotion/index.html.twig', ['promotions' => $pagination['items'], 'pagination' => $pagination, 'categories' => $categories, 'active_category' => $category]);
 
-        /*
-        $promotions = [
-            ['tag' => 'Restauration', 'title' => 'MENU SPÉCIAL', 'date' => 'Du 5 au 18 Mai 2025', 'shop' => 'Gastro',
-             'description' => "Découvrez une formule spéciale pour profiter d'un repas complet à prix avantageux.", 'image' => 'images/promo/menu.jpg'],
-            ['tag' => 'Mode', 'title' => "Jusqu'à -50%", 'date' => 'Du 5 au 18 Mai 2025', 'shop' => 'Zara',
-             'description' => 'Profitez de réductions exceptionnelles dans toutes vos boutiques préférées.', 'image' => 'images/promo/mode.jpg'],
-            ['tag' => 'Nouveauté', 'title' => 'Atelier créatif enfants', 'date' => '18 Mai 2025', 'shop' => 'Garderie',
-             'description' => 'Des activités créatives encadrées pour vos enfants pendant votre séance shopping.', 'image' => 'images/promo/atelier.jpg'],
-        ];
-
-        return $this->render('promotion/index.html.twig', ['promotions' => $promotions]); */
     }
 
     #[Route('/evenements', name: 'app_events')]
@@ -209,43 +184,6 @@ class SiteController extends AbstractController
         $featured = $articles[0] ?? null;
         $pagination = $this->paginate(array_slice($articles, 1), $request);
 
-        /*
-
-        $promotions = array_map(static fn ($promotion) => [
-            'type' => 'promotion',
-            'badge' => $promotion->getCategorie()?->getNom() ?? 'Nouveautés',
-            'title' => $promotion->getTitre(),
-            'date' => $promotion->getDateDebut()?->format('d/m/Y'),
-            'timestamp' => $promotion->getDateDebut()?->getTimestamp() ?? 0,
-            'text' => $promotion->getDescription() ?? '',
-            'image' => $promotion->getImageMedia()?->getChemin() ?? 'images/promo/default.jpg',
-            'href' => '/promotions/'.$promotion->getSlug(),
-        ], $promotionRepository->findActive());
-
-        $events = array_map(static fn ($event) => [
-            'type' => 'event',
-            'badge' => 'Événement',
-            'title' => $event->getTitre(),
-            'date' => $event->getDateDebut()?->format('d/m/Y'),
-            'timestamp' => $event->getDateDebut()?->getTimestamp() ?? 0,
-            'text' => $event->getDescription() ?? '',
-            'image' => $event->getImageMedia()?->getChemin() ?? 'images/news/default.jpg',
-            'href' => '/evenements/'.$event->getSlug(),
-        ], $evenementRepository->findActive());
-
-        $articles = array_merge($promotions, $events);
-        usort($articles, static fn (array $left, array $right) => $right['timestamp'] <=> $left['timestamp']);
-        $articles = array_values(array_filter($articles, static function (array $article) use ($type, $search): bool {
-            if ($type !== 'all' && $article['type'] !== $type) {
-                return false;
-            }
-            if ($search === '') {
-                return true;
-            }
-            return str_contains(mb_strtolower($article['title'].' '.$article['text'].' '.$article['badge']), mb_strtolower($search));
-        }));
-
-        */
         return $this->render('actualite/index.html.twig', [
             'articles' => $pagination['items'],
             'pagination' => $pagination,
@@ -273,6 +211,21 @@ class SiteController extends AbstractController
             'services' => $pagination['items'],
             'pagination' => $pagination,
         ]);
+    }
+
+    #[Route('/informations-pratiques', name: 'app_informations_pratiques', methods: ['GET'])]
+    public function informationsPratiques(InformationPratiqueRepository $informationPratiqueRepository): Response
+    {
+        return $this->render('info/pratiques.html.twig', [
+            'items' => $informationPratiqueRepository->findActiveOrdered(),
+            'address' => $informationPratiqueRepository->findActiveAddress(),
+        ]);
+    }
+
+    #[Route('/informations', name: 'app_informations_legacy', methods: ['GET'])]
+    public function informationsLegacy(): Response
+    {
+        return $this->redirectToRoute('app_informations_pratiques', [], Response::HTTP_MOVED_PERMANENTLY);
     }
 
     #[Route('/galerie', name: 'app_galerie_virtuelle', methods: ['GET'])]
@@ -331,16 +284,13 @@ class SiteController extends AbstractController
     }
 
     #[Route('/evenements/{slug}', name: 'app_event_detail', methods: ['GET'])]
-    public function eventDetail(string $slug, EvenementRepository $evenementRepository, ReservationService $reservationService): Response
+    public function eventDetail(string $slug, EvenementRepository $evenementRepository): Response
     {
         $event = $evenementRepository->findOneBy(['slug' => $slug, 'estActif' => true]);
         if (!$event instanceof \App\Entity\Evenement) {
             throw $this->createNotFoundException('Événement introuvable.');
         }
-        return $this->render('evenement/detail.html.twig', [
-            'event' => $event,
-            'places_restantes' => $reservationService->placesRestantes($event),
-        ]);
+        return $this->render('evenement/detail.html.twig', ['event' => $event]);
     }
 
     #[Route('/contact', name: 'app_contact', methods: ['GET', 'POST'])]
@@ -374,7 +324,7 @@ class SiteController extends AbstractController
     }
 
     /** @return array{items: array, current_page: int, total_pages: int, total_items: int, per_page: int} */
-    private function paginate(array $items, Request $request, int $perPage = 9): array
+    private function paginate(array $items, Request $request, int $perPage = 10): array
     {
         $totalItems = count($items);
         $totalPages = max(1, (int) ceil($totalItems / $perPage));

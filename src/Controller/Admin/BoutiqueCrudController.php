@@ -13,17 +13,29 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\File;
 
 final class BoutiqueCrudController extends AbstractEntityCrudController
 {
     protected static string $entityClass = Boutique::class;
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return parent::configureCrud($crud)
+            ->setSearchFields([
+                'enseigne.nom',
+                'enseigne.slug',
+                'categorie.nom',
+                'description',
+            ]);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         if ($pageName === Crud::PAGE_INDEX) {
             return [
-                ImageField::new('photoMedia', 'Photo')->setBasePath('')->formatValue(static fn (?Media $media): ?string => $media?->getChemin()),
+                ImageField::new('photoMedia', 'Logo')->setBasePath('')->formatValue(static fn (?Media $media): ?string => $media?->getChemin()),
                 AssociationField::new('enseigne', 'Nom de la boutique'),
                 AssociationField::new('categorie', 'Catégorie'),
                 TextareaField::new('description', 'Description'),
@@ -33,13 +45,13 @@ final class BoutiqueCrudController extends AbstractEntityCrudController
 
         return array_merge([
             TextField::new('enseigneNom', 'Nom de l’enseigne')->onlyOnForms()->setRequired(true),
-            Field::new('enseigneLogoUpload', 'Logo de l’enseigne')
-                ->setFormType(FileType::class)
-                ->setFormTypeOption('mapped', true)
+            TextareaField::new('description', 'Description de la boutique')->onlyOnForms(),
+            AssociationField::new('categorie', 'Catégorie')
+                ->renderAsNativeWidget()
                 ->setFormTypeOption('required', false)
-                ->setFormTypeOption('constraints', [new Image(maxSize: '8M', maxWidth: 8000, maxHeight: 8000)])
-                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif'])
-                ->setHelp('Laissez vide pour conserver le logo actuel. Il sera converti automatiquement en WebP.')
+                ->setFormTypeOption('placeholder', 'Choisir une catégorie')
+                ->setFormTypeOption('choice_label', 'nom')
+                ->setQueryBuilder(static fn ($queryBuilder) => $queryBuilder->orderBy('entity.nom', 'ASC'))
                 ->onlyOnForms(),
             TextField::new('enseigneTelephone', 'Téléphone de l’enseigne')->onlyOnForms(),
             TextField::new('enseigneEmail', 'Email de l’enseigne')->onlyOnForms(),
@@ -48,13 +60,30 @@ final class BoutiqueCrudController extends AbstractEntityCrudController
             TextField::new('enseigneInstagram', 'Instagram de l’enseigne')->onlyOnForms(),
             BooleanField::new('enseigneEstActif', 'Enseigne active')->onlyOnForms(),
         ], iterator_to_array(parent::configureFields($pageName)), [
-            Field::new('photoUpload', 'Photo de la boutique')
+            Field::new('photoUpload', 'Logo de la boutique')
                 ->setFormType(FileType::class)
                 ->setFormTypeOption('mapped', true)
                 ->setFormTypeOption('required', $pageName === Crud::PAGE_NEW)
-                ->setFormTypeOption('constraints', [new Image(maxSize: '8M', maxWidth: 8000, maxHeight: 8000)])
-                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif'])
-                ->setHelp('Une photo déjà liée ? Laissez vide pour la conserver, ou choisissez une nouvelle photo pour la remplacer.')
+                ->setFormTypeOption('constraints', [new File(
+                    maxSize: '8M',
+                    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml'],
+                    mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
+                )])
+                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
+                ->setHelp('Laissez vide pour conserver le logo actuel, ou choisissez un nouveau logo pour le remplacer. Les SVG sont conservés tels quels.')
+                ->onlyOnForms(),
+            Field::new('galleryUploads', 'Ajouter des photos à l’album de la boutique')
+                ->setFormType(FileType::class)
+                ->setFormTypeOption('mapped', true)
+                ->setFormTypeOption('multiple', true)
+                ->setFormTypeOption('required', false)
+                ->setFormTypeOption('constraints', [new All(constraints: [new File(
+                    maxSize: '8M',
+                    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/svg+xml'],
+                    mimeTypesMessage: 'Veuillez sélectionner une image JPEG, PNG, WebP, AVIF ou SVG.',
+                )])])
+                ->setFormTypeOption('attr', ['accept' => 'image/jpeg,image/png,image/webp,image/avif,image/svg+xml'])
+                ->setHelp('Sélectionnez plusieurs photos à ajouter à l’album de cette boutique. Les photos existantes sont conservées.')
                 ->onlyOnForms(),
             ChoiceField::new('horaireMode', 'Type d’horaire')->onlyOnForms()->setChoices([
                 'Même horaire tous les jours' => 'fixe',

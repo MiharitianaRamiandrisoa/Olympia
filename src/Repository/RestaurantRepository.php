@@ -14,7 +14,9 @@ class RestaurantRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('r')->join('r.enseigne', 'e')->addSelect('e')
             ->leftJoin('r.categorie', 'c')->addSelect('c')
-            ->andWhere('r.estActif = :active')->setParameter('active', true)->orderBy('e.nom', 'ASC');
+            ->andWhere('r.estActif = :active')
+            ->andWhere('e.estActif = :active')
+            ->setParameter('active', true)->orderBy('e.nom', 'ASC');
         if ($search !== null && trim($search) !== '') {
             $qb->andWhere('LOWER(e.nom) LIKE :search OR LOWER(c.nom) LIKE :search')
                 ->setParameter('search', '%'.mb_strtolower(trim($search)).'%');
@@ -33,6 +35,7 @@ class RestaurantRepository extends ServiceEntityRepository
             ->leftJoin('r.photoMedia', 'm')->addSelect('m')
             ->andWhere('e.slug = :slug')->setParameter('slug', $slug)
             ->andWhere('r.estActif = :active')->setParameter('active', true)
+            ->andWhere('e.estActif = :active')
             ->getQuery()->getOneOrNullResult();
     }
 }

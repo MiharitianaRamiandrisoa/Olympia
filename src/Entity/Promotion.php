@@ -4,6 +4,8 @@ use App\Repository\PromotionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PromotionRepository::class)]
+#[ORM\Table(name: 'promotion')]
+#[ORM\UniqueConstraint(name: 'UNIQ_PROMOTION_ORIGINE_EXTERNE', columns: ['origine', 'identifiant_externe'])]
 class Promotion
 {
     use ImageUploadTrait;
@@ -13,6 +15,8 @@ class Promotion
     #[ORM\ManyToOne(targetEntity: CategoriePromotion::class)] #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] private ?CategoriePromotion $categorie = null;
     #[ORM\Column(length: 200)] private ?string $titre = null;
     #[ORM\Column(length: 220, unique: true)] private ?string $slug = null;
+    #[ORM\Column(length: 30)] private string $origine = 'manuelle';
+    #[ORM\Column(length: 255, nullable: true)] private ?string $identifiantExterne = null;
     #[ORM\Column(type: 'text', nullable: true)] private ?string $description = null;
     #[ORM\Column(type: 'text', nullable: true)] private ?string $conditions = null;
     #[ORM\ManyToOne(targetEntity: Media::class)] #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')] private ?Media $imageMedia = null;
@@ -29,6 +33,10 @@ class Promotion
     public function setTitre(string $v): static { $this->titre = $v; return $this; }
     public function getSlug(): ?string { return $this->slug; }
     public function setSlug(string $v): static { $this->slug = $v; return $this; }
+    public function getOrigine(): string { return $this->origine; }
+    public function setOrigine(string $v): static { $this->origine = $v; return $this; }
+    public function getIdentifiantExterne(): ?string { return $this->identifiantExterne; }
+    public function setIdentifiantExterne(?string $v): static { $this->identifiantExterne = $v; return $this; }
     public function getDescription(): ?string { return $this->description; }
     public function setDescription(?string $v): static { $this->description = $v; return $this; }
     public function getConditions(): ?string { return $this->conditions; }

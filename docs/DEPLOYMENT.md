@@ -24,6 +24,8 @@ Le serveur SSH de préproduction doit disposer de PHP 8.2 ou supérieur et de Co
 
 Le mot de passe de la base ne doit pas être ajouté dans `.env`, dans le dépôt ou dans le workflow. Il doit uniquement être enregistré dans le secret GitHub `PREPROD_DB_PASSWORD`.
 
+Les clés d'import Make sont écrites automatiquement dans `.env.local` sur le serveur par le workflow. Les secrets GitHub `ACTUALITE_IMPORT_API_KEY`, `EVENEMENT_IMPORT_API_KEY` et `PROMOTION_IMPORT_API_KEY` permettent de définir les clés respectives ; à défaut, la valeur `test-key` est utilisée.
+
 ## 1. Transférer les sources
 
 ```bash
@@ -72,17 +74,3 @@ find public -type d -exec chmod 755 {} +
 find public -type f -exec chmod 644 {} +
 php bin/console cache:clear --env=prod
 ```
-
-## 3. Activer la billetterie
-
-La migration `Version20261014150000` ajoute les champs de reservation a `evenement` et les tables `reservation`, `billet` et `controle_entree`. Apres sauvegarde de la base, l executer sur l environnement cible :
-
-```bash
-php bin/console doctrine:migrations:migrate --env=prod --no-interaction
-```
-
-Pour envoyer les confirmations, remplacer `MAILER_DSN=null://null` par un DSN SMTP fonctionnel dans la configuration d environnement de production. Tant que cette valeur reste `null://null`, les reservations gratuites sont confirmees et les billets restent consultables via leur lien securise, mais aucun e-mail n est declare comme envoye.
-
-Pour les evenements payants, le projet fournit une page de paiement simulee pour les tests. Apres le formulaire, la reservation est conservee pendant `PAYMENT_HOLD_MINUTES` minutes (15 par defaut), puis le paiement simule confirme la reservation et genere un billet par place. Une reservation non payee est supprimee a expiration. La commande `php bin/console app:reservations:cleanup-expired` doit etre executee regulierement par une tache planifiee en production.
-
-Les utilisateurs charges du controle doivent recevoir le role `ROLE_TICKET_CONTROL`. Un `ROLE_ADMIN` herite automatiquement de ce role. L interface de controle est disponible sur `/billetterie/controle` et l export CSV sur `/olympia-admin/billetterie/participants.csv`.

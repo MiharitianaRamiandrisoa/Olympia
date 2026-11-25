@@ -43,7 +43,7 @@ final class SeedDemoServicesCommand extends Command
             'slug' => 'point-information',
             'description' => 'Notre équipe vous accompagne pour trouver une boutique, un restaurant ou une information pratique.',
             'image' => 'hero-boutiques.jpg',
-            'telephone' => '+261 (0)34 234 56 67',
+            'telephone' => '+261 34 70 850 50',
             'email' => 'contact@olympiacentre.com',
             'horaires' => '10h00 - 21h00',
             'featured' => false,

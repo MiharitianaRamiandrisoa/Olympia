@@ -1,0 +1,12 @@
+{{ actualite.titre }}
+
+{% if actualite.chapeau %}{{ actualite.chapeau|striptags|trim }}
+
+{% endif %}
+{% if actualite.contenu %}{{ actualite.contenu|striptags|trim|slice(0, 700) }}{% if actualite.contenu|striptags|length > 700 %}…{% endif %}
+
+{% endif %}
+Lire l’actualité : {{ absolute_url(path('app_actualite_detail', {slug: actualite.slug})) }}
+
+Retrouvez toutes nos actualités sur {{ absolute_url(path('app_actualites')) }}
+Vous recevez ce message après votre inscription à la newsletter d’Olympia Madagascar.

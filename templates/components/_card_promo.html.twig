@@ -3,6 +3,10 @@
   {% set srcset = responsive_srcset(promo.image) %}
   <img src="{{ optimized_image(promo.image) }}"{% if srcset %} srcset="{{ srcset }}" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 700px"{% endif %} alt="{{ promo.title }} - {{ promo.shop }}" width="700" height="560" class="h-56 w-full object-cover" loading="lazy" decoding="async">
   <div class="flex flex-1 flex-col p-6">
+    {% set card_description = promo.description|default('')|striptags|trim %}
+    {% if card_description|length > 220 %}
+      {% set card_description = card_description|slice(0, 220)|trim ~ '…' %}
+    {% endif %}
     <span class="w-fit rounded-full bg-olympia px-3 py-1 text-[11px] font-bold uppercase text-white">{{ promo.tag }}</span>
     <h3 class="mt-2 text-xl font-bold">{{ promo.title }}</h3>
     <p class="mt-2 flex items-center gap-2 text-sm text-olympia-muted">
@@ -10,7 +14,7 @@
       {{ promo.date }}
     </p>
     <p class="mt-2 text-sm font-medium text-olympia-gold">{{ promo.shop }}</p>
-    <p class="mt-3 flex-1 text-sm leading-relaxed text-olympia-muted">{{ promo.description }}</p>
+    <p class="mt-3 line-clamp-4 flex-1 text-sm leading-relaxed text-olympia-muted">{{ card_description }}</p>
     <a href="{{ promo.url|default('#') }}" class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-olympia hover:underline">
       En savoir plus
       <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>

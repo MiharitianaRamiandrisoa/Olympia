@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\BoutiqueRepository;
+use App\Repository\ActualiteRepository;
 use App\Repository\EvenementRepository;
 use App\Repository\PromotionRepository;
 use App\Repository\RestaurantRepository;
@@ -15,6 +16,7 @@ final class SeoController extends AbstractController
 {
     public function __construct(
         private readonly BoutiqueRepository $boutiques,
+        private readonly ActualiteRepository $actualites,
         private readonly RestaurantRepository $restaurants,
         private readonly PromotionRepository $promotions,
         private readonly EvenementRepository $events,
@@ -37,8 +39,15 @@ final class SeoController extends AbstractController
     public function sitemap(): Response
     {
         $urls = [];
-        foreach (['app_home', 'app_enseignes', 'app_restaurants', 'app_actualites', 'app_promotions', 'app_events', 'app_services', 'app_contact', 'app_legal_mentions', 'app_legal_privacy', 'app_legal_terms'] as $route) {
+        foreach (['app_home', 'app_enseignes', 'app_restaurants', 'app_actualites', 'app_promotions', 'app_events', 'app_services', 'app_informations_pratiques', 'app_contact', 'app_legal_mentions', 'app_legal_privacy', 'app_legal_terms'] as $route) {
             $urls[$this->generateUrl($route, [], UrlGeneratorInterface::ABSOLUTE_URL)] = null;
+        }
+
+        foreach ($this->actualites->findActive() as $actualite) {
+            if ($actualite->getSlug()) {
+                $urls[$this->generateUrl('app_actualite_detail', ['slug' => $actualite->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL)]
+                    = $actualite->getDateModification() ?? $actualite->getDatePublication();
+            }
         }
 
         foreach ($this->boutiques->findActive() as $boutique) {

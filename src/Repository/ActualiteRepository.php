@@ -29,4 +29,16 @@ final class ActualiteRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /** @return Actualite[] */
+    public function findPendingNewsletters(?\DateTimeImmutable $now = null): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.estActif = :active')->setParameter('active', true)
+            ->andWhere('a.datePublication <= :now')->setParameter('now', $now ?? new \DateTimeImmutable())
+            ->andWhere('a.newsletterEnvoyeeLe IS NULL')
+            ->orderBy('a.datePublication', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

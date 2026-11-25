@@ -31,6 +31,17 @@ final class PublicPageCacheSubscriber implements EventSubscriberInterface
             return;
         }
 
+        // La page d'accueil tire aléatoirement les enseignes mises en avant.
+        // Elle ne doit donc pas être servie depuis le cache HTTP public,
+        // sinon le même tirage resterait affiché pendant toute sa durée de vie.
+        if ($route === 'app_home') {
+            $response->setPrivate();
+            $response->setMaxAge(0);
+            $response->headers->set('Cache-Control', 'no-store, private');
+
+            return;
+        }
+
         $response->setPublic();
         $response->setMaxAge(60);
         $response->setSharedMaxAge(60);
