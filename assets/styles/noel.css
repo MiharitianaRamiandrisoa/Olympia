@@ -1,0 +1,199 @@
+/* Décorations de Noël discrètes, sans interaction avec le contenu. */
+
+.noel-deco,
+.noel-decorations {
+    pointer-events: none;
+    user-select: none;
+}
+
+.noel-deco {
+    position: absolute;
+    display: block;
+    height: auto;
+    max-width: none;
+}
+
+.noel-decorations--page {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.noel-decorations--hero-pattern {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url("/images/noel/fond-noel-pattern.svg");
+    background-position: center;
+    background-repeat: repeat;
+    background-size: clamp(18rem, 42vw, 32rem);
+    opacity: 1;
+    pointer-events: none;
+    user-select: none;
+}
+
+.noel-decorations--hero-pattern ~ .container-site {
+    position: relative;
+    z-index: 1;
+}
+
+.noel-message-banner {
+    position: relative;
+    display: flex;
+    min-height: 7rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-block: 1px solid rgb(223 207 172 / 55%);
+    background: var(--color-olympia-cream);
+    color: var(--color-olympia);
+    padding: 1.25rem 4rem;
+    text-align: center;
+}
+
+.noel-message-banner__content {
+    position: relative;
+    z-index: 1;
+}
+
+.noel-message-banner__eyebrow {
+    display: block;
+    color: var(--color-olympia-gold);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.noel-message-banner p {
+    margin-top: 0.35rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
+    font-weight: 600;
+}
+
+.noel-message-banner__flake {
+    position: absolute;
+    width: 3.25rem;
+    height: auto;
+    opacity: 0.68;
+    pointer-events: none;
+    user-select: none;
+}
+
+.noel-message-banner__flake--left {
+    left: max(1rem, calc(50% - 28rem));
+}
+
+.noel-message-banner__flake--right {
+    right: max(1rem, calc(50% - 28rem));
+}
+
+.noel-deco--page-simple-left {
+    top: 15%;
+    left: max(0.75rem, calc(50% - 44rem));
+    width: 2.2rem;
+    opacity: 0.62;
+}
+
+.noel-deco--page-points-right {
+    top: 34%;
+    right: max(1rem, calc(50% - 43rem));
+    width: 1.9rem;
+    opacity: 0.56;
+}
+
+.noel-deco--page-crystal-left {
+    top: 53%;
+    left: max(1.25rem, calc(50% - 42rem));
+    width: 2.25rem;
+    opacity: 0.5;
+}
+
+.noel-deco--page-simple-right {
+    top: 71%;
+    right: max(3rem, calc(50% - 45rem));
+    width: 1.65rem;
+    opacity: 0.58;
+}
+
+.noel-deco--page-points-left {
+    top: 87%;
+    left: max(2rem, calc(50% - 46rem));
+    width: 1.5rem;
+    opacity: 0.46;
+}
+
+.noel-deco--page-sparkle-right {
+    top: 25%;
+    right: max(4rem, calc(50% - 40rem));
+    width: 1.45rem;
+    opacity: 0.72;
+}
+
+.noel-deco--page-sparkle-left {
+    top: 61%;
+    left: max(3rem, calc(50% - 43rem));
+    width: 1.05rem;
+    opacity: 0.58;
+}
+
+.noel-deco--page-sparkle-small {
+    top: 82%;
+    right: max(6rem, calc(50% - 46rem));
+    width: 0.75rem;
+    opacity: 0.64;
+}
+
+@media (max-width: 767px) {
+    .noel-decorations--page,
+    .noel-message-banner__flake {
+        display: block;
+    }
+
+    .noel-deco--page-simple-left {
+        left: 0.75rem;
+        width: 1.7rem;
+    }
+
+    .noel-message-banner {
+        min-height: 6rem;
+        padding-inline: 3.5rem;
+    }
+
+    .noel-message-banner__flake {
+        width: 2rem;
+    }
+
+    .noel-deco--page-points-right {
+        right: 0.75rem;
+        width: 1.5rem;
+    }
+
+    .noel-deco--page-crystal-left,
+    .noel-deco--page-points-left {
+        display: none;
+    }
+
+    .noel-deco--page-simple-right {
+        right: 1rem;
+        width: 1.35rem;
+    }
+
+    .noel-deco--page-sparkle-right {
+        right: 2.5rem;
+        width: 1.1rem;
+    }
+
+    .noel-deco--page-sparkle-left {
+        left: 2.25rem;
+        width: 0.85rem;
+    }
+
+    .noel-deco--page-sparkle-small {
+        right: 3rem;
+        width: 0.65rem;
+    }
+
+}

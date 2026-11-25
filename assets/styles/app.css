@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./noel.css";
 
 @font-face {
     font-family: "Caesar Dressing";

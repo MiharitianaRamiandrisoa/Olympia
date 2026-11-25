@@ -11,6 +11,7 @@
 
 {% block body %}
   {% include 'home/sections/_hero.html.twig' %}
+  {% include 'components/_christmas-message-banner.html.twig' %}
   {% include 'home/sections/_quick-access.html.twig' with {items: quick_access} only %}
   {% include 'home/sections/_featured-shops.html.twig' with {shops: shops} only %}
   {% include 'home/sections/_restaurant-banner.html.twig' %}

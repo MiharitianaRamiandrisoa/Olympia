@@ -1,0 +1,12 @@
+{% set theme = olympia_theme() %}
+
+{% if theme.seasonal %}
+  <section class="noel-message-banner" aria-label="Message de Noël">
+    <img src="{{ asset('images/noel/flocon-simple.svg') }}" alt="" aria-hidden="true" width="100" height="100" loading="lazy" decoding="async" class="noel-message-banner__flake noel-message-banner__flake--left">
+    <div class="noel-message-banner__content">
+      <span class="noel-message-banner__eyebrow">L’esprit des fêtes s’installe à Olympia</span>
+      <p>Joyeuses fêtes à toutes et à tous&nbsp;!</p>
+    </div>
+    <img src="{{ asset('images/noel/flocon-points.svg') }}" alt="" aria-hidden="true" width="100" height="100" loading="lazy" decoding="async" class="noel-message-banner__flake noel-message-banner__flake--right">
+  </section>
+{% endif %}
