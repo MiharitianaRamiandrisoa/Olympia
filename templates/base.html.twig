@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% set seo_title %}{% block title %}Olympia Centre Commercial{% endblock %}{% endset %}
   {% set seo_title = seo_title|striptags|trim %}
+  {% set site_theme = olympia_theme() %}
   {% set seo_description %}{% block meta_description %}Shopping, restauration, espace bien-être, enfant, services à une même adresse{% endblock %}{% endset %}
   {% set seo_description = seo_description|striptags|trim|slice(0, 160) %}
   {% set seo_og_type %}{% block og_type %}website{% endblock %}{% endset %}
@@ -19,6 +20,8 @@
   {% set seo_image = app.request.schemeAndHttpHost ~ app.request.baseUrl ~ optimized_image(seo_image_path) %}
   <meta name="description" content="{{ seo_description }}">
   <meta name="author" content="Olympia Madagascar">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="{{ site_theme.color }}">
   <meta name="robots" content="{{ seo_has_filter_query ? 'noindex,follow' : 'index,follow' }}">
   <meta name="theme-color" content="#154953">
   <link rel="canonical" href="{{ canonical_url }}">
@@ -44,7 +47,7 @@
   <title>{{ seo_title }}</title>
   {% block head_preloads %}{% endblock %}
   {# Versionner l'asset force le navigateur/CDN à prendre la CSS déployée. #}
-  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261020-7">
+  <link rel="stylesheet" href="{{ asset('build/app.css') }}?v=20261124-noel-3">
   {{ importmap('app') }}
   {% block stylesheets %}{% endblock %}
   {% block structured_data %}
@@ -68,16 +71,11 @@
     </script>
   {% endblock %}
 </head>
-<body class="flex min-h-screen flex-col">
-  <div id="page-navigation-loader" class="page-navigation-loader" data-turbo-temporary hidden role="status" aria-live="polite" aria-label="Chargement de la page">
-    <div class="page-navigation-loader__message">
-      <span class="page-navigation-loader__spinner" aria-hidden="true"></span>
-    </div>
-  </div>
-
+<body class="theme-{{ site_theme.key }} flex min-h-screen flex-col" data-theme="{{ site_theme.key }}">
   {% include 'components/_header.html.twig' %}
 
   <main class="brand-pattern flex-1 {% block main_background %}bg-olympia-cream{% endblock %}">
+    {% include 'components/_christmas-decorations.html.twig' with {placement: 'page'} only %}
     {% block hero %}{% endblock %}
     {% block filters %}{% endblock %}
     {% block body %}{% endblock %}

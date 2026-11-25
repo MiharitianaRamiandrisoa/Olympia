@@ -32,7 +32,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           port: 21
-          server-dir: /public_html/
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
           local-dir: ./
           security: strict
           exclude: |
@@ -70,12 +70,23 @@ jobs:
           script_stop: true
           envs: APP_SECRET,DB_HOST,DB_NAME,DB_USER,DB_PASSWORD,MAILER_USERNAME,MAILER_PASSWORD,ACTUALITE_IMPORT_API_KEY,EVENEMENT_IMPORT_API_KEY,PROMOTION_IMPORT_API_KEY
           script: |
-            set -e
+            set -eu
 
             SERVER_DIR='${{ secrets.SSH_SERVER_DIR || '/home/olympiam/domains/olympia-madagascar.mg/public_html' }}'
             cd "$SERVER_DIR"
+            export PATH="$HOME/.local/bin:$PATH"
+            echo "SSH user: $(whoami)"
+            echo "Working directory: $(pwd)"
+            test -f composer.json || { echo "ERROR: composer.json is missing from the deployment directory."; exit 1; }
+            test -f bin/console || { echo "ERROR: Symfony bin/console is missing from the deployment directory."; exit 1; }
 
             umask 077
+            if [ -z "${APP_SECRET:-}" ] || [ -z "${DB_HOST:-}" ] || [ -z "${DB_NAME:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; then
+              echo "ERROR: deployment secrets are incomplete."
+              exit 1
+            fi
+
+            command -v php >/dev/null 2>&1 || { echo "ERROR: PHP is not available."; exit 1; }
             printf '%s\n' \
               'APP_ENV=prod' \
               'APP_DEBUG=0' \
@@ -91,7 +102,6 @@ jobs:
               exit 1
             fi
 
-            command -v php >/dev/null 2>&1 || { echo "ERREUR : PHP n'est pas disponible."; exit 1; }
             DB_USER_URL="$(php -r 'echo rawurlencode(getenv("DB_USER"));')"
             DB_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("DB_PASSWORD"));')"
             DB_NAME_URL="$(php -r 'echo rawurlencode(getenv("DB_NAME"));')"
@@ -106,7 +116,9 @@ jobs:
             export APP_DEBUG=0
             mkdir -p var/cache var/log var/share
 
-            command -v composer >/dev/null 2>&1 || { echo "ERREUR : Composer n'est pas disponible."; exit 1; }
+            command -v composer >/dev/null 2>&1 || { echo "ERROR: Composer is not available."; exit 1; }
+            php --version | head -n 1
+            composer --version
 
             composer install \
               --no-dev \
@@ -126,24 +138,24 @@ jobs:
             find public -type d -exec chmod 755 {} +
             find public -type f -exec chmod 644 {} +
 
-            echo "Sources transférées. Compilation des assets laissée manuelle."
+            echo "Deployment completed. JavaScript assets are managed manually on the server."
 
   deploy-preprod:
     if: ${{ github.ref_name == 'Dev' || github.ref_name == 'dev' }}
-    name: Deploy preproduction
+    name: Déploiement préproduction
     runs-on: ubuntu-latest
     environment:
       name: preprod
       url: https://test.olympia-madagascar.mg
 
     steps:
-      - name: Checkout
+      - name: Récupérer le code source
         uses: actions/checkout@v4
 
-      - name: Deploy sources by FTP
+      - name: Déployer les sources par FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.PREPROD_FTP_HOST || secrets.FTP_HOST }}
+          server: ${{ secrets.PREPROD_FTP_HOST }}
           username: ${{ secrets.PREPROD_FTP_USER }}
           password: ${{ secrets.PREPROD_FTP_PASSWORD }}
           protocol: ftps
@@ -165,7 +177,7 @@ jobs:
             **/assets/vendor/**
             **/.phpunit.cache/**
 
-      - name: Install dependencies and configure preproduction
+      - name: Installer les dépendances PHP et préparer Symfony
         uses: appleboy/ssh-action@v1.2.0
         env:
           APP_SECRET: ${{ secrets.PREPROD_APP_SECRET }}
@@ -211,7 +223,8 @@ jobs:
               'MAILER_DSN=null://null' \
               'NEWSLETTER_FROM=newsletter@olympia-madagascar.mg' \
               'OLYMPIA_SESSION_IDLE_TIMEOUT=3600' \
-              'PAYMENT_HOLD_MINUTES=15' > .env
+              'PAYMENT_HOLD_MINUTES=15' \
+              'OLYMPIA_THEME_OVERRIDE=auto' > .env
 
             DB_USER_URL="$(php -r 'echo rawurlencode(getenv("DB_USER"));')"
             DB_PASSWORD_URL="$(php -r 'echo rawurlencode(getenv("DB_PASSWORD"));')"
@@ -242,4 +255,4 @@ jobs:
             find public -type d -exec chmod 755 {} +
             find public -type f -exec chmod 644 {} +
 
-            echo "Preproduction deployment completed. JavaScript assets are managed manually on the server."
+            echo "Deployment completed. JavaScript assets are managed manually on the server."

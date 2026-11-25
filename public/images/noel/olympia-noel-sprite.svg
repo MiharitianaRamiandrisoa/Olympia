@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="olympia-flocon" viewBox="0 0 100 100">
+<g fill="none" stroke="#DDC9A4" stroke-width="3.2" stroke-linecap="round"><path d="M50 7V93M12.8 28.5L87.2 71.5M12.8 71.5L87.2 28.5"/><path d="M50 7l-8 10m8-10 8 10M50 93l-8-10m8 10 8-10M12.8 28.5l13 1m-13-1 5-11m69.4 54-13-1m13 1-5 11M12.8 71.5l13-1m-13 1 5 11m69.4-54-13 1m13-1-5-11"/></g></symbol>
+<symbol id="olympia-etoile" viewBox="0 0 100 100"><path d="M50 4C56 37 63 44 96 50 63 56 56 63 50 96 44 63 37 56 4 50 37 44 44 37 50 4Z" fill="#DDC9A4"/></symbol>
+<symbol id="olympia-boules" viewBox="0 0 220 260"><path d="M52 0v52M157 0v29" stroke="#B99A61" stroke-width="2"/><path d="M42 50h20v12H42zM147 27h20v12h-20z" fill="#C7A66B"/><circle cx="52" cy="105" r="48" fill="#0D5360"/><circle cx="157" cy="91" r="58" fill="#D8B875"/></symbol>
+<symbol id="olympia-cadeau" viewBox="0 0 180 160"><path d="M16 55h148v91H16z" fill="#0D5360"/><path d="M8 42h164v25H8z" fill="#146675"/><path d="M76 42h28v104H76z" fill="#D9B878"/><path d="M90 43C38 37 39 2 62 7c18 4 28 35 28 36Zm0 0c52-6 51-41 28-36-18 4-28 35-28 36Z" fill="#E4C58D" stroke="#B58A49" stroke-width="2"/></symbol>
+</svg>

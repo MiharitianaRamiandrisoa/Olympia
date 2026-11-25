@@ -8,6 +8,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     olympia.session_idle_timeout: '%env(int:OLYMPIA_SESSION_IDLE_TIMEOUT)%'
+    olympia.theme_override: '%env(string:OLYMPIA_THEME_OVERRIDE)%'
 
 services:
     # default configuration for services in *this* file
@@ -32,6 +33,10 @@ services:
     App\Controller\Api\ActualiteImportController:
         arguments:
             $apiKey: '%env(string:ACTUALITE_IMPORT_API_KEY)%'
+
+    App\Service\ThemeResolver:
+        arguments:
+            $override: '%olympia.theme_override%'
 
     App\Controller\Api\MakeEventPromotionImportController:
         arguments:

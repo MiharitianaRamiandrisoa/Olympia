@@ -1,0 +1,18 @@
+{% set theme = olympia_theme() %}
+
+{% if theme.seasonal %}
+  {% if placement == 'page' %}
+    <div class="noel-decorations noel-decorations--page" aria-hidden="true">
+      <img src="{{ asset('images/noel/flocon-simple.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-simple-left">
+      <img src="{{ asset('images/noel/flocon-points.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-points-right">
+      <img src="{{ asset('images/noel/flocon-cristal.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-crystal-left">
+      <img src="{{ asset('images/noel/flocon-simple.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-simple-right">
+      <img src="{{ asset('images/noel/flocon-points.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-points-left">
+      <img src="{{ asset('images/noel/petite-etincelle.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-sparkle-right">
+      <img src="{{ asset('images/noel/petite-etincelle.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-sparkle-left">
+      <img src="{{ asset('images/noel/petite-etincelle.svg') }}" alt="" width="100" height="100" loading="lazy" decoding="async" class="noel-deco noel-deco--page-sparkle-small">
+    </div>
+  {% elseif placement == 'hero' %}
+    <div class="noel-decorations noel-decorations--hero-pattern" aria-hidden="true"></div>
+  {% endif %}
+{% endif %}
